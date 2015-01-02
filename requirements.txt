@@ -1,0 +1,5 @@
+Django >= 1.7
+
+# Coverage: for now, use the tip from bitbucket.  Eventually, it will be:
+#     coverage >= 4.0
+-e hg+https://hg.bitbucket.org/ned/coveragepy/#egg=coverage
