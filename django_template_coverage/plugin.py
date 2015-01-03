@@ -7,7 +7,7 @@ import coverage.plugin
 import django
 from django.template import Lexer, Token, TextNode
 from django.template.base import TOKEN_MAPPING
-from django.template import TOKEN_BLOCK, TOKEN_VAR
+from django.template import TOKEN_BLOCK, TOKEN_TEXT, TOKEN_VAR
 
 from blessed import Terminal
 t = Terminal()
@@ -127,11 +127,28 @@ class FileReporter(coverage.plugin.FileReporter):
             if comment:
                 continue
 
-            if token.token_type == TOKEN_BLOCK or token.token_type == TOKEN_VAR:
-                if token.token_type == TOKEN_BLOCK and token.contents.startswith('end'):
+            if token.token_type == TOKEN_BLOCK:
+                if token.contents.startswith("end"):
                     continue
-
+                if token.contents == "else":
+                    continue
                 source_lines.add(token.lineno)
+
+            elif token.token_type == TOKEN_VAR:
+                source_lines.add(token.lineno)
+
+            elif token.token_type == TOKEN_TEXT:
+                # Text nodes often start with newlines, but we don't want to
+                # consider that first line to be part of the text.
+                lineno = token.lineno
+                lines = token.contents.splitlines(True)
+                num_lines = len(lines)
+                if num_lines <= 1:
+                    continue
+                if lines[0].isspace():
+                    lineno += 1
+                    num_lines -= 1
+                source_lines.update(xrange(lineno, lineno+num_lines))
 
         return source_lines
 

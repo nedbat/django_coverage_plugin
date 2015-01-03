@@ -52,14 +52,17 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
     def get_analysis(self, morf=None):
         if morf is None:
             morf = self.template_path
-        return self.cov.analysis2(os.path.abspath(morf))
+        filename, executable, excluded, missing, formatted = self.cov.analysis2(os.path.abspath(morf))
+        return executable, missing, formatted
 
 
 class SimpleTemplateTest(DjangoPluginTestCase):
     def test_plain_text(self):
         text, line_data = self.do_django_coverage('Hello\nWorld\n')
         self.assertEqual(text, 'Hello\nWorld\n')
-        self.assertEqual(line_data, [1,2])
+        self.assertEqual(line_data, [1, 2])
+
+        self.assertEqual(self.get_analysis(), ([1, 2], [], ""))
 
     def test_if(self):
         template = """\
@@ -76,12 +79,7 @@ class SimpleTemplateTest(DjangoPluginTestCase):
         self.assertEqual(text.strip(), '')
         self.assertEqual(line_data, [1])
 
-        if 1:
-            analysis = self.get_analysis()
-            self.assertEqual(analysis[1], [1])
-            self.assertEqual(analysis[2], [])
-            self.assertEqual(analysis[3], [])
-            self.assertEqual(analysis[4], "")
+        self.assertEqual(self.get_analysis(), ([1, 2], [2], "2"))
 
     def test_if_else(self):
         template = """\
@@ -96,9 +94,10 @@ class SimpleTemplateTest(DjangoPluginTestCase):
         self.assertEqual(text.strip(), 'Hello')
         self.assertEqual(line_data, [1, 2])
 
+        self.assertEqual(self.get_analysis(), ([1, 2, 4], [4], "4"))
+
         text, line_data = self.do_django_coverage(template, {'foo': False})
         self.assertEqual(text.strip(), 'Goodbye')
         self.assertEqual(line_data, [1, 4])
-        if 0:
-            self.get_analysis()
-            1/0
+
+        self.assertEqual(self.get_analysis(), ([1, 2, 4], [2], "2"))
