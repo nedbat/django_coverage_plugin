@@ -9,8 +9,9 @@ from django.template import Lexer, Token, TextNode
 from django.template.base import TOKEN_MAPPING
 from django.template import TOKEN_BLOCK, TOKEN_TEXT, TOKEN_VAR
 
-from blessed import Terminal
-t = Terminal()
+if 0:
+    from blessed import Terminal
+    t = Terminal()
 
 # TODO: Add a check for TEMPLATE_DEBUG, and make noise if it is false.
 

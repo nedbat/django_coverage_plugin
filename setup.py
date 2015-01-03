@@ -11,7 +11,7 @@ setup(
     url='',
     packages=['django_template_coverage'],
     install_requires=[
-        'Django >= 1.7',
-        'coverage >= 4.0a1',
+        'Django',
+        'coverage >= 4.0a2',
     ],
 )

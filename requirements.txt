@@ -1,4 +1,5 @@
-Django >= 1.7
+#Django
+tox >= 1.8
 
 # Coverage: for now, use the tip from bitbucket.  Eventually, it will be:
 #     coverage >= 4.0
