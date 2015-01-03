@@ -8,7 +8,7 @@ from six.moves import range
 import coverage.plugin
 
 import django
-from django.template import Lexer, Token, TextNode
+from django.template import Lexer, TextNode
 from django.template.base import TOKEN_MAPPING
 from django.template import TOKEN_BLOCK, TOKEN_TEXT, TOKEN_VAR
 

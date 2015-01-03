@@ -2,7 +2,6 @@
 
 from __future__ import print_function, unicode_literals
 
-import atexit
 import os
 import os.path
 
@@ -53,7 +52,7 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
             self.cov = coverage.Coverage(timid=True, source=["."])
             self.cov.config["run:plugins"].append("django_template_coverage")
             if 0:
-                cov.config["run:debug"].append("trace")
+                self.cov.config["run:debug"].append("trace")
             self.cov.start()
             text = tem.render(ctx)
             self.cov.stop()
