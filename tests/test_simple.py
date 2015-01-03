@@ -31,11 +31,12 @@ django.setup()
 
 class DjangoPluginTestCase(TempDirMixin, TestCase):
     def do_django_coverage(self, template, context={}):
-        tem_file = "templates/{}".format("the_template.html")
-        self.make_file(tem_file, template)
+        self.template_file = self.id().rpartition(".")[2] + ".html"
+        self.template_path = "templates/{}".format(self.template_file)
+        self.make_file(self.template_path, template)
 
         with self.settings(TEMPLATE_DIRS=("templates",)):
-            tem = get_template("the_template.html")
+            tem = get_template(self.template_file)
             ctx = Context(context)
             # timid=True here just because the plugin code is in .py, not in .c yet.
             self.cov = coverage.Coverage(timid=True, source=["."])
@@ -45,10 +46,12 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
             text = tem.render(ctx)
             self.cov.stop()
             self.cov.save()
-            line_data = self.cov.data.line_data()[os.path.realpath(tem_file)]
+            line_data = self.cov.data.line_data()[os.path.realpath(self.template_path)]
             return text, line_data
 
-    def get_analysis(self, morf="templates/the_template.html"):
+    def get_analysis(self, morf=None):
+        if morf is None:
+            morf = self.template_path
         return self.cov.analysis2(os.path.abspath(morf))
 
 
@@ -67,13 +70,13 @@ class SimpleTemplateTest(DjangoPluginTestCase):
 
         text, line_data = self.do_django_coverage(template, {'foo': True})
         self.assertEqual(text.strip(), 'Hello')
-        self.assertEqual(line_data, [1,2,3])
+        self.assertEqual(line_data, [1, 2])
 
         text, line_data = self.do_django_coverage(template, {'foo': False})
         self.assertEqual(text.strip(), '')
-        self.assertEqual(line_data, [1,3])
+        self.assertEqual(line_data, [1])
 
-        if 0:
+        if 1:
             analysis = self.get_analysis()
             self.assertEqual(analysis[1], [1])
             self.assertEqual(analysis[2], [])
@@ -91,11 +94,11 @@ class SimpleTemplateTest(DjangoPluginTestCase):
 
         text, line_data = self.do_django_coverage(template, {'foo': True})
         self.assertEqual(text.strip(), 'Hello')
-        self.assertEqual(line_data, [1,2,5])
+        self.assertEqual(line_data, [1, 2])
 
         text, line_data = self.do_django_coverage(template, {'foo': False})
         self.assertEqual(text.strip(), 'Goodbye')
-        self.assertEqual(line_data, [1,3,4,5])
+        self.assertEqual(line_data, [1, 4])
         if 0:
             self.get_analysis()
             1/0

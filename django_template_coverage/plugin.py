@@ -5,8 +5,9 @@ import os.path
 import coverage.plugin
 
 import django
-from django.template import Lexer, Token
-from django.template.base import TOKEN_MAPPING, TOKEN_BLOCK, TOKEN_VAR
+from django.template import Lexer, Token, TextNode
+from django.template.base import TOKEN_MAPPING
+from django.template import TOKEN_BLOCK, TOKEN_VAR
 
 from blessed import Terminal
 t = Terminal()
@@ -26,8 +27,8 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
 
     def file_tracer(self, filename):
         if filename.startswith(self.django_template_dir):
-            # TODO: django/templatetags shouldn't be traced.
-            return self
+            if "templatetags" not in filename:
+                return self
         return None
 
     def file_reporter(self, filename):
@@ -48,14 +49,8 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
             dump_frame(frame)
         try:
             source = render_self.source
-            #print t.bold_blue("source: {!r}".format(source))
             origin = source[0]
-            #print t.bold_blue("origin: {!r}".format(origin.__dict__))
             filename = origin.name
-            #print t.bold_red("filename: {!r}".format(filename))
-            template_text = open(filename).read()
-            #print "text: {!r}".format(template_text[source[1][0]:source[1][1]])
-            #print
             return filename
         except (AttributeError, IndexError):
             pass
@@ -63,26 +58,45 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
 
     def line_number_range(self, frame):
         assert frame.f_code.co_name == 'render'
-        source = self.template_source(frame)
+        #print frame.f_code.co_filename, frame.f_lineno
+        render_self = frame.f_locals['self']
+        source = render_self.source
+        #print source[0].name, source[1]
+        s_start, s_end = source[1]
+        if isinstance(render_self, TextNode):
+            text = render_self.s
+            first_line = text.splitlines(True)[0]
+            if first_line.isspace():
+                s_start += len(first_line)
         line_map = self.get_line_map(source[0].name)
-        start = get_line_number(line_map, source[1][0])
-        end = get_line_number(line_map, source[1][1])
+        start = get_line_number(line_map, s_start)
+        end = get_line_number(line_map, s_end-1)
+        #print s_start, s_end, start, end
         if start < 0 or end < 0:
             return -1, -1
         return start, end
 
     ## FileTracer helpers
 
-    def template_source(self, frame):
-        render_self = frame.f_locals['self']
-        return getattr(render_self, "source", None)
-
     def get_line_map(self, filename):
+        """The line map for `filename`.
+
+        A line map is a list of character offsets, indicating where each line
+        in the text begins.  For example, a line map like this::
+
+            [13, 19, 30]
+
+        means that line 2 starts at character 13, line 3 starts at 19, etc.
+        Line 1 always starts at character 0.
+
+        """
         if filename not in self.source_map:
             with open(filename) as template_file:
                 template_source = template_file.read()
-            line_lengths = [len(l) for l in template_source.splitlines(True)]
-            self.source_map[filename] = list(running_sum(line_lengths))
+                #for i in range(0, len(template_source), 10):
+                #    print "%3d: %r" % (i, template_source[i:i+10])
+            self.source_map[filename] = make_line_map(template_source)
+            #print self.source_map[filename]
         return self.source_map[filename]
 
 
@@ -101,7 +115,7 @@ class FileReporter(coverage.plugin.FileReporter):
 
         comment = False
         for token in tokens:
-            print "%10s %2d: %r" % (TOKEN_MAPPING[token.token_type], token.lineno, token.contents)
+            #print "%10s %2d: %r" % (TOKEN_MAPPING[token.token_type], token.lineno, token.contents)
             if token.token_type == TOKEN_BLOCK:
                 if token.contents == 'comment':
                     comment = True
@@ -128,11 +142,18 @@ def running_sum(seq):
         total += num
         yield total
 
+def make_line_map(text):
+    line_lengths = [len(l) for l in text.splitlines(True)]
+    line_map = list(running_sum(line_lengths))
+    return line_map
+
 def get_line_number(line_map, offset):
+    """Find a line number, given a line map and a character offset."""
     for lineno, line_offset in enumerate(line_map, start=1):
-        if line_offset >= offset:
+        if line_offset > offset:
             return lineno
     return -1
+
 
 def dump_frame(frame):
     """Dump interesting information about this frame."""
