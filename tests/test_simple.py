@@ -12,23 +12,28 @@ from coverage.test_helpers import TempDirMixin
 import django
 from django.template import Context
 from django.template.loader import get_template
-from django.test import TestCase
 
 # Make Django templates outside of Django: http://stackoverflow.com/a/98178/14343
 from django.conf import settings
-BOGUS_DB = '/tmp/django_coverage.db'
 settings.configure(
-    CACHES = {},
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        },
+    },
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BOGUS_DB,
+            'NAME': ":memory:",
         }
     },
     TEMPLATE_DEBUG = True,
 )
-atexit.register(os.remove, BOGUS_DB)
-django.setup()
+
+if hasattr(django, "setup"):
+    django.setup()
+
+from django.test import TestCase
 
 # TODO: test what happens if TEMPLATE_DEBUG is not set.
 
