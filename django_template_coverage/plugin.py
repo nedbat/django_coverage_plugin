@@ -18,6 +18,7 @@ if 0:
 
 # TODO: Add a check for TEMPLATE_DEBUG, and make noise if it is false.
 
+
 class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
 
     def __init__(self, options):
@@ -27,7 +28,7 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
 
         self.source_map = {}
 
-    ## CoveragePlugin methods
+    # --- CoveragePlugin methods
 
     def file_tracer(self, filename):
         if filename.startswith(self.django_template_dir):
@@ -38,7 +39,7 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
     def file_reporter(self, filename):
         return FileReporter(filename)
 
-    ## FileTracer methods
+    # --- FileTracer methods
 
     def has_dynamic_source_filename(self):
         return True
@@ -62,10 +63,8 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
 
     def line_number_range(self, frame):
         assert frame.f_code.co_name == 'render'
-        #print(frame.f_code.co_filename, frame.f_lineno)
         render_self = frame.f_locals['self']
         source = render_self.source
-        #print(source[0].name, source[1])
         s_start, s_end = source[1]
         if isinstance(render_self, TextNode):
             text = render_self.s
@@ -75,12 +74,11 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
         line_map = self.get_line_map(source[0].name)
         start = get_line_number(line_map, s_start)
         end = get_line_number(line_map, s_end-1)
-        #print(s_start, s_end, start, end)
         if start < 0 or end < 0:
             return -1, -1
         return start, end
 
-    ## FileTracer helpers
+    # --- FileTracer helpers
 
     def get_line_map(self, filename):
         """The line map for `filename`.
@@ -97,16 +95,17 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
         if filename not in self.source_map:
             with open(filename) as template_file:
                 template_source = template_file.read()
-                #for i in range(0, len(template_source), 10):
-                #    print("%3d: %r" % (i, template_source[i:i+10]))
+                if 0:   # change to see the template text
+                    for i in range(0, len(template_source), 10):
+                        print("%3d: %r" % (i, template_source[i:i+10]))
             self.source_map[filename] = make_line_map(template_source)
-            #print(self.source_map[filename])
         return self.source_map[filename]
 
 
 class FileReporter(coverage.plugin.FileReporter):
     def __init__(self, filename):
-        # TODO: do we want the .filename attribute to be part of the public API?
+        # TODO: do we want the .filename attribute to be part of the public
+        # API of the coverage plugin?
         self.filename = filename
 
     def statements(self):
@@ -119,7 +118,14 @@ class FileReporter(coverage.plugin.FileReporter):
 
         comment = False
         for token in tokens:
-            #print("%10s %2d: %r" % (TOKEN_MAPPING[token.token_type], token.lineno, token.contents))
+            if 0:   # change to see the tokens from the template
+                print(
+                    "%10s %2d: %r" % (
+                        TOKEN_MAPPING[token.token_type],
+                        token.lineno,
+                        token.contents,
+                    )
+                )
             if token.token_type == TOKEN_BLOCK:
                 if token.contents == 'comment':
                     comment = True
@@ -163,10 +169,12 @@ def running_sum(seq):
         total += num
         yield total
 
+
 def make_line_map(text):
     line_lengths = [len(l) for l in text.splitlines(True)]
     line_map = list(running_sum(line_lengths))
     return line_map
+
 
 def get_line_number(line_map, offset):
     """Find a line number, given a line map and a character offset."""

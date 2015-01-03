@@ -10,32 +10,34 @@ import coverage
 from coverage.test_helpers import TempDirMixin
 
 import django
-from django.template import Context
-from django.template.loader import get_template
 
-# Make Django templates outside of Django: http://stackoverflow.com/a/98178/14343
+# Make Django templates outside of Django.
+# Originally taken from: http://stackoverflow.com/a/98178/14343
 from django.conf import settings
 settings.configure(
-    CACHES = {
+    CACHES={
         'default': {
             'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         },
     },
-    DATABASES = {
+    DATABASES={
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': ":memory:",
         }
     },
-    TEMPLATE_DEBUG = True,
+    TEMPLATE_DEBUG=True,
 )
 
 if hasattr(django, "setup"):
     django.setup()
 
+from django.template import Context
+from django.template.loader import get_template
 from django.test import TestCase
 
 # TODO: test what happens if TEMPLATE_DEBUG is not set.
+
 
 class DjangoPluginTestCase(TempDirMixin, TestCase):
     def do_django_coverage(self, template, context={}):
@@ -46,21 +48,26 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
         with self.settings(TEMPLATE_DIRS=("templates",)):
             tem = get_template(self.template_file)
             ctx = Context(context)
-            # timid=True here just because the plugin code is in .py, not in .c yet.
+            # timid=True here temporarily just because the plugin code is in
+            # pytracer.py, not in tracer.c yet.
             self.cov = coverage.Coverage(timid=True, source=["."])
             self.cov.config["run:plugins"].append("django_template_coverage")
-            #cov.config["run:debug"].append("trace")
+            if 0:
+                cov.config["run:debug"].append("trace")
             self.cov.start()
             text = tem.render(ctx)
             self.cov.stop()
             self.cov.save()
-            line_data = self.cov.data.line_data()[os.path.realpath(self.template_path)]
+            line_data = self.cov.data.line_data()[
+                os.path.realpath(self.template_path)
+            ]
             return text, line_data
 
     def get_analysis(self, morf=None):
         if morf is None:
             morf = self.template_path
-        filename, executable, excluded, missing, formatted = self.cov.analysis2(os.path.abspath(morf))
+        analysis = self.cov.analysis2(os.path.abspath(morf))
+        _, executable, _, missing, formatted = analysis
         return executable, missing, formatted
 
 
