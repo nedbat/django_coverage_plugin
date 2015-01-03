@@ -18,13 +18,14 @@ from django.test import TestCase
 from django.conf import settings
 BOGUS_DB = '/tmp/django_coverage.db'
 settings.configure(
-    TEMPLATE_DEBUG = True,
+    CACHES = {},
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BOGUS_DB,
         }
-    }
+    },
+    TEMPLATE_DEBUG = True,
 )
 atexit.register(os.remove, BOGUS_DB)
 django.setup()
