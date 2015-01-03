@@ -1,6 +1,9 @@
 """The Django coverage plugin."""
 
+from __future__ import print_function, unicode_literals
+
 import os.path
+from six.moves import range
 
 import coverage.plugin
 
@@ -59,10 +62,10 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
 
     def line_number_range(self, frame):
         assert frame.f_code.co_name == 'render'
-        #print frame.f_code.co_filename, frame.f_lineno
+        #print(frame.f_code.co_filename, frame.f_lineno)
         render_self = frame.f_locals['self']
         source = render_self.source
-        #print source[0].name, source[1]
+        #print(source[0].name, source[1])
         s_start, s_end = source[1]
         if isinstance(render_self, TextNode):
             text = render_self.s
@@ -72,7 +75,7 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
         line_map = self.get_line_map(source[0].name)
         start = get_line_number(line_map, s_start)
         end = get_line_number(line_map, s_end-1)
-        #print s_start, s_end, start, end
+        #print(s_start, s_end, start, end)
         if start < 0 or end < 0:
             return -1, -1
         return start, end
@@ -95,9 +98,9 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
             with open(filename) as template_file:
                 template_source = template_file.read()
                 #for i in range(0, len(template_source), 10):
-                #    print "%3d: %r" % (i, template_source[i:i+10])
+                #    print("%3d: %r" % (i, template_source[i:i+10]))
             self.source_map[filename] = make_line_map(template_source)
-            #print self.source_map[filename]
+            #print(self.source_map[filename])
         return self.source_map[filename]
 
 
@@ -116,7 +119,7 @@ class FileReporter(coverage.plugin.FileReporter):
 
         comment = False
         for token in tokens:
-            #print "%10s %2d: %r" % (TOKEN_MAPPING[token.token_type], token.lineno, token.contents)
+            #print("%10s %2d: %r" % (TOKEN_MAPPING[token.token_type], token.lineno, token.contents))
             if token.token_type == TOKEN_BLOCK:
                 if token.contents == 'comment':
                     comment = True
@@ -149,7 +152,7 @@ class FileReporter(coverage.plugin.FileReporter):
                 if lines[0].isspace():
                     lineno += 1
                     num_lines -= 1
-                source_lines.update(xrange(lineno, lineno+num_lines))
+                source_lines.update(range(lineno, lineno+num_lines))
 
         return source_lines
 
@@ -180,12 +183,12 @@ def dump_frame(frame):
     if "__builtins__" in locals:
         del locals["__builtins__"]
 
-    print "-- frame -----------------------"
-    print "{}:{}:{}".format(
+    print("-- frame -----------------------")
+    print("{}:{}:{}".format(
         os.path.basename(frame.f_code.co_filename),
         frame.f_lineno,
         type(self),
-        )
-    print locals
+        ))
+    print(locals)
     if self:
-        print "self:", self.__dict__
+        print("self:", self.__dict__)

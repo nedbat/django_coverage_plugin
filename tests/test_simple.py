@@ -1,5 +1,7 @@
 """Simple tests for django_template_coverage."""
 
+from __future__ import print_function, unicode_literals
+
 import atexit
 import os
 import os.path
