@@ -13,5 +13,6 @@ setup(
     install_requires=[
         'Django',
         'coverage >= 4.0a2',
+        'six',
     ],
 )
