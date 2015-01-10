@@ -161,7 +161,7 @@ class FileReporter(coverage.plugin.FileReporter):
                     comment = True
                 if token.contents.startswith("end"):
                     continue
-                elif token.contents == "else":
+                elif token.contents in ("else", "empty"):
                     continue
                 elif token.contents.startswith("extends"):
                     extends = True
