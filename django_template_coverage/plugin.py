@@ -12,6 +12,9 @@ from django.template import Lexer, TextNode
 from django.template.base import TOKEN_MAPPING
 from django.template import TOKEN_BLOCK, TOKEN_TEXT, TOKEN_VAR
 
+
+SHOW_PARSING = True
+
 if 0:
     from blessed import Terminal
     t = Terminal()
@@ -109,18 +112,22 @@ class FileReporter(coverage.plugin.FileReporter):
         self.filename = filename
         # TODO: is self.name required? Can the base class provide it somehow?
         self.name = os.path.basename(filename)
+        # TODO: html filenames are absolute.
 
     def statements(self):
         source_lines = set()
 
+        if SHOW_PARSING:
+            print("-------------- {}".format(self.filename))
+
         with open(self.filename) as f:
             text = f.read()
 
-        tokens = Lexer(text, "<string>").tokenize()
+        tokens = Lexer(text, self.filename).tokenize()
 
         comment = False
         for token in tokens:
-            if 0:   # change to see the tokens from the template
+            if SHOW_PARSING:
                 print(
                     "%10s %2d: %r" % (
                         TOKEN_MAPPING[token.token_type],
