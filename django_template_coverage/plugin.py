@@ -142,10 +142,7 @@ class FileReporter(coverage.plugin.FileReporter):
                     )
                 )
             if token.token_type == TOKEN_BLOCK:
-                if token.contents == 'comment':
-                    comment = True
-                    continue
-                elif token.contents == 'endcomment':
+                if token.contents == 'endcomment':
                     comment = False
                     continue
 
@@ -160,6 +157,8 @@ class FileReporter(coverage.plugin.FileReporter):
                     if extends:
                         continue
 
+                if token.contents == 'comment':
+                    comment = True
                 if token.contents.startswith("end"):
                     continue
                 elif token.contents == "else":

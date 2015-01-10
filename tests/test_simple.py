@@ -8,6 +8,7 @@ from .plugin_test import DjangoPluginTestCase
 
 
 class SimpleTemplateTest(DjangoPluginTestCase):
+
     def test_one_line(self):
         self.make_template('Hello')
         text = self.run_django_coverage()
@@ -16,11 +17,56 @@ class SimpleTemplateTest(DjangoPluginTestCase):
         self.assertEqual(self.get_analysis(), ([1], []))
 
     def test_plain_text(self):
-        self.make_template('Hello\nWorld\n')
+        self.make_template('Hello\nWorld\n\nGoodbye')
         text = self.run_django_coverage()
-        self.assertEqual(text, 'Hello\nWorld\n')
-        self.assertEqual(self.get_line_data(), [1, 2])
-        self.assertEqual(self.get_analysis(), ([1, 2], []))
+        self.assertEqual(text, 'Hello\nWorld\n\nGoodbye')
+        self.assertEqual(self.get_line_data(), [1, 2, 3, 4])
+        self.assertEqual(self.get_analysis(), ([1, 2, 3, 4], []))
+
+
+class CommentTest(DjangoPluginTestCase):
+
+    def test_simple(self):
+        self.make_template("""\
+            First
+            {% comment %}
+                ignore this
+            {% endcomment %}
+            Last
+            """)
+        text = self.run_django_coverage()
+        self.assertEqual(text, "First\n\nLast\n")
+        self.assertEqual(self.get_line_data(), [1, 2, 5])
+        self.assertEqual(self.get_analysis(), ([1, 2, 5], []))
+
+    def test_with_stuff_inside(self):
+        self.make_template("""\
+            First
+            {% comment %}
+                {% if foo %}
+                    {{ foo }}
+                {% endif %}
+            {% endcomment %}
+            Last
+            """)
+        text = self.run_django_coverage()
+        self.assertEqual(text, "First\n\nLast\n")
+        self.assertEqual(self.get_line_data(), [1, 2, 7])
+        self.assertEqual(self.get_analysis(), ([1, 2, 7], []))
+
+    def test_inline_comment(self):
+        self.make_template("""\
+            First
+            {# disregard all of this #}
+            Last
+            """)
+        text = self.run_django_coverage()
+        self.assertEqual(text, "First\n\nLast\n")
+        self.assertEqual(self.get_line_data(), [1, 3])
+        self.assertEqual(self.get_analysis(), ([1, 3], []))
+
+
+class ConditionalTest(DjangoPluginTestCase):
 
     def test_if(self):
         self.make_template("""\
