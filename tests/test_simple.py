@@ -64,3 +64,19 @@ class CommentTest(DjangoPluginTestCase):
         self.assertEqual(text, "First\n\nLast\n")
         self.assertEqual(self.get_line_data(), [1, 3])
         self.assertEqual(self.get_analysis(), ([1, 3], []))
+
+
+class OtherTest(DjangoPluginTestCase):
+
+    def test_filter(self):
+        self.make_template("""\
+            First
+            {% filter force_escape|lower %}
+                LOOK: 1 < 2
+            {% endfilter %}
+            Last
+            """)
+        text = self.run_django_coverage()
+        self.assertEqual(text, "First\n\n    look: 1 &lt; 2\n\nLast\n")
+        self.assertEqual(self.get_line_data(), [1, 2, 3, 5])
+        self.assertEqual(self.get_analysis(), ([1, 2, 3, 5], []))
