@@ -39,6 +39,9 @@ from django.test import TestCase
 class DjangoPluginTestCase(TempDirMixin, TestCase):
     """A base class for all our tests."""
 
+    def path(self, name=None):
+        return "templates/{}".format(name or self.template_file)
+
     def make_template(self, text, name=None):
         """Make a template with `text`.
 
@@ -50,8 +53,8 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
             self.template_file = name
         else:
             self.template_file = self.id().rpartition(".")[2] + ".html"
-        self.template_path = "templates/{}".format(self.template_file)
-        self.make_file(self.template_path, text)
+        template_path = self.path(self.template_file)
+        self.make_file(template_path, text)
 
     def run_django_coverage(self, name=None, context=None):
         """Run a template under coverage.
@@ -86,7 +89,7 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
             list: the line numbers of lines executed in the template.
 
         """
-        path = "templates/{}".format(name or self.template_file)
+        path = self.path(name)
         line_data = self.cov.data.line_data()[os.path.realpath(path)]
         return line_data
 
@@ -98,8 +101,7 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
                 numbers of missed lines.
 
         """
-        if name is None:
-            name = self.template_path
-        analysis = self.cov.analysis2(os.path.abspath(name))
+        path = self.path(name)
+        analysis = self.cov.analysis2(os.path.abspath(path))
         _, executable, _, missing, _ = analysis
         return executable, missing

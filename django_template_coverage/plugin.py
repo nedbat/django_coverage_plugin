@@ -13,7 +13,7 @@ from django.template.base import TOKEN_MAPPING
 from django.template import TOKEN_BLOCK, TOKEN_TEXT, TOKEN_VAR
 
 
-SHOW_PARSING = True
+SHOW_PARSING = False
 
 if 0:
     from blessed import Terminal
@@ -125,7 +125,13 @@ class FileReporter(coverage.plugin.FileReporter):
 
         tokens = Lexer(text, self.filename).tokenize()
 
+        # Are we inside a comment?
         comment = False
+        # Is this a template that extends another template?
+        extends = False
+        # Are we inside a block?
+        inblock = False
+
         for token in tokens:
             if SHOW_PARSING:
                 print(
@@ -147,27 +153,40 @@ class FileReporter(coverage.plugin.FileReporter):
                 continue
 
             if token.token_type == TOKEN_BLOCK:
+                if token.contents.startswith("endblock"):
+                    inblock = False
+                elif token.contents.startswith("block"):
+                    inblock = True
+                    if extends:
+                        continue
+
                 if token.contents.startswith("end"):
                     continue
-                if token.contents == "else":
+                elif token.contents == "else":
                     continue
+                elif token.contents.startswith("extends"):
+                    extends = True
+
                 source_lines.add(token.lineno)
 
             elif token.token_type == TOKEN_VAR:
                 source_lines.add(token.lineno)
 
             elif token.token_type == TOKEN_TEXT:
+                if extends and not inblock:
+                    continue
                 # Text nodes often start with newlines, but we don't want to
                 # consider that first line to be part of the text.
                 lineno = token.lineno
                 lines = token.contents.splitlines(True)
                 num_lines = len(lines)
-                if num_lines <= 1:
-                    continue
                 if lines[0].isspace():
                     lineno += 1
                     num_lines -= 1
                 source_lines.update(range(lineno, lineno+num_lines))
+
+            if SHOW_PARSING:
+                print("Now source_lines is: {!r}".format(source_lines))
 
         return source_lines
 
