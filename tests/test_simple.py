@@ -169,8 +169,34 @@ class BlockTest(DjangoPluginTestCase):
             """)
 
         text = self.run_django_coverage(name="specific.html")
-        self.assertEqual(text.strip(), "PROLOG\nHello\n\nSECOND\n\nGoodbye")
+        self.assertEqual(text, "PROLOG\nHello\n\nSECOND\n\nGoodbye\n")
         self.assertEqual(self.get_line_data("base.html"), [1, 2, 3])
         self.assertEqual(self.get_line_data("specific.html"), [1, 2, 5])
         self.assertEqual(self.get_analysis("base.html"), ([1, 2, 3], []))
         self.assertEqual(self.get_analysis("specific.html"), ([1, 2, 5], []))
+
+    def test_inheriting_with_unused_blocks(self):
+        self.make_template(name="base.html", text="""\
+            Hello
+            {% block second_line %}second{% endblock %}
+            Goodbye
+            """)
+
+        self.make_template(name="specific.html", text="""\
+            {% extends "base.html" %}
+
+            {% block second_line %}
+            SECOND
+            {% endblock %}
+
+            {% block sir_does_not_appear_in_this_movie %}
+            I was bit by a moose once
+            {% endblock %}
+            """)
+
+        text = self.run_django_coverage(name="specific.html")
+        self.assertEqual(text, "Hello\n\nSECOND\n\nGoodbye\n")
+        self.assertEqual(self.get_line_data("base.html"), [1, 2, 3])
+        self.assertEqual(self.get_line_data("specific.html"), [1, 4])
+        self.assertEqual(self.get_analysis("base.html"), ([1, 2, 3], []))
+        self.assertEqual(self.get_analysis("specific.html"), ([1, 4, 8], [8]))
