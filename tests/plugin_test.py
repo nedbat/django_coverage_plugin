@@ -37,14 +37,36 @@ from django.test import TestCase
 
 
 class DjangoPluginTestCase(TempDirMixin, TestCase):
-    def do_django_coverage(self, template, context={}):
-        self.template_file = self.id().rpartition(".")[2] + ".html"
-        self.template_path = "templates/{}".format(self.template_file)
-        self.make_file(self.template_path, template)
+    """A base class for all our tests."""
 
+    def make_template(self, text, name=None):
+        """Make a template with `text`.
+
+        If `name` isn't provided, make a name from the test method name.
+        The template is implicitly available for the other methods to use.
+
+        """
+        if name is not None:
+            self.template_file = name
+        else:
+            self.template_file = self.id().rpartition(".")[2] + ".html"
+        self.template_path = "templates/{}".format(self.template_file)
+        self.make_file(self.template_path, text)
+
+    def run_django_coverage(self, name=None, context=None):
+        """Run a template under coverage.
+
+        The data context is `context` if provided, else {}.
+        If `name` is provided, run that template, otherwise use the last
+        template made by `make_template`.
+
+        Returns:
+            str: the text produced by the template.
+
+        """
         with self.settings(TEMPLATE_DIRS=("templates",)):
-            tem = get_template(self.template_file)
-            ctx = Context(context)
+            tem = get_template(name or self.template_file)
+            ctx = Context(context or {})
             # timid=True here temporarily just because the plugin code is in
             # pytracer.py, not in tracer.c yet.
             self.cov = coverage.Coverage(timid=True, source=["."])
@@ -55,14 +77,29 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
             text = tem.render(ctx)
             self.cov.stop()
             self.cov.save()
-            line_data = self.cov.data.line_data()[
-                os.path.realpath(self.template_path)
-            ]
-            return text, line_data
+            return text
 
-    def get_analysis(self, morf=None):
-        if morf is None:
-            morf = self.template_path
-        analysis = self.cov.analysis2(os.path.abspath(morf))
-        _, executable, _, missing, formatted = analysis
-        return executable, missing, formatted
+    def get_line_data(self, name=None):
+        """Get the executed-line data for a template.
+
+        Returns:
+            list: the line numbers of lines executed in the template.
+
+        """
+        path = "templates/{}".format(name or self.template_file)
+        line_data = self.cov.data.line_data()[os.path.realpath(path)]
+        return line_data
+
+    def get_analysis(self, name=None):
+        """Get the coverage analysis for a template.
+
+        Returns:
+            list, list: the line numbers of executable lines, and the line
+                numbers of missed lines.
+
+        """
+        if name is None:
+            name = self.template_path
+        analysis = self.cov.analysis2(os.path.abspath(name))
+        _, executable, _, missing, _ = analysis
+        return executable, missing
