@@ -14,6 +14,7 @@ from django.template import TOKEN_BLOCK, TOKEN_TEXT, TOKEN_VAR
 
 
 SHOW_PARSING = False
+SHOW_TRACING = False
 
 if 0:
     from blessed import Terminal
@@ -68,6 +69,8 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
         assert frame.f_code.co_name == 'render'
         render_self = frame.f_locals['self']
         source = render_self.source
+        if SHOW_TRACING:
+            print("{!r}: {}".format(render_self, source))
         s_start, s_end = source[1]
         if isinstance(render_self, TextNode):
             text = render_self.s
@@ -162,6 +165,11 @@ class FileReporter(coverage.plugin.FileReporter):
                 if token.contents.startswith("end"):
                     continue
                 elif token.contents in ("else", "empty"):
+                    continue
+                elif token.contents.startswith("elif"):
+                    # NOTE: I don't like this, I want to be able to trace elif
+                    # nodes, but the Django template engine doesn't track them
+                    # in a way that we can get useful information from them.
                     continue
                 elif token.contents.startswith("extends"):
                     extends = True

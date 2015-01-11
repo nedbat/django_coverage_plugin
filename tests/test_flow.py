@@ -42,6 +42,32 @@ class ConditionalTest(DjangoPluginTestCase):
         self.assertEqual(self.get_line_data(), [1, 4])
         self.assertEqual(self.get_analysis(), ([1, 2, 4], [2]))
 
+    def test_if_elif_else(self):
+        self.make_template("""\
+            {% if foo %}
+            Hello
+            {% elif bar %}
+            Aloha
+            {% else %}
+            Goodbye
+            {% endif %}
+            """)
+
+        text = self.run_django_coverage(context={'foo': True, 'bar': False})
+        self.assertEqual(text.strip(), 'Hello')
+        self.assertEqual(self.get_line_data(), [1, 2])
+        self.assertEqual(self.get_analysis(), ([1, 2, 4, 6], [4, 6]))
+
+        text = self.run_django_coverage(context={'foo': False, 'bar': True})
+        self.assertEqual(text.strip(), 'Aloha')
+        self.assertEqual(self.get_line_data(), [1, 4])
+        self.assertEqual(self.get_analysis(), ([1, 2, 4, 6], [2, 6]))
+
+        text = self.run_django_coverage(context={'foo': False, 'bar': False})
+        self.assertEqual(text.strip(), 'Goodbye')
+        self.assertEqual(self.get_line_data(), [1, 6])
+        self.assertEqual(self.get_analysis(), ([1, 2, 4, 6], [2, 4]))
+
 
 class LoopTest(DjangoPluginTestCase):
     def test_loop(self):
