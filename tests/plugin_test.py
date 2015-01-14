@@ -4,6 +4,7 @@ from __future__ import print_function, unicode_literals
 
 import os
 import os.path
+import re
 
 import coverage
 from coverage.test_helpers import TempDirMixin
@@ -105,3 +106,8 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
         analysis = self.cov.analysis2(os.path.abspath(path))
         _, executable, _, missing, _ = analysis
         return executable, missing
+
+
+def squashed(s):
+    """Remove all of the whitespace from s."""
+    return re.sub(r"\s", "", s)

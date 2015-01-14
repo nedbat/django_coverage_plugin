@@ -193,7 +193,7 @@ class FileReporter(coverage.plugin.FileReporter):
                 source_lines.update(range(lineno, lineno+num_lines))
 
             if SHOW_PARSING:
-                print("Now source_lines is: {!r}".format(source_lines))
+                print("\t\t\tNow source_lines is: {!r}".format(source_lines))
 
         return source_lines
 

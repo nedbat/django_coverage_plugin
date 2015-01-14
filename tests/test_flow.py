@@ -2,10 +2,10 @@
 
 from __future__ import print_function, unicode_literals
 
-from .plugin_test import DjangoPluginTestCase
+from .plugin_test import DjangoPluginTestCase, squashed
 
 
-class ConditionalTest(DjangoPluginTestCase):
+class IfTest(DjangoPluginTestCase):
 
     def test_if(self):
         self.make_template("""\
@@ -109,3 +109,77 @@ class LoopTest(DjangoPluginTestCase):
         self.assertEqual(text, "Before\n\nNONE\n\nAfter\n")
         self.assertEqual(self.get_line_data(), [1, 2, 5, 7])
         self.assertEqual(self.get_analysis(), ([1, 2, 3, 5, 7], [3]))
+
+
+class IfChangedTest(DjangoPluginTestCase):
+
+    def test_ifchanged(self):
+        self.make_template("""\
+            {% for a,b in items %}
+                {% ifchanged %}
+                    {{ a }}
+                {% endifchanged %}
+                {{ b }}
+            {% endfor %}
+            """)
+
+        text = self.run_django_coverage(context={
+            'items': ["AX", "AY", "BZ", "BW"],
+        })
+        self.assertEqual(squashed(text), 'AXYBZW')
+        self.assertEqual(self.get_line_data(), [1, 2, 3, 4, 5])
+        self.assertEqual(self.get_analysis(), ([1, 2, 3, 4, 5], []))
+
+    def test_ifchanged_variable(self):
+        self.make_template("""\
+            {% for a,b in items %}
+                {% ifchanged a %}
+                    {{ a }}
+                {% endifchanged %}
+                {{ b }}
+            {% endfor %}
+            """)
+
+        text = self.run_django_coverage(context={
+            'items': ["AX", "AY", "BZ", "BW"],
+        })
+        self.assertEqual(squashed(text), 'AXYBZW')
+        self.assertEqual(self.get_line_data(), [1, 2, 3, 4, 5])
+        self.assertEqual(self.get_analysis(), ([1, 2, 3, 4, 5], []))
+
+
+class IfEqualTest(DjangoPluginTestCase):
+
+    def test_ifequal(self):
+        self.make_template("""\
+            {% for i,x in items %}
+                {% ifequal x "X" %}
+                    X
+                {% endifequal %}
+                {{ i }}
+            {% endfor %}
+            """)
+
+        text = self.run_django_coverage(context={
+            'items': [(0, 'A'), (1, 'X'), (2, 'X'), (3, 'B')],
+        })
+        self.assertEqual(squashed(text), '0X1X23')
+        self.assertEqual(self.get_line_data(), [1, 2, 3, 4, 5])
+        self.assertEqual(self.get_analysis(), ([1, 2, 3, 4, 5], []))
+
+    def test_ifnotequal(self):
+        self.make_template("""\
+            {% for i,x in items %}
+                {% ifnotequal x "X" %}
+                    X
+                {% endifnotequal %}
+                {{ i }}
+            {% endfor %}
+            """)
+
+        text = self.run_django_coverage(context={
+            'items': [(0, 'A'), (1, 'X'), (2, 'X'), (3, 'B')],
+        })
+        self.assertEqual(squashed(text), 'X012X3')
+        self.assertEqual(self.get_line_data(), [1, 2, 3, 4, 5])
+        self.assertEqual(self.get_analysis(), ([1, 2, 3, 4, 5], []))
