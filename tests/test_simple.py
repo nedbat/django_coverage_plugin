@@ -23,6 +23,24 @@ class SimpleTemplateTest(DjangoPluginTestCase):
         self.assertEqual(self.get_line_data(), [1, 2, 3, 4])
         self.assertEqual(self.get_analysis(), ([1, 2, 3, 4], []))
 
+    def test_variable(self):
+        self.make_template("""\
+            Hello, {{name}}
+            """)
+        text = self.run_django_coverage(context={'name': 'John'})
+        self.assertEqual(text, "Hello, John\n")
+        self.assertEqual(self.get_line_data(), [1])
+        self.assertEqual(self.get_analysis(), ([1], []))
+
+    def test_lone_variable(self):
+        self.make_template("""\
+            {{name}}
+            """)
+        text = self.run_django_coverage(context={'name': 'John'})
+        self.assertEqual(text, "John\n")
+        self.assertEqual(self.get_line_data(), [1])
+        self.assertEqual(self.get_analysis(), ([1], []))
+
 
 class CommentTest(DjangoPluginTestCase):
 
