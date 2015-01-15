@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='django_template_coverage',
@@ -8,7 +8,7 @@ setup(
     description='Django template coverage.py plugin',
     author='Ned Batchelder',
     author_email='ned@nedbatchelder.com',
-    url='',
+    url='https://github.com/nedbat/django_coverage_plugin',
     packages=['django_template_coverage'],
     install_requires=[
         'Django',

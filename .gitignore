@@ -4,3 +4,5 @@ htmlcov
 .tox
 MANIFEST
 *.egg-info
+build
+dist
