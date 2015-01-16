@@ -4,7 +4,7 @@ from __future__ import print_function, unicode_literals
 
 import unittest
 
-from django_template_coverage.plugin import make_line_map, get_line_number
+from django_coverage_plugin.plugin import make_line_map, get_line_number
 
 
 class HelperTest(unittest.TestCase):

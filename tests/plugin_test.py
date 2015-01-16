@@ -74,7 +74,7 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
             # timid=True here temporarily just because the plugin code is in
             # pytracer.py, not in tracer.c yet.
             self.cov = coverage.Coverage(timid=True, source=["."])
-            self.cov.config["run:plugins"].append("django_template_coverage")
+            self.cov.config["run:plugins"].append("django_coverage_plugin")
             if 0:
                 self.cov.config["run:debug"].append("trace")
             self.cov.start()

@@ -1,10 +1,10 @@
-# Makefile for django_template_coverage
+# Makefile for django_coverage_plugin
 
 default:
 	@echo "* No default action *"
 
 clean:
-	-rm -rf django_template_coverage.egg-info
+	-rm -rf *.egg-info
 	-rm -rf build dist
 	-rm -f *.pyc */*.pyc */*/*.pyc */*/*/*.pyc */*/*/*/*.pyc */*/*/*/*/*.pyc
 	-rm -f *.pyo */*.pyo */*/*.pyo */*/*/*.pyo */*/*/*/*.pyo */*/*/*/*/*.pyo
