@@ -32,7 +32,7 @@ settings.configure(
 if hasattr(django, "setup"):
     django.setup()
 
-from django.template import Context
+from django.template import Context, Template
 from django.template.loader import get_template
 from django.test import TestCase
 
@@ -57,23 +57,35 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
         template_path = self.path(self.template_file)
         self.make_file(template_path, text)
 
-    def run_django_coverage(self, name=None, context=None):
+    def run_django_coverage(
+        self, name=None, text=None, context=None, options=None,
+    ):
         """Run a template under coverage.
 
         The data context is `context` if provided, else {}.
-        If `name` is provided, run that template, otherwise use the last
+        If `text` is provided, make a string template to run. Otherwise,
+        if `name` is provided, run that template, otherwise use the last
         template made by `make_template`.
+
+        If `options` is provided, they are kwargs for the Coverage
+        constructor, which default to source=["."].
 
         Returns:
             str: the text produced by the template.
 
         """
+        if options is None:
+            options = {'source': ["."]}
+
         with self.settings(TEMPLATE_DIRS=("templates",)):
-            tem = get_template(name or self.template_file)
+            if text is not None:
+                tem = Template(text)
+            else:
+                tem = get_template(name or self.template_file)
             ctx = Context(context or {})
             # timid=True here temporarily just because the plugin code is in
             # pytracer.py, not in tracer.c yet.
-            self.cov = coverage.Coverage(timid=True, source=["."])
+            self.cov = coverage.Coverage(timid=True, **options)
             self.cov.config["run:plugins"].append("django_coverage_plugin")
             if 0:
                 self.cov.config["run:debug"].append("trace")

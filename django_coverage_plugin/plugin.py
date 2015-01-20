@@ -60,6 +60,10 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
             source = render_self.source
             origin = source[0]
             filename = origin.name
+            if filename.startswith("<"):
+                # String templates have a filename of "<unknown source>", and
+                # can't be reported on later, so ignore them.
+                return None
             return filename
         except (AttributeError, IndexError):
             pass

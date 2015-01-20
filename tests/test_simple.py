@@ -98,3 +98,16 @@ class OtherTest(DjangoPluginTestCase):
         self.assertEqual(text, "First\n\n    look: 1 &lt; 2\n\nLast\n")
         self.assertEqual(self.get_line_data(), [1, 2, 3, 5])
         self.assertEqual(self.get_analysis(), ([1, 2, 3, 5], []))
+
+
+class StringTemplateTest(DjangoPluginTestCase):
+
+    run_in_temp_dir = False
+
+    def test_string_template(self):
+        text = self.run_django_coverage(
+            text="Hello, {{name}}!",
+            context={'name': 'World'},
+            options={},
+            )
+        self.assertEqual(text, "Hello, World!")
