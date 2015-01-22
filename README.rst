@@ -3,6 +3,11 @@ Django Template Coverage Plugin
 
 A coverage.py plugin to measure the coverage of Django templates.
 
+Details of how to use it are in this `blog post`_.  Real docs are TBD.
+
+.. _blog post: http://nedbatchelder.com/blog/201501/coveragepy_for_django_templates.html
+
+
 To run the tests on Python 2.7::
 
     $ pip install -r requirements.txt
@@ -20,3 +25,5 @@ Yet to be done
   in the reports.
 
 - How to find unexecuted templates?
+
+- Docs
