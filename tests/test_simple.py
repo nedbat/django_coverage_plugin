@@ -1,6 +1,5 @@
+# coding: utf8
 """Simple tests for django_coverage_plugin."""
-
-from __future__ import print_function, unicode_literals
 
 from .plugin_test import DjangoPluginTestCase
 
@@ -32,6 +31,16 @@ class SimpleTemplateTest(DjangoPluginTestCase):
         self.assertEqual(self.get_line_data(), [1])
         self.assertEqual(self.get_analysis(), ([1], []))
 
+    def test_variable_on_second_line(self):
+        self.make_template("""\
+            Hello,
+            {{name}}
+            """)
+        text = self.run_django_coverage(context={'name': 'John'})
+        self.assertEqual(text, "Hello,\nJohn\n")
+        self.assertEqual(self.get_line_data(), [1, 2])
+        self.assertEqual(self.get_analysis(), ([1, 2], []))
+
     def test_lone_variable(self):
         self.make_template("""\
             {{name}}
@@ -40,6 +49,23 @@ class SimpleTemplateTest(DjangoPluginTestCase):
         self.assertEqual(text, "John\n")
         self.assertEqual(self.get_line_data(), [1])
         self.assertEqual(self.get_analysis(), ([1], []))
+
+    def test_long_text(self):
+        self.make_template("line\n"*50)
+        text = self.run_django_coverage()
+        self.assertEqual(text, "line\n"*50)
+        self.assertEqual(self.get_line_data(), list(range(1, 51)))
+        self.assertEqual(self.get_analysis(), (list(range(1, 51)), []))
+
+    def test_non_ascii(self):
+        self.make_template("""\
+            υηιcσɗє ιѕ тяιcку
+            {{more}}!
+            """)
+        text = self.run_django_coverage(context={'more': u'ɘboɔinU'})
+        self.assertEqual(text, u'υηιcσɗє ιѕ тяιcку\nɘboɔinU!\n')
+        self.assertEqual(self.get_line_data(), [1, 2])
+        self.assertEqual(self.get_analysis(), ([1, 2], []))
 
 
 class CommentTest(DjangoPluginTestCase):

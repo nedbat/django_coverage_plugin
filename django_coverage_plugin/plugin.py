@@ -16,11 +16,19 @@ from django.template import TOKEN_BLOCK, TOKEN_TEXT, TOKEN_VAR
 SHOW_PARSING = False
 SHOW_TRACING = False
 
-if 0:
-    from blessed import Terminal
-    t = Terminal()
-
 # TODO: Add a check for TEMPLATE_DEBUG, and make noise if it is false.
+
+
+def read_template_source(filename):
+    """Read the source of a Django template, returning the Unicode text."""
+    # Import this late to be sure we don't trigger settings machinery too
+    # early.
+    from django.conf import settings
+
+    with open(filename, "rb") as f:
+        text = f.read().decode(settings.FILE_CHARSET)
+
+    return text
 
 
 class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
@@ -85,7 +93,9 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
         start = get_line_number(line_map, s_start)
         end = get_line_number(line_map, s_end-1)
         if start < 0 or end < 0:
-            return -1, -1
+            start, end = -1, -1
+        if SHOW_TRACING:
+            print("line_number_range -> {!r}".format((start, end)))
         return start, end
 
     # --- FileTracer helpers
@@ -103,11 +113,10 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
 
         """
         if filename not in self.source_map:
-            with open(filename) as template_file:
-                template_source = template_file.read()
-                if 0:   # change to see the template text
-                    for i in range(0, len(template_source), 10):
-                        print("%3d: %r" % (i, template_source[i:i+10]))
+            template_source = read_template_source(filename)
+            if 0:   # change to see the template text
+                for i in range(0, len(template_source), 10):
+                    print("%3d: %r" % (i, template_source[i:i+10]))
             self.source_map[filename] = make_line_map(template_source)
         return self.source_map[filename]
 
@@ -127,9 +136,7 @@ class FileReporter(coverage.plugin.FileReporter):
         if SHOW_PARSING:
             print("-------------- {}".format(self.filename))
 
-        with open(self.filename) as f:
-            text = f.read()
-
+        text = read_template_source(self.filename)
         tokens = Lexer(text, self.filename).tokenize()
 
         # Are we inside a comment?
