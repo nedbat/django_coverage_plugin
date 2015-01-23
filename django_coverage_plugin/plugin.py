@@ -7,7 +7,7 @@ from six.moves import range
 
 import coverage.plugin
 
-import django
+import django.template
 from django.template import Lexer, TextNode
 from django.template.base import TOKEN_MAPPING
 from django.template import TOKEN_BLOCK, TOKEN_TEXT, TOKEN_VAR
@@ -35,8 +35,9 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
 
     def __init__(self, options):
         super(Plugin, self).__init__(options)
-        self.django_dir = os.path.dirname(django.__file__)
-        self.django_template_dir = os.path.join(self.django_dir, "template")
+        self.django_template_dir = os.path.realpath(
+            os.path.dirname(django.template.__file__)
+        )
 
         self.source_map = {}
 
