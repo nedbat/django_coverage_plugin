@@ -8,9 +8,10 @@ from six.moves import range
 import coverage.plugin
 
 import django.template
-from django.template import Lexer, TextNode
-from django.template.base import TOKEN_MAPPING
-from django.template import TOKEN_BLOCK, TOKEN_TEXT, TOKEN_VAR
+from django.template.base import (
+    Lexer, TextNode,
+    TOKEN_BLOCK, TOKEN_MAPPING, TOKEN_TEXT, TOKEN_VAR,
+    )
 
 
 SHOW_PARSING = False
