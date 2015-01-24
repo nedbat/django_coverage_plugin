@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='django_coverage_plugin',
-    version='0.2',
+    version='0.3',
     description='Django template coverage.py plugin',
     author='Ned Batchelder',
     author_email='ned@nedbatchelder.com',
@@ -13,7 +13,7 @@ setup(
     install_requires=[
         # If you change this, update tox.ini and requirements.txt also.
         'Django',
-        'coverage >= 4.0a2',
+        'coverage >= 4.0a3',
         'six >= 1.4.0',
     ],
 )
