@@ -44,6 +44,11 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
 
     # --- CoveragePlugin methods
 
+    def sys_info(self):
+        return [
+            ("django_template_dir", self.django_template_dir),
+        ]
+
     def file_tracer(self, filename):
         if filename.startswith(self.django_template_dir):
             if "templatetags" not in filename:

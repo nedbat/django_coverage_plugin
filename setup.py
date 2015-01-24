@@ -13,7 +13,7 @@ setup(
     install_requires=[
         # If you change this, update tox.ini and requirements.txt also.
         'Django',
-        'coverage >= 4.0a3',
+        'coverage >= 4.0a4',
         'six >= 1.4.0',
     ],
 )
