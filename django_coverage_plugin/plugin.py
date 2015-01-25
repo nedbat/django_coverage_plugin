@@ -47,6 +47,11 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
     def sys_info(self):
         return [
             ("django_template_dir", self.django_template_dir),
+            ("environment", sorted(
+                ("%s = %s" % (k, v))
+                for k, v in os.environ.items()
+                if "DJANGO" in k
+            )),
         ]
 
     def file_tracer(self, filename):
