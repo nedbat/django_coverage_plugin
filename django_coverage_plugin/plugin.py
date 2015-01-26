@@ -139,7 +139,7 @@ class FileReporter(coverage.plugin.FileReporter):
         # API of the coverage plugin?
         self.filename = filename
         # TODO: is self.name required? Can the base class provide it somehow?
-        self.name = os.path.basename(filename)
+        self.name = os.path.relpath(filename)
         # TODO: html filenames are absolute.
 
     def statements(self):
