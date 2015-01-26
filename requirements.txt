@@ -1,5 +1,5 @@
 # If you change this file, don't forget to update tox.ini and setup.py also.
 coverage >= 4.0a4
-Django
+Django >= 1.4
 six >= 1.4.0
 tox >= 1.8
