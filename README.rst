@@ -23,6 +23,11 @@ plugins, or coveralls.io.
 You will see your templates listed in your coverage report alongside your
 Python modules.
 
+If you get a django.core.exceptions.ImproperlyConfigured error, you need to set
+the DJANGO_SETTINGS_MODULE environment variable.  You may also have problems
+with importing the settings module with coverage commands.  You can set
+PYTHONPATH=. to fix that. I'm interested in ideas about how to fix this better.
+
 
 What the? How?
 --------------
