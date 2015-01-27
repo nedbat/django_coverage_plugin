@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='django_coverage_plugin',
-    version='0.3.2',
+    version='0.3.3',
     description='Django template coverage.py plugin',
     author='Ned Batchelder',
     author_email='ned@nedbatchelder.com',
