@@ -142,14 +142,20 @@ class FileReporter(coverage.plugin.FileReporter):
         self.name = os.path.relpath(filename)
         # TODO: html filenames are absolute.
 
+        self._source = None
+
+    def source(self):
+        if self._source is None:
+            self._source = read_template_source(self.filename)
+        return self._source
+
     def statements(self):
         source_lines = set()
 
         if SHOW_PARSING:
             print("-------------- {}".format(self.filename))
 
-        text = read_template_source(self.filename)
-        tokens = Lexer(text, self.filename).tokenize()
+        tokens = Lexer(self.source(), self.filename).tokenize()
 
         # Are we inside a comment?
         comment = False
