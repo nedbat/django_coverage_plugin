@@ -1,7 +1,5 @@
 """Tests of control-flow structures for django_coverage_plugin."""
 
-from __future__ import print_function, unicode_literals
-
 from .plugin_test import DjangoPluginTestCase, squashed
 
 

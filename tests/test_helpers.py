@@ -1,7 +1,5 @@
 """Test helpers for the django coverage plugin."""
 
-from __future__ import print_function, unicode_literals
-
 import unittest
 
 from django_coverage_plugin.plugin import make_line_map, get_line_number
