@@ -226,6 +226,9 @@ class FileReporter(coverage.plugin.FileReporter):
 
         return source_lines
 
+    def no_branch_lines(self):
+        return set()
+
 
 def running_sum(seq):
     total = 0
