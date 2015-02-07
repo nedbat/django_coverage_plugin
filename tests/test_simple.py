@@ -137,3 +137,15 @@ class StringTemplateTest(DjangoPluginTestCase):
             options={},
             )
         self.assertEqual(text, "Hello, World!")
+
+
+class BranchTest(DjangoPluginTestCase):
+
+    def test_with_branch_enabled(self):
+        self.make_template('Hello')
+        text = self.run_django_coverage(
+            options={'source': ["."], 'branch': True}
+            )
+        self.assertEqual(text, 'Hello')
+        self.assertEqual(self.get_line_data(), [-1, 1])
+        self.assertEqual(self.get_analysis(), ([1], []))
