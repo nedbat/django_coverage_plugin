@@ -84,6 +84,8 @@ class CommentTest(DjangoPluginTestCase):
         self.assertEqual(text, "First\n\nLast\n")
         self.assertEqual(self.get_line_data(), [1, 2, 5])
         self.assertEqual(self.get_analysis(), ([1, 2, 5], []))
+        self.assertEqual(self.get_html_report(), 100)
+        self.assertEqual(self.get_xml_report(), 100)
 
     def test_with_stuff_inside(self):
         self.make_template("""\
@@ -99,6 +101,8 @@ class CommentTest(DjangoPluginTestCase):
         self.assertEqual(text, "First\n\nLast\n")
         self.assertEqual(self.get_line_data(), [1, 2, 7])
         self.assertEqual(self.get_analysis(), ([1, 2, 7], []))
+        self.assertEqual(self.get_html_report(), 100)
+        self.assertEqual(self.get_xml_report(), 100)
 
     def test_inline_comment(self):
         self.make_template("""\
@@ -110,6 +114,8 @@ class CommentTest(DjangoPluginTestCase):
         self.assertEqual(text, "First\n\nLast\n")
         self.assertEqual(self.get_line_data(), [1, 3])
         self.assertEqual(self.get_analysis(), ([1, 3], []))
+        self.assertEqual(self.get_html_report(), 100)
+        self.assertEqual(self.get_xml_report(), 100)
 
 
 class OtherTest(DjangoPluginTestCase):
@@ -126,6 +132,8 @@ class OtherTest(DjangoPluginTestCase):
         self.assertEqual(text, "First\n\n    look: 1 &lt; 2\n\nLast\n")
         self.assertEqual(self.get_line_data(), [1, 2, 3, 5])
         self.assertEqual(self.get_analysis(), ([1, 2, 3, 5], []))
+        self.assertEqual(self.get_html_report(), 100)
+        self.assertEqual(self.get_xml_report(), 100)
 
 
 class StringTemplateTest(DjangoPluginTestCase):
@@ -151,3 +159,5 @@ class BranchTest(DjangoPluginTestCase):
         self.assertEqual(text, 'Hello\nWorld\n\nGoodbye')
         self.assertEqual(self.get_line_data(), [1, 2, 3, 4])
         self.assertEqual(self.get_analysis(), ([1, 2, 3, 4], []))
+        self.assertEqual(self.get_html_report(), 100)
+        self.assertEqual(self.get_xml_report(), 100)
