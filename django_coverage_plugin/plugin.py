@@ -107,7 +107,9 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
         if start < 0 or end < 0:
             start, end = -1, -1
         if SHOW_TRACING:
-            print("line_number_range -> {!r}".format((start, end)))
+            print("line_number_range({}) -> {}".format(
+                source[0].name, (start, end)
+            ))
         return start, end
 
     # --- FileTracer helpers
