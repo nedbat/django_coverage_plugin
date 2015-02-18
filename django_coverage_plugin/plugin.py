@@ -226,10 +226,6 @@ class FileReporter(coverage.plugin.FileReporter):
 
         return source_lines
 
-    # Note: this function won't be needed after coverage.py 4.0a5.
-    def no_branch_lines(self):
-        return set()
-
 
 def running_sum(seq):
     total = 0
