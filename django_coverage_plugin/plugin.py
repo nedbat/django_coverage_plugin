@@ -6,6 +6,7 @@ import os.path
 from six.moves import range
 
 import coverage.plugin
+from coverage.files import FileLocator
 
 import django.template
 from django.template.base import (
@@ -136,10 +137,13 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
 
 
 class FileReporter(coverage.plugin.FileReporter):
-    def __init__(self, filename):
+    def __init__(self, filename, file_locator=None):
+        self.file_locator = file_locator or FileLocator()
+
         # TODO: do we want the .filename attribute to be part of the public
         # API of the coverage plugin?
-        self.filename = filename
+        self.filename = self.file_locator.canonical_filename(filename)
+
         # TODO: is self.name required? Can the base class provide it somehow?
         self.name = os.path.relpath(filename)
         # TODO: html filenames are absolute.
