@@ -115,6 +115,28 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
         _, executable, _, missing, _ = analysis
         return executable, missing
 
+    def get_html_report(self, name=None):
+        """Get the html report for a template.
+
+        Returns:
+            float: the total percentage covered.
+
+        """
+        path = self.path(name)
+        html_coverage = self.cov.html_report(os.path.abspath(path))
+        return html_coverage
+
+    def get_xml_report(self, name=None):
+        """Get the xml report for a template.
+
+        Returns:
+            float: the total percentage covered.
+
+        """
+        path = self.path(name)
+        xml_coverage = self.cov.xml_report(os.path.abspath(path))
+        return xml_coverage
+
 
 def squashed(s):
     """Remove all of the whitespace from s."""

@@ -66,6 +66,8 @@ class SimpleTemplateTest(DjangoPluginTestCase):
         self.assertEqual(text, u'υηιcσɗє ιѕ тяιcку\nɘboɔinU!\n')
         self.assertEqual(self.get_line_data(), [1, 2])
         self.assertEqual(self.get_analysis(), ([1, 2], []))
+        self.assertEqual(self.get_html_report(), 100)
+        self.assertEqual(self.get_xml_report(), 100)
 
 
 class CommentTest(DjangoPluginTestCase):
