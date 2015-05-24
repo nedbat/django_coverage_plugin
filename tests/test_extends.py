@@ -102,7 +102,7 @@ class BlockTest(DjangoPluginTestCase):
 
 
 class LoadTest(DjangoPluginTestCase):
-    def test_loads(self):
+    def test_load(self):
         self.make_template(name="load.html", text="""\
             {% load i18n %}
 
@@ -114,3 +114,23 @@ class LoadTest(DjangoPluginTestCase):
         self.assertEqual(text, "\n\nFIRST\nSECOND\n")
         self.assertEqual(self.get_line_data("load.html"), [1, 2, 3, 4])
         self.assertEqual(self.get_analysis("load.html"), ([1, 2, 3, 4], []))
+
+    def test_load_with_extends(self):
+        self.make_template(name="base.html", text="""\
+            Hello
+            {% block second_line %}second{% endblock %}
+            Goodbye
+            """)
+
+        self.make_template(name="specific.html", text="""\
+            {% extends "base.html" %}
+            {% load i18n %}
+            {% block second_line %}
+            SPECIFIC
+            {% endblock %}
+            """)
+
+        text = self.run_django_coverage(name="specific.html")
+        self.assertEqual(text, "Hello\n\nSPECIFIC\n\nGoodbye\n")
+        self.assertEqual(self.get_line_data("specific.html"), [1, 4])
+        self.assertEqual(self.get_analysis("specific.html"), ([1, 4], []))
