@@ -1,7 +1,7 @@
 # coding: utf8
 """Simple tests for django_coverage_plugin."""
 
-from .plugin_test import DjangoPluginTestCase
+from .plugin_test import DjangoPluginTestCase, needs_django
 
 # TODO: test what happens if TEMPLATE_DEBUG is not set.
 
@@ -156,6 +156,18 @@ class OtherTest(DjangoPluginTestCase):
 
         text = self.run_django_coverage(context={'var2': 'B'})
         self.assertEqual(text, "B\nB\nquux\n")
+        self.assertEqual(self.get_line_data(), [1, 2, 3])
+        self.assertEqual(self.get_analysis(), ([1, 2, 3], []))
+
+    @needs_django(1, 8)
+    def test_lorem(self):
+        self.make_template("""\
+            First
+            {% lorem 3 w %}
+            Last
+            """)
+        text = self.run_django_coverage()
+        self.assertEqual(text, "First\nlorem ipsum dolor\nLast\n")
         self.assertEqual(self.get_line_data(), [1, 2, 3])
         self.assertEqual(self.get_analysis(), ([1, 2, 3], []))
 

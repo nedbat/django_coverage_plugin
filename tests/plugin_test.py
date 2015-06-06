@@ -3,6 +3,7 @@
 import os
 import os.path
 import re
+import unittest
 
 import coverage
 from coverage.test_helpers import TempDirMixin
@@ -29,6 +30,7 @@ settings.configure(
 
 if hasattr(django, "setup"):
     django.setup()
+
 
 from django.template import Context, Template
 from django.template.loader import get_template
@@ -141,3 +143,17 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
 def squashed(s):
     """Remove all of the whitespace from s."""
     return re.sub(r"\s", "", s)
+
+
+def needs_django(*needed_version):
+    """A decorator for tests to require a minimum version of Django.
+
+    @needs_django(1, 8)     # Don't run the test on 1.7 or lower.
+    def test_thing(self):
+        ...
+
+    """
+    if django.VERSION >= tuple(needed_version):
+        return lambda func: func
+    else:
+        return unittest.skip("Django version must be newer")
