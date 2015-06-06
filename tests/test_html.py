@@ -15,8 +15,6 @@ class HtmlTest(DjangoPluginTestCase):
 
         self.run_django_coverage()
         self.cov.html_report()
-        print(os.getcwd())
-        print(os.listdir("htmlcov"))
         with open("htmlcov/templates_test_simple_html.html") as fhtml:
             html = fhtml.read()
-        self.assertIn("<span class='txt'>Simple &#169; 2015</span>", html)
+        self.assertIn('<span class="txt">Simple &#169; 2015</span>', html)
