@@ -117,6 +117,24 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
         _, executable, _, missing, _ = analysis
         return executable, missing
 
+    def assert_analysis(self, executable, missing=None, name=None):
+        """Assert that the analysis for `name` is right."""
+        actual_executable, actual_missing = self.get_analysis(name)
+        self.assertEqual(
+            executable,
+            actual_executable,
+            "Executable lines aren't as expected: %r != %r" % (
+                executable, actual_executable,
+            ),
+        )
+        self.assertEqual(
+            missing or [],
+            actual_missing,
+            "Missing lines aren't as expected: %r != %r" % (
+                missing, actual_missing,
+            ),
+        )
+
     def get_html_report(self, name=None):
         """Get the html report for a template.
 

@@ -12,8 +12,7 @@ class BlockTest(DjangoPluginTestCase):
 
         text = self.run_django_coverage()
         self.assertEqual(text.strip(), '')
-        self.assertEqual(self.get_line_data(), [1])
-        self.assertEqual(self.get_analysis(), ([1], []))
+        self.assert_analysis([1])
 
     def test_empty_block_with_text_inside(self):
         self.make_template("""\
@@ -22,8 +21,7 @@ class BlockTest(DjangoPluginTestCase):
 
         text = self.run_django_coverage()
         self.assertEqual(text.strip(), 'Hello')
-        self.assertEqual(self.get_line_data(), [1])
-        self.assertEqual(self.get_analysis(), ([1], []))
+        self.assert_analysis([1])
 
     def test_empty_block_with_text_outside(self):
         self.make_template("""\
@@ -33,8 +31,7 @@ class BlockTest(DjangoPluginTestCase):
 
         text = self.run_django_coverage()
         self.assertEqual(text.strip(), 'Hello')
-        self.assertEqual(self.get_line_data(), [1, 2])
-        self.assertEqual(self.get_analysis(), ([1, 2], []))
+        self.assert_analysis([1, 2])
 
     def test_two_empty_blocks(self):
         self.make_template("""\
@@ -46,8 +43,7 @@ class BlockTest(DjangoPluginTestCase):
 
         text = self.run_django_coverage()
         self.assertEqual(text.strip(), 'X\n\nY')
-        self.assertEqual(self.get_line_data(), [1, 2, 3, 4])
-        self.assertEqual(self.get_analysis(), ([1, 2, 3, 4], []))
+        self.assert_analysis([1, 2, 3, 4])
 
     def test_inheriting(self):
         self.make_template(name="base.html", text="""\
@@ -69,10 +65,8 @@ class BlockTest(DjangoPluginTestCase):
 
         text = self.run_django_coverage(name="specific.html")
         self.assertEqual(text, "PROLOG\nHello\n\nSECOND\n\nGoodbye\n")
-        self.assertEqual(self.get_line_data("base.html"), [1, 2, 3])
-        self.assertEqual(self.get_line_data("specific.html"), [1, 2, 5])
-        self.assertEqual(self.get_analysis("base.html"), ([1, 2, 3], []))
-        self.assertEqual(self.get_analysis("specific.html"), ([1, 2, 5], []))
+        self.assert_analysis([1, 2, 3], name="base.html")
+        self.assert_analysis([1, 2, 5], name="specific.html")
 
     def test_inheriting_with_unused_blocks(self):
         self.make_template(name="base.html", text="""\
@@ -95,10 +89,8 @@ class BlockTest(DjangoPluginTestCase):
 
         text = self.run_django_coverage(name="specific.html")
         self.assertEqual(text, "Hello\n\nSECOND\n\nGoodbye\n")
-        self.assertEqual(self.get_line_data("base.html"), [1, 2, 3])
-        self.assertEqual(self.get_line_data("specific.html"), [1, 4])
-        self.assertEqual(self.get_analysis("base.html"), ([1, 2, 3], []))
-        self.assertEqual(self.get_analysis("specific.html"), ([1, 4, 8], [8]))
+        self.assert_analysis([1, 2, 3], name="base.html")
+        self.assert_analysis([1, 4, 8], [8], name="specific.html")
 
 
 class LoadTest(DjangoPluginTestCase):
@@ -112,8 +104,7 @@ class LoadTest(DjangoPluginTestCase):
 
         text = self.run_django_coverage(name="load.html")
         self.assertEqual(text, "\n\nFIRST\nSECOND\n")
-        self.assertEqual(self.get_line_data("load.html"), [1, 2, 3, 4])
-        self.assertEqual(self.get_analysis("load.html"), ([1, 2, 3, 4], []))
+        self.assert_analysis([1, 2, 3, 4], name="load.html")
 
     def test_load_with_extends(self):
         self.make_template(name="base.html", text="""\
@@ -132,8 +123,7 @@ class LoadTest(DjangoPluginTestCase):
 
         text = self.run_django_coverage(name="specific.html")
         self.assertEqual(text, "Hello\n\nSPECIFIC\n\nGoodbye\n")
-        self.assertEqual(self.get_line_data("specific.html"), [1, 4])
-        self.assertEqual(self.get_analysis("specific.html"), ([1, 4], []))
+        self.assert_analysis([1, 4], name="specific.html")
 
 
 class IncludeTest(DjangoPluginTestCase):
@@ -151,7 +141,5 @@ class IncludeTest(DjangoPluginTestCase):
 
         text = self.run_django_coverage(name="outer.html")
         self.assertEqual(text, "First\nInside\nJob\n\nLast\n")
-        self.assertEqual(self.get_line_data("outer.html"), [1, 2, 3])
-        self.assertEqual(self.get_line_data("nested.html"), [1, 2])
-        self.assertEqual(self.get_analysis("outer.html"), ([1, 2, 3], []))
-        self.assertEqual(self.get_analysis("nested.html"), ([1, 2], []))
+        self.assert_analysis([1, 2, 3], name="outer.html")
+        self.assert_analysis([1, 2], name="nested.html")

@@ -12,15 +12,13 @@ class SimpleTemplateTest(DjangoPluginTestCase):
         self.make_template('Hello')
         text = self.run_django_coverage()
         self.assertEqual(text, 'Hello')
-        self.assertEqual(self.get_line_data(), [1])
-        self.assertEqual(self.get_analysis(), ([1], []))
+        self.assert_analysis([1])
 
     def test_plain_text(self):
         self.make_template('Hello\nWorld\n\nGoodbye')
         text = self.run_django_coverage()
         self.assertEqual(text, 'Hello\nWorld\n\nGoodbye')
-        self.assertEqual(self.get_line_data(), [1, 2, 3, 4])
-        self.assertEqual(self.get_analysis(), ([1, 2, 3, 4], []))
+        self.assert_analysis([1, 2, 3, 4])
 
     def test_variable(self):
         self.make_template("""\
@@ -28,8 +26,7 @@ class SimpleTemplateTest(DjangoPluginTestCase):
             """)
         text = self.run_django_coverage(context={'name': 'John'})
         self.assertEqual(text, "Hello, John\n")
-        self.assertEqual(self.get_line_data(), [1])
-        self.assertEqual(self.get_analysis(), ([1], []))
+        self.assert_analysis([1])
 
     def test_variable_on_second_line(self):
         self.make_template("""\
@@ -38,8 +35,7 @@ class SimpleTemplateTest(DjangoPluginTestCase):
             """)
         text = self.run_django_coverage(context={'name': 'John'})
         self.assertEqual(text, "Hello,\nJohn\n")
-        self.assertEqual(self.get_line_data(), [1, 2])
-        self.assertEqual(self.get_analysis(), ([1, 2], []))
+        self.assert_analysis([1, 2])
 
     def test_lone_variable(self):
         self.make_template("""\
@@ -47,15 +43,13 @@ class SimpleTemplateTest(DjangoPluginTestCase):
             """)
         text = self.run_django_coverage(context={'name': 'John'})
         self.assertEqual(text, "John\n")
-        self.assertEqual(self.get_line_data(), [1])
-        self.assertEqual(self.get_analysis(), ([1], []))
+        self.assert_analysis([1])
 
     def test_long_text(self):
         self.make_template("line\n"*50)
         text = self.run_django_coverage()
         self.assertEqual(text, "line\n"*50)
-        self.assertEqual(self.get_line_data(), list(range(1, 51)))
-        self.assertEqual(self.get_analysis(), (list(range(1, 51)), []))
+        self.assert_analysis(list(range(1, 51)))
 
     def test_non_ascii(self):
         self.make_template("""\
@@ -64,8 +58,7 @@ class SimpleTemplateTest(DjangoPluginTestCase):
             """)
         text = self.run_django_coverage(context={'more': u'ɘboɔinU'})
         self.assertEqual(text, u'υηιcσɗє ιѕ тяιcку\nɘboɔinU!\n')
-        self.assertEqual(self.get_line_data(), [1, 2])
-        self.assertEqual(self.get_analysis(), ([1, 2], []))
+        self.assert_analysis([1, 2])
         self.assertEqual(self.get_html_report(), 100)
         self.assertEqual(self.get_xml_report(), 100)
 
@@ -82,8 +75,7 @@ class CommentTest(DjangoPluginTestCase):
             """)
         text = self.run_django_coverage()
         self.assertEqual(text, "First\n\nLast\n")
-        self.assertEqual(self.get_line_data(), [1, 2, 5])
-        self.assertEqual(self.get_analysis(), ([1, 2, 5], []))
+        self.assert_analysis([1, 2, 5])
 
     def test_with_stuff_inside(self):
         self.make_template("""\
@@ -97,8 +89,7 @@ class CommentTest(DjangoPluginTestCase):
             """)
         text = self.run_django_coverage()
         self.assertEqual(text, "First\n\nLast\n")
-        self.assertEqual(self.get_line_data(), [1, 2, 7])
-        self.assertEqual(self.get_analysis(), ([1, 2, 7], []))
+        self.assert_analysis([1, 2, 7])
 
     def test_inline_comment(self):
         self.make_template("""\
@@ -108,8 +99,7 @@ class CommentTest(DjangoPluginTestCase):
             """)
         text = self.run_django_coverage()
         self.assertEqual(text, "First\n\nLast\n")
-        self.assertEqual(self.get_line_data(), [1, 3])
-        self.assertEqual(self.get_analysis(), ([1, 3], []))
+        self.assert_analysis([1, 3])
 
 
 class OtherTest(DjangoPluginTestCase):
@@ -127,8 +117,7 @@ class OtherTest(DjangoPluginTestCase):
             """)
         text = self.run_django_coverage(context={'body': '<Hello>'})
         self.assertEqual(text, "First\n\n&lt;Hello&gt;\n\n\n<Hello>\n\nLast\n")
-        self.assertEqual(self.get_line_data(), [1, 2, 3, 5, 6, 8])
-        self.assertEqual(self.get_analysis(), ([1, 2, 3, 5, 6, 8], []))
+        self.assert_analysis([1, 2, 3, 5, 6, 8])
 
     def test_filter(self):
         self.make_template("""\
@@ -140,8 +129,7 @@ class OtherTest(DjangoPluginTestCase):
             """)
         text = self.run_django_coverage()
         self.assertEqual(text, "First\n\n    look: 1 &lt; 2\n\nLast\n")
-        self.assertEqual(self.get_line_data(), [1, 2, 3, 5])
-        self.assertEqual(self.get_analysis(), ([1, 2, 3, 5], []))
+        self.assert_analysis([1, 2, 3, 5])
 
     def test_firstof(self):
         self.make_template("""\
@@ -151,13 +139,11 @@ class OtherTest(DjangoPluginTestCase):
             """)
         text = self.run_django_coverage(context={'var1': 'A'})
         self.assertEqual(text, "A\nplugh\nquux\n")
-        self.assertEqual(self.get_line_data(), [1, 2, 3])
-        self.assertEqual(self.get_analysis(), ([1, 2, 3], []))
+        self.assert_analysis([1, 2, 3])
 
         text = self.run_django_coverage(context={'var2': 'B'})
         self.assertEqual(text, "B\nB\nquux\n")
-        self.assertEqual(self.get_line_data(), [1, 2, 3])
-        self.assertEqual(self.get_analysis(), ([1, 2, 3], []))
+        self.assert_analysis([1, 2, 3])
 
     @needs_django(1, 8)
     def test_lorem(self):
@@ -168,8 +154,7 @@ class OtherTest(DjangoPluginTestCase):
             """)
         text = self.run_django_coverage()
         self.assertEqual(text, "First\nlorem ipsum dolor\nLast\n")
-        self.assertEqual(self.get_line_data(), [1, 2, 3])
-        self.assertEqual(self.get_analysis(), ([1, 2, 3], []))
+        self.assert_analysis([1, 2, 3])
 
 
 class StringTemplateTest(DjangoPluginTestCase):
@@ -193,5 +178,4 @@ class BranchTest(DjangoPluginTestCase):
             options={'source': ["."], 'branch': True}
             )
         self.assertEqual(text, 'Hello\nWorld\n\nGoodbye')
-        self.assertEqual(self.get_line_data(), [1, 2, 3, 4])
-        self.assertEqual(self.get_analysis(), ([1, 2, 3, 4], []))
+        self.assert_analysis([1, 2, 3, 4])
