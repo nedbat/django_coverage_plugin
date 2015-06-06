@@ -3,6 +3,9 @@
 default:
 	@echo "* No default action *"
 
+test:
+	tox
+
 clean:
 	-rm -rf *.egg-info
 	-rm -rf build dist
