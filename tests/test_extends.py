@@ -134,3 +134,24 @@ class LoadTest(DjangoPluginTestCase):
         self.assertEqual(text, "Hello\n\nSPECIFIC\n\nGoodbye\n")
         self.assertEqual(self.get_line_data("specific.html"), [1, 4])
         self.assertEqual(self.get_analysis("specific.html"), ([1, 4], []))
+
+
+class IncludeTest(DjangoPluginTestCase):
+    def test_include(self):
+        self.make_template(name="outer.html", text="""\
+            First
+            {% include "nested.html" %}
+            Last
+            """)
+
+        self.make_template(name="nested.html", text="""\
+            Inside
+            Job
+            """)
+
+        text = self.run_django_coverage(name="outer.html")
+        self.assertEqual(text, "First\nInside\nJob\n\nLast\n")
+        self.assertEqual(self.get_line_data("outer.html"), [1, 2, 3])
+        self.assertEqual(self.get_line_data("nested.html"), [1, 2])
+        self.assertEqual(self.get_analysis("outer.html"), ([1, 2, 3], []))
+        self.assertEqual(self.get_analysis("nested.html"), ([1, 2], []))

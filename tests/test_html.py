@@ -1,8 +1,6 @@
 # coding: utf8
 """Tests of HTML reporting for django_coverage_plugin."""
 
-import os
-
 from .plugin_test import DjangoPluginTestCase
 
 

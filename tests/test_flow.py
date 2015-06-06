@@ -72,13 +72,13 @@ class LoopTest(DjangoPluginTestCase):
         self.make_template("""\
             Before
             {% for item in items %}
-            -{{ item }}
+            {% cycle "-" "+" %}{{ item }}
             {% endfor %}
             After
             """)
 
         text = self.run_django_coverage(context={'items': "ABC"})
-        self.assertEqual(text, "Before\n\n-A\n\n-B\n\n-C\n\nAfter\n")
+        self.assertEqual(text, "Before\n\n-A\n\n+B\n\n-C\n\nAfter\n")
         self.assertEqual(self.get_line_data(), [1, 2, 3, 5])
         self.assertEqual(self.get_analysis(), ([1, 2, 3, 5], []))
 

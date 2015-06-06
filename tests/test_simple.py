@@ -114,6 +114,22 @@ class CommentTest(DjangoPluginTestCase):
 
 class OtherTest(DjangoPluginTestCase):
 
+    def test_autoescape(self):
+        self.make_template("""\
+            First
+            {% autoescape on %}
+            {{ body }}
+            {% endautoescape %}
+            {% autoescape off %}
+            {{ body }}
+            {% endautoescape %}
+            Last
+            """)
+        text = self.run_django_coverage(context={'body': '<Hello>'})
+        self.assertEqual(text, "First\n\n&lt;Hello&gt;\n\n\n<Hello>\n\nLast\n")
+        self.assertEqual(self.get_line_data(), [1, 2, 3, 5, 6, 8])
+        self.assertEqual(self.get_analysis(), ([1, 2, 3, 5, 6, 8], []))
+
     def test_filter(self):
         self.make_template("""\
             First
@@ -126,6 +142,22 @@ class OtherTest(DjangoPluginTestCase):
         self.assertEqual(text, "First\n\n    look: 1 &lt; 2\n\nLast\n")
         self.assertEqual(self.get_line_data(), [1, 2, 3, 5])
         self.assertEqual(self.get_analysis(), ([1, 2, 3, 5], []))
+
+    def test_firstof(self):
+        self.make_template("""\
+            {% firstof var1 var2 var3 "xyzzy" %}
+            {% firstof var2 var3 "plugh" %}
+            {% firstof var3 "quux" %}
+            """)
+        text = self.run_django_coverage(context={'var1': 'A'})
+        self.assertEqual(text, "A\nplugh\nquux\n")
+        self.assertEqual(self.get_line_data(), [1, 2, 3])
+        self.assertEqual(self.get_analysis(), ([1, 2, 3], []))
+
+        text = self.run_django_coverage(context={'var2': 'B'})
+        self.assertEqual(text, "B\nB\nquux\n")
+        self.assertEqual(self.get_line_data(), [1, 2, 3])
+        self.assertEqual(self.get_analysis(), ([1, 2, 3], []))
 
 
 class StringTemplateTest(DjangoPluginTestCase):
