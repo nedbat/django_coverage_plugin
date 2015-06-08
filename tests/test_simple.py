@@ -156,6 +156,26 @@ class OtherTest(DjangoPluginTestCase):
         self.assertEqual(text, "First\nlorem ipsum dolor\nLast\n")
         self.assert_analysis([1, 2, 3])
 
+    def test_now(self):
+        self.make_template("""\
+            Now:
+            {% now "\\n\\o\\w" %}
+            .
+            """)
+        text = self.run_django_coverage()
+        self.assertEqual(text, "Now:\nnow\n.\n")
+        self.assert_analysis([1, 2, 3])
+
+    @needs_django(1, 8)
+    def test_now_as(self):
+        self.make_template("""\
+            {% now "\\n\\o\\w" as right_now %}
+            Now it's {{ right_now }}.
+            """)
+        text = self.run_django_coverage()
+        self.assertEqual(text, "\nNow it's now.\n")
+        self.assert_analysis([1, 2])
+
 
 class StringTemplateTest(DjangoPluginTestCase):
 
