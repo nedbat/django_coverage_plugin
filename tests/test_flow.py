@@ -1,5 +1,7 @@
 """Tests of control-flow structures for django_coverage_plugin."""
 
+import textwrap
+
 from .plugin_test import DjangoPluginTestCase, squashed
 
 
@@ -97,6 +99,40 @@ class LoopTest(DjangoPluginTestCase):
         text = self.run_django_coverage(context={'items': ""})
         self.assertEqual(text, "Before\n\nNONE\n\nAfter\n")
         self.assert_analysis([1, 2, 3, 5, 7], [3])
+
+    def test_regroup(self):
+        self.make_template("""\
+            {% spaceless %}
+            {% regroup cities by country as country_list %}
+            <ul>
+            {% for country in country_list %}
+                <li>{{ country.grouper }}
+                <ul>
+                    {% for item in country.list %}
+                    <li>{{ item.name }}: {{ item.population }}</li>
+                    {% endfor %}
+                </ul>
+                </li>
+            {% endfor %}
+            </ul>
+            {% endspaceless %}
+            """)
+        text = self.run_django_coverage(context={
+            'cities': [
+                {'name': 'Mumbai', 'population': '19', 'country': 'India'},
+                {'name': 'Calcutta', 'population': '15', 'country': 'India'},
+                {'name': 'New York', 'population': '20', 'country': 'USA'},
+                {'name': 'Chicago', 'population': '7', 'country': 'USA'},
+                {'name': 'Tokyo', 'population': '33', 'country': 'Japan'},
+            ],
+            })
+        self.assertEqual(text, textwrap.dedent("""\
+            <ul><li>India
+                <ul><li>Mumbai: 19</li><li>Calcutta: 15</li></ul></li><li>USA
+                <ul><li>New York: 20</li><li>Chicago: 7</li></ul></li><li>Japan
+                <ul><li>Tokyo: 33</li></ul></li></ul>
+            """))
+        self.assert_analysis([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13])
 
 
 class IfChangedTest(DjangoPluginTestCase):
