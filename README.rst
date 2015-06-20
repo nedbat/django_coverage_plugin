@@ -35,6 +35,12 @@ file.  The ``source=``, ``include=``, and ``omit=`` options control what
 template files are included in the report.
 
 
+Caveats
+-------
+
+The `{% ssi %}` tag does not trace the files it includes.
+
+
 What the? How?
 --------------
 

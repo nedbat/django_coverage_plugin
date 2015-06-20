@@ -1,6 +1,6 @@
 """Tests of template inheritance for django_coverage_plugin."""
 
-from .plugin_test import DjangoPluginTestCase
+from .plugin_test import DjangoPluginTestCase, needs_django
 
 
 class BlockTest(DjangoPluginTestCase):
@@ -143,3 +143,45 @@ class IncludeTest(DjangoPluginTestCase):
         self.assertEqual(text, "First\nInside\nJob\n\nLast\n")
         self.assert_analysis([1, 2, 3], name="outer.html")
         self.assert_analysis([1, 2], name="nested.html")
+
+
+# {% ssi %} is in earlier Djangos than 1.5, but doesn't trace properly.
+@needs_django(1, 5)
+class SsiTest(DjangoPluginTestCase):
+    """Test {% ssi %}, which does not trace the included file."""
+
+    def test_ssi_unparsed(self):
+        nested = self.make_template(name="nested.html", text="""\
+            Inside {{ a }}
+            Job
+            """)
+
+        self.make_template(name="outer.html", text="""\
+            First
+            {% ssi "NESTED" %}
+            Last
+            """.replace("NESTED", nested))
+
+        text = self.run_django_coverage(name="outer.html", context={'a': 17})
+        self.assertEqual(text, "First\nInside {{ a }}\nJob\n\nLast\n")
+        self.assert_analysis([1, 2, 3], name="outer.html")
+        # nested.html is not among the measured files:
+        self.assertEqual(self.measured_files(), ["templates/outer.html"])
+
+    def test_ssi_parsed(self):
+        nested = self.make_template(name="nested.html", text="""\
+            Inside {{ a }}
+            Job
+            """)
+
+        self.make_template(name="outer.html", text="""\
+            First
+            {% ssi "NESTED" parsed %}
+            Last
+            """.replace("NESTED", nested))
+
+        text = self.run_django_coverage(name="outer.html", context={'a': 17})
+        self.assertEqual(text, "First\nInside 17\nJob\n\nLast\n")
+        self.assert_analysis([1, 2, 3], name="outer.html")
+        # nested.html is not among the measured files:
+        self.assertEqual(self.measured_files(), ["templates/outer.html"])

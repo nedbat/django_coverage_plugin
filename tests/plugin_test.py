@@ -26,6 +26,7 @@ settings.configure(
         }
     },
     TEMPLATE_DEBUG=True,
+    ALLOWED_INCLUDE_ROOTS=["/"],    # for {% ssi %}
 )
 
 if hasattr(django, "setup"):
@@ -55,7 +56,7 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
         else:
             self.template_file = self.id().rpartition(".")[2] + ".html"
         template_path = self.path(self.template_file)
-        self.make_file(template_path, text)
+        return os.path.abspath(self.make_file(template_path, text))
 
     def run_django_coverage(
         self, name=None, text=None, context=None, options=None,
@@ -116,6 +117,10 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
         analysis = self.cov.analysis2(os.path.abspath(path))
         _, executable, _, missing, _ = analysis
         return executable, missing
+
+    def measured_files(self):
+        """Get the list of measured files, in relative form."""
+        return [os.path.relpath(f) for f in self.cov.data.measured_files()]
 
     def assert_analysis(self, executable, missing=None, name=None):
         """Assert that the analysis for `name` is right."""

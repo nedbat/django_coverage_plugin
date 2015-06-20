@@ -3,6 +3,7 @@
 from __future__ import print_function
 
 import os.path
+
 from six.moves import range
 
 import coverage.plugin
@@ -77,9 +78,7 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
         if 0:
             dump_frame(frame)
         try:
-            source = render_self.source
-            origin = source[0]
-            filename = origin.name
+            filename = render_self.source[0].name
             if filename.startswith("<"):
                 # String templates have a filename of "<unknown source>", and
                 # can't be reported on later, so ignore them.
@@ -91,6 +90,8 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
 
     def line_number_range(self, frame):
         assert frame.f_code.co_name == 'render'
+        if 0:
+            dump_frame(frame, label="line_number_range")
         render_self = frame.f_locals['self']
         source = render_self.source
         if SHOW_TRACING:
@@ -255,14 +256,16 @@ def get_line_number(line_map, offset):
     return -1
 
 
-def dump_frame(frame):
+def dump_frame(frame, label=""):
     """Dump interesting information about this frame."""
-    locals = frame.f_locals
+    locals = dict(frame.f_locals)
     self = locals.get('self', None)
     if "__builtins__" in locals:
         del locals["__builtins__"]
 
-    print("-- frame -----------------------")
+    if label:
+        label = " ( %s ) " % label
+    print("-- frame --%s---------------------" % label)
     print("{}:{}:{}".format(
         os.path.basename(frame.f_code.co_filename),
         frame.f_lineno,
@@ -271,3 +274,4 @@ def dump_frame(frame):
     print(locals)
     if self:
         print("self:", self.__dict__)
+    print("\\--")
