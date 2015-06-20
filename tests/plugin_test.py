@@ -27,6 +27,7 @@ settings.configure(
     },
     TEMPLATE_DEBUG=True,
     ALLOWED_INCLUDE_ROOTS=["/"],    # for {% ssi %}
+    ROOT_URLCONF="tests",
 )
 
 if hasattr(django, "setup"):

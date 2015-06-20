@@ -176,6 +176,26 @@ class OtherTest(DjangoPluginTestCase):
         self.assertEqual(text, "\nNow it's now.\n")
         self.assert_analysis([1, 2])
 
+    def test_templatetag(self):
+        self.make_template("""\
+            {% templatetag openblock %}
+            url 'entry_list'
+            {% templatetag closeblock %}
+            """)
+        text = self.run_django_coverage()
+        self.assertEqual(text, "{%\nurl 'entry_list'\n%}\n")
+        self.assert_analysis([1, 2, 3])
+
+    @needs_django(1, 5)     # not sure why, but 1.4 won't reverse "index".
+    def test_url(self):
+        self.make_template("""\
+            {% url 'index' %}
+            nice.
+            """)
+        text = self.run_django_coverage()
+        self.assertEqual(text, "/home\nnice.\n")
+        self.assert_analysis([1, 2])
+
 
 class StringTemplateTest(DjangoPluginTestCase):
 
