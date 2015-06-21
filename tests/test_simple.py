@@ -186,7 +186,7 @@ class OtherTest(DjangoPluginTestCase):
         self.assertEqual(text, "{%\nurl 'entry_list'\n%}\n")
         self.assert_analysis([1, 2, 3])
 
-    @needs_django(1, 5)     # not sure why, but 1.4 won't reverse "index".
+    @needs_django(1, 5)     # 1.4 had different syntax for {% url %}
     def test_url(self):
         self.make_template("""\
             {% url 'index' %}
@@ -195,6 +195,24 @@ class OtherTest(DjangoPluginTestCase):
         text = self.run_django_coverage()
         self.assertEqual(text, "/home\nnice.\n")
         self.assert_analysis([1, 2])
+
+    @needs_django(1, 5)     # {% verbatim %} is new in 1.5
+    def test_verbatim(self):
+        self.make_template("""\
+            1
+            {% verbatim %}
+            {{if dying}}Alive.{{/if}}
+            second.
+            {%third%}.
+            {% endverbatim %}
+            7
+            """)
+        text = self.run_django_coverage()
+        self.assertEqual(
+            text,
+            "1\n\n{{if dying}}Alive.{{/if}}\nsecond.\n{%third%}.\n\n7\n"
+        )
+        self.assert_analysis([1, 2, 3, 4, 5, 7])
 
 
 class StringTemplateTest(DjangoPluginTestCase):

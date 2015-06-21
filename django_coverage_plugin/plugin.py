@@ -13,6 +13,11 @@ from django.template.base import (
     Lexer, TextNode,
     TOKEN_BLOCK, TOKEN_MAPPING, TOKEN_TEXT, TOKEN_VAR,
     )
+try:
+    from django.template.defaulttags import VerbatimNode
+except ImportError:
+    # Django 1.4 didn't have VerbatimNode
+    VerbatimNode = None
 
 
 SHOW_PARSING = False
@@ -98,10 +103,14 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
             print("{!r}: {}".format(render_self, source))
         s_start, s_end = source[1]
         if isinstance(render_self, TextNode):
-            text = render_self.s
-            first_line = text.splitlines(True)[0]
+            first_line = render_self.s.splitlines(True)[0]
             if first_line.isspace():
                 s_start += len(first_line)
+        elif VerbatimNode and isinstance(render_self, VerbatimNode):
+            # VerbatimNode doesn't track source the same way. s_end only points
+            # to the end of the {% verbatim %} opening tag, not the entire
+            # content. Adjust it to cover all of it.
+            s_end += len(render_self.content)
         line_map = self.get_line_map(source[0].name)
         start = get_line_number(line_map, s_start)
         end = get_line_number(line_map, s_end-1)
