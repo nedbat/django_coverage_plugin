@@ -4,7 +4,7 @@ Django Template Coverage Plugin
 A `coverage.py`_ plugin to measure the coverage of Django templates.
 
 Supported Python versions are 2.7 and 3.4.  Supported Django versions are 1.4
-through 1.8 alpha.
+through 1.8.
 
 The plugin itself is pip installable::
 
@@ -38,7 +38,8 @@ template files are included in the report.
 Caveats
 -------
 
-The `{% ssi %}` tag does not trace the files it includes.
+Files included by the `{% ssi %}` tag are not included in the coverage
+measurements.
 
 Coverage can't tell whether a `{% blocktrans %}` tag used the singular or
 plural text, so both are marked as used if the tag is used.
@@ -54,8 +55,7 @@ you want to help me with it, feel free to drop me an email.
 
 The coverage.py plugin mechanism is designed to be generally useful for hooking
 into the collection and reporting phases of coverage.py, specifically to
-support non-Python files. I've also got a plugin for Mako templates, but it
-needs some fixes from Mako. If you have non-Python files you'd like to support
+support non-Python files.  If you have non-Python files you'd like to support
 in coverage.py, let's talk.
 
 
