@@ -8,7 +8,7 @@ from .plugin_test import DjangoPluginTestCase, needs_django
 
 # 200 Unicode chars: snowman + poo.
 UNIUNI = u"\u26C4\U0001F4A9"*100
-if isinstance(UNIUNI, type("")):
+if isinstance(UNIUNI, str):
     UNISTR = UNIUNI
 else:
     UNISTR = UNIUNI.encode("utf8")
