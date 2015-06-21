@@ -13,6 +13,7 @@ from django.template.base import (
     Lexer, TextNode,
     TOKEN_BLOCK, TOKEN_MAPPING, TOKEN_TEXT, TOKEN_VAR,
     )
+from django.templatetags.i18n import BlockTranslateNode
 try:
     from django.template.defaulttags import VerbatimNode
 except ImportError:
@@ -62,8 +63,7 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
 
     def file_tracer(self, filename):
         if filename.startswith(self.django_template_dir):
-            if "templatetags" not in filename:
-                return self
+            return self
         return None
 
     def file_reporter(self, filename):
@@ -111,6 +111,12 @@ class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
             # to the end of the {% verbatim %} opening tag, not the entire
             # content. Adjust it to cover all of it.
             s_end += len(render_self.content)
+        elif isinstance(render_self, BlockTranslateNode):
+            # BlockTranslateNode has a list of text and variable tokens.
+            # Get the end of the contents by looking at the last token,
+            # and use its endpoint.
+            last_tokens = render_self.plural or render_self.singular
+            s_end = last_tokens[-1].source[1][1]
         line_map = self.get_line_map(source[0].name)
         start = get_line_number(line_map, s_start)
         end = get_line_number(line_map, s_end-1)

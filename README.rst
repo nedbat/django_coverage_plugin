@@ -40,6 +40,9 @@ Caveats
 
 The `{% ssi %}` tag does not trace the files it includes.
 
+Coverage can't tell whether a `{% blocktrans %}` tag used the singular or
+plural text, so both are marked as used if the tag is used.
+
 
 What the? How?
 --------------
