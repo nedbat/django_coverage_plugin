@@ -111,6 +111,7 @@ class CommentTest(DjangoPluginTestCase):
 
 
 class OtherTest(DjangoPluginTestCase):
+    """Tests of miscellaneous tags."""
 
     def test_autoescape(self):
         self.make_template("""\
@@ -222,6 +223,25 @@ class OtherTest(DjangoPluginTestCase):
             u"{%third%}.UNIUNI\n\n7\n".replace(u"UNIUNI", UNIUNI)
         )
         self.assert_analysis([1, 2, 3, 4, 5, 7])
+
+    def test_widthratio(self):
+        self.make_template("""\
+            {% widthratio 175 200 100 %}
+            == 88
+            """)
+        text = self.run_django_coverage()
+        self.assertEqual(text, "88\n== 88\n")
+        self.assert_analysis([1, 2])
+
+    def test_with(self):
+        self.make_template("""\
+            {% with alpha=1 beta=2 %}
+            alpha = {{ alpha }}, beta = {{ beta }}.
+            {% endwith %}
+            """)
+        text = self.run_django_coverage()
+        self.assertEqual(text, "\nalpha = 1, beta = 2.\n\n")
+        self.assert_analysis([1, 2])
 
 
 class StringTemplateTest(DjangoPluginTestCase):
