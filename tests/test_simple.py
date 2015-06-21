@@ -6,6 +6,14 @@ from .plugin_test import DjangoPluginTestCase, needs_django
 # TODO: test what happens if TEMPLATE_DEBUG is not set.
 
 
+# 200 Unicode chars: snowman + poo.
+UNIUNI = u"\u26C4\U0001F4A9"*100
+if isinstance(UNIUNI, type("")):
+    UNISTR = UNIUNI
+else:
+    UNISTR = UNIUNI.encode("utf8")
+
+
 class SimpleTemplateTest(DjangoPluginTestCase):
 
     def test_one_line(self):
@@ -203,14 +211,15 @@ class OtherTest(DjangoPluginTestCase):
             {% verbatim %}
             {{if dying}}Alive.{{/if}}
             second.
-            {%third%}.
+            {%third%}.UNISTR
             {% endverbatim %}
             7
-            """)
+            """.replace("UNISTR", UNISTR))
         text = self.run_django_coverage()
         self.assertEqual(
             text,
-            "1\n\n{{if dying}}Alive.{{/if}}\nsecond.\n{%third%}.\n\n7\n"
+            u"1\n\n{{if dying}}Alive.{{/if}}\nsecond.\n"
+            u"{%third%}.UNIUNI\n\n7\n".replace(u"UNIUNI", UNIUNI)
         )
         self.assert_analysis([1, 2, 3, 4, 5, 7])
 
