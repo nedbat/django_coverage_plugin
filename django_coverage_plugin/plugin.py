@@ -39,10 +39,12 @@ def read_template_source(filename):
     return text
 
 
-class Plugin(coverage.plugin.CoveragePlugin, coverage.plugin.FileTracer):
+class DjangoTemplatePlugin(
+    coverage.plugin.CoveragePlugin,
+    coverage.plugin.FileTracer,
+):
 
-    def __init__(self, options):
-        super(Plugin, self).__init__(options)
+    def __init__(self):
         self.django_template_dir = os.path.realpath(
             os.path.dirname(django.template.__file__)
         )
