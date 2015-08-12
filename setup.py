@@ -11,7 +11,6 @@ setup(
     url='https://github.com/nedbat/django_coverage_plugin',
     packages=['django_coverage_plugin'],
     install_requires=[
-        # If you change this, update tox.ini and requirements.txt also.
         'Django >= 1.4',
         'coverage >= 4.0b2',
         'six >= 1.4.0',

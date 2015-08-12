@@ -1,5 +1,2 @@
-# If you change this file, don't forget to update tox.ini and setup.py also.
-coverage >= 4.0b2
-Django >= 1.4
-six >= 1.4.0
+# To run tests, we just need tox.
 tox >= 1.8
