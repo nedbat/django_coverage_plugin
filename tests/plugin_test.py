@@ -86,16 +86,20 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
                 tem = get_template(name or self.template_file)
             ctx = Context(context or {})
             self.cov = coverage.Coverage(**options)
-            plugins = self.cov.config.get_option("run:plugins")
-            plugins.append("django_coverage_plugin")
-            self.cov.config.set_option("run:plugins", plugins)
+            self.append_config("run:plugins", "django_coverage_plugin")
             if 0:
-                self.cov.config["run:debug"].append("trace")
+                self.append_config("run:debug", "trace")
             self.cov.start()
             text = tem.render(ctx)
             self.cov.stop()
             self.cov.save()
             return text
+
+    def append_config(self, option, value):
+        """Append to a configuration option."""
+        val = self.cov.config.get_option(option)
+        val.append(value)
+        self.cov.config.set_option(option, val)
 
     def get_line_data(self, name=None):
         """Get the executed-line data for a template.
