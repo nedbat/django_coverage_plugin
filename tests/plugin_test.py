@@ -86,7 +86,9 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
                 tem = get_template(name or self.template_file)
             ctx = Context(context or {})
             self.cov = coverage.Coverage(**options)
-            self.cov.config["run:plugins"].append("django_coverage_plugin")
+            plugins = self.cov.config.get_option("run:plugins")
+            plugins.append("django_coverage_plugin")
+            self.cov.config.set_option("run:plugins", plugins)
             if 0:
                 self.cov.config["run:debug"].append("trace")
             self.cov.start()

@@ -155,9 +155,7 @@ class DjangoTemplatePlugin(
 
 class FileReporter(coverage.plugin.FileReporter):
     def __init__(self, filename):
-        # TODO: do we want the .filename attribute to be part of the public
-        # API of the coverage plugin?
-        self.filename = filename
+        super(FileReporter, self).__init__(filename)
         # TODO: html filenames are absolute.
 
         self._source = None
@@ -167,7 +165,7 @@ class FileReporter(coverage.plugin.FileReporter):
             self._source = read_template_source(self.filename)
         return self._source
 
-    def statements(self):
+    def lines(self):
         source_lines = set()
 
         if SHOW_PARSING:
