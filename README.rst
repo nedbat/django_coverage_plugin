@@ -16,11 +16,11 @@ To run it, add this setting to your .coveragerc::
     plugins =
         django_coverage_plugin
 
-Then run your tests under coverage.py. It requires the latest coverage.py, so
+Then run your tests under coverage.py. It requires the coverage.py 4.x, so
 it may not work with other coverage-related tools such as test-runner coverage
 plugins.
 
-You will see your templates listed in your coverage report alongside your
+You will see your templates listed in your coverage report along with your
 Python modules.
 
 If you get a django.core.exceptions.ImproperlyConfigured error, you need to set
