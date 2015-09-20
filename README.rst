@@ -1,7 +1,11 @@
+==================================
 Django Template Coverage.py Plugin
 ==================================
 
 A `coverage.py`_ plugin to measure the coverage of Django templates.
+
+| |license| |versions| |status|
+| |kit| |downloads|
 
 Supported Python versions are 2.7 and 3.4.  Supported Django versions are 1.4
 through 1.8.
@@ -10,15 +14,13 @@ The plugin itself is pip installable::
 
     $ pip install django_coverage_plugin
 
-To run it, add this setting to your .coveragerc::
+To run it, add this setting to your .coveragerc file::
 
     [run]
     plugins =
         django_coverage_plugin
 
-Then run your tests under coverage.py. It requires the coverage.py 4.x, so
-it may not work with other coverage-related tools such as test-runner coverage
-plugins.
+Then run your tests under coverage.py. It requires coverage.py 4.0.
 
 You will see your templates listed in your coverage report along with your
 Python modules.
@@ -70,3 +72,20 @@ To run the tests::
 
 .. _coverage.py: http://nedbatchelder.com/code/coverage
 .. _dtcov: https://github.com/traff/dtcov
+
+
+.. |license| image:: https://img.shields.io/pypi/l/django_coverage_plugin.svg
+    :target: https://pypi.python.org/pypi/django_coverage_plugin
+    :alt: License
+.. |versions| image:: https://img.shields.io/pypi/pyversions/django_coverage_plugin.svg
+    :target: https://pypi.python.org/pypi/django_coverage_plugin
+    :alt: Python versions supported
+.. |status| image:: https://img.shields.io/pypi/status/django_coverage_plugin.svg
+    :target: https://pypi.python.org/pypi/django_coverage_plugin
+    :alt: Package stability
+.. |kit| image:: https://badge.fury.io/py/django_coverage_plugin.svg
+    :target: https://pypi.python.org/pypi/django_coverage_plugin
+    :alt: PyPI status
+.. |downloads| image:: https://img.shields.io/pypi/dm/django_coverage_plugin.svg
+    :target: https://pypi.python.org/pypi/django_coverage_plugin
+    :alt: Monthly PyPI downloads
