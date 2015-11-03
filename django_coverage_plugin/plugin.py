@@ -33,6 +33,9 @@ def read_template_source(filename):
     # early.
     from django.conf import settings
 
+    if not settings.configured:
+        settings.configure()
+
     with open(filename, "rb") as f:
         text = f.read().decode(settings.FILE_CHARSET)
 
