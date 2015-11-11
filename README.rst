@@ -47,6 +47,20 @@ Coverage.py can't tell whether a ``{% blocktrans %}`` tag used the singular or
 plural text, so both are marked as used if the tag is used.
 
 
+Changes
+-------
+
+v1.1, in progress
+~~~~~~~~~~~~~~~~~
+
+Explicitly configure settings if need be to get things to work.
+
+v1.0: 20 September 2015
+~~~~~~~~~~~~~~~~~~~~~~~
+
+First version :)
+
+
 What the? How?
 --------------
 
