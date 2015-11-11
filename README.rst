@@ -30,7 +30,7 @@ the DJANGO_SETTINGS_MODULE environment variable.
 
 
 Configuration
--------------
+~~~~~~~~~~~~~
 
 The Django template plugin uses some existing settings from your .coveragerc
 file.  The ``source=``, ``include=``, and ``omit=`` options control what
@@ -38,7 +38,7 @@ template files are included in the report.
 
 
 Caveats
--------
+~~~~~~~
 
 Files included by the ``{% ssi %}`` tag are not included in the coverage
 measurements.
@@ -48,21 +48,21 @@ plural text, so both are marked as used if the tag is used.
 
 
 Changes
--------
+~~~~~~~
 
 v1.1, in progress
-~~~~~~~~~~~~~~~~~
+-----------------
 
 Explicitly configure settings if need be to get things to work.
 
 v1.0: 20 September 2015
-~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------
 
 First version :)
 
 
 What the? How?
---------------
+~~~~~~~~~~~~~~
 
 The technique used to measure the coverage is the same that Dmitry Trofimov
 used in `dtcov`_, but integrated into coverage.py as a plugin, and made more
@@ -76,7 +76,7 @@ in coverage.py, let's talk.
 
 
 Tests
------
+~~~~~
 
 To run the tests::
 
