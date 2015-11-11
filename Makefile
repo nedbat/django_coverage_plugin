@@ -16,6 +16,7 @@ clean:
 	-rm -f MANIFEST
 	-rm -f .coverage .coverage.* coverage.xml
 	-rm -f setuptools-*.egg distribute-*.egg distribute-*.tar.gz
+	-rm -f README.html
 
 sterile: clean
 	-rm -rf .tox*
