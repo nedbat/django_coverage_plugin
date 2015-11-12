@@ -50,8 +50,8 @@ plural text, so both are marked as used if the tag is used.
 Changes
 ~~~~~~~
 
-v1.1, in progress
------------------
+v1.1, 12 November 2015
+----------------------
 
 Explicitly configure settings if need be to get things to work.
 
