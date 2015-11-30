@@ -1,4 +1,4 @@
-"""The Django coverage plugin."""
+"""The Django template coverage plugin."""
 
 from __future__ import print_function
 
@@ -8,11 +8,12 @@ from six.moves import range
 
 import coverage.plugin
 
+from django import VERSION as DJANGO_VERSION
 import django.template
 from django.template.base import (
-    Lexer, TextNode,
+    Lexer, TextNode, NodeList, Template,
     TOKEN_BLOCK, TOKEN_MAPPING, TOKEN_TEXT, TOKEN_VAR,
-    )
+)
 from django.templatetags.i18n import BlockTranslateNode
 try:
     from django.template.defaulttags import VerbatimNode
@@ -25,6 +26,28 @@ SHOW_PARSING = False
 SHOW_TRACING = False
 
 # TODO: Add a check for TEMPLATE_DEBUG, and make noise if it is false.
+
+
+def dig(frame, *paths):
+    for path in paths:
+        try:
+            val = frame.f_locals[path[0]]
+        except KeyError:
+            continue
+        for acc in path[1:]:
+            if isinstance(acc, int):
+                try:
+                    val = val[acc]
+                except (IndexError, TypeError):
+                    break
+            else:
+                try:
+                    val = getattr(val, acc)
+                except AttributeError:
+                    break
+        else:
+            return val
+    return None
 
 
 def read_template_source(filename):
@@ -83,30 +106,51 @@ class DjangoTemplatePlugin(
         if frame.f_code.co_name != 'render':
             return None
 
-        locals = frame.f_locals
-        render_self = locals['self']
         if 0:
-            dump_frame(frame)
-        try:
-            filename = render_self.source[0].name
+            dump_frame(frame, label="dynamic_source_filename")
+        # The filename used to be self.source[0].name.  In more modern Djangos,
+        # it's context.template.origin.
+        filename = dig(
+            frame,
+            ["self", "source", 0, "name"],
+            ["context", "template", "origin", "name"],
+        )
+
+        if filename is not None:
             if filename.startswith("<"):
                 # String templates have a filename of "<unknown source>", and
                 # can't be reported on later, so ignore them.
                 return None
             return filename
-        except (AttributeError, IndexError):
-            pass
         return None
 
     def line_number_range(self, frame):
         assert frame.f_code.co_name == 'render'
         if 0:
             dump_frame(frame, label="line_number_range")
+
         render_self = frame.f_locals['self']
-        source = render_self.source
+        if isinstance(render_self, (NodeList, Template)):
+            return -1, -1
+
+        if DJANGO_VERSION >= (1, 9):
+            def position_for_node(node):
+                return node.token.position
+            def position_for_token(token):
+                return token.position
+        else:
+            def position_for_node(node):
+                return node.source[1]
+            def position_for_token(token):
+                return token.source[1]
+
+        position = position_for_node(render_self)
+        if position is None:
+            return -1, -1
+
         if SHOW_TRACING:
-            print("{!r}: {}".format(render_self, source))
-        s_start, s_end = source[1]
+            print("{!r}: {}".format(render_self, position))
+        s_start, s_end = position
         if isinstance(render_self, TextNode):
             first_line = render_self.s.splitlines(True)[0]
             if first_line.isspace():
@@ -121,15 +165,21 @@ class DjangoTemplatePlugin(
             # Get the end of the contents by looking at the last token,
             # and use its endpoint.
             last_tokens = render_self.plural or render_self.singular
-            s_end = last_tokens[-1].source[1][1]
-        line_map = self.get_line_map(source[0].name)
+            s_end = position_for_token(last_tokens[-1])[1]
+
+        filename = dig(
+            frame,
+            ["self", "source", 0, "name"],
+            ["context", "template", "origin", "name"],
+        )
+        line_map = self.get_line_map(filename)
         start = get_line_number(line_map, s_start)
         end = get_line_number(line_map, s_end-1)
         if start < 0 or end < 0:
             start, end = -1, -1
         if SHOW_TRACING:
             print("line_number_range({}) -> {}".format(
-                source[0].name, (start, end)
+                filename, (start, end)
             ))
         return start, end
 
@@ -174,7 +224,11 @@ class FileReporter(coverage.plugin.FileReporter):
         if SHOW_PARSING:
             print("-------------- {}".format(self.filename))
 
-        tokens = Lexer(self.source(), self.filename).tokenize()
+        if DJANGO_VERSION >= (1, 9):
+            lexer = Lexer(self.source())
+        else:
+            lexer = Lexer(self.source(), self.filename)
+        tokens = lexer.tokenize()
 
         # Are we inside a comment?
         comment = False
@@ -276,6 +330,7 @@ def dump_frame(frame, label=""):
     """Dump interesting information about this frame."""
     locals = dict(frame.f_locals)
     self = locals.get('self', None)
+    context = locals.get('context', None)
     if "__builtins__" in locals:
         del locals["__builtins__"]
 
@@ -290,4 +345,6 @@ def dump_frame(frame, label=""):
     print(locals)
     if self:
         print("self:", self.__dict__)
+    if context:
+        print("context:", context.__dict__)
     print("\\--")
