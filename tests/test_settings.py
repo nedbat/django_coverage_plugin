@@ -1,18 +1,16 @@
 """Settings tests for django_coverage_plugin."""
 
-import copy
-
 import django
 from django.test.utils import override_settings
 
 from django_coverage_plugin import DjangoTemplatePluginException
 
-from .plugin_test import DjangoPluginTestCase, test_settings
+from .plugin_test import DjangoPluginTestCase, test_settings, django_start_at
 
 
 if django.VERSION >= (1, 8):
     DEBUG_FALSE_OVERRIDES = {
-        'TEMPLATES': [copy.deepcopy(test_settings['TEMPLATES'][0])]
+        'TEMPLATES': [test_settings()['TEMPLATES'][0]]
     }
     DEBUG_FALSE_OVERRIDES['TEMPLATES'][0]['OPTIONS']['debug'] = False
 else:

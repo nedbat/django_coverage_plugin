@@ -13,46 +13,51 @@ import django
 # Make Django templates outside of Django.
 # Originally taken from: http://stackoverflow.com/a/98178/14343
 from django.conf import settings
-test_settings = {
-    'CACHES': {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        },
-    },
-    'DATABASES': {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': ':memory:',
-        }
-    },
-    'ROOT_URLCONF': 'tests',
-}
 
-if django.VERSION >= (1, 8):
-    test_settings.update({
-        'TEMPLATES': [
-            {
-                'BACKEND': 'django.template.backends.django.DjangoTemplates',
-                'DIRS': ['templates'],      # where the tests put things.
-                'OPTIONS': {
-                    'debug': True,
-                },
+def test_settings():
+    """Create a dict full of default Django settings for the tests."""
+    the_settings = {
+        'CACHES': {
+            'default': {
+                'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
             },
-        ],
-    })
+        },
+        'DATABASES': {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': ':memory:',
+            }
+        },
+        'ROOT_URLCONF': 'tests',
+    }
 
-    if django.VERSION < (1, 10):
-        # for {% ssi %}
-        test_settings['TEMPLATES'][0]['OPTIONS']['allowed_include_roots'] = ['/']
+    if django.VERSION >= (1, 8):
+        the_settings.update({
+            'TEMPLATES': [
+                {
+                    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+                    'DIRS': ['templates'],      # where the tests put things.
+                    'OPTIONS': {
+                        'debug': True,
+                    },
+                },
+            ],
+        })
 
-else:
-    test_settings.update({
-        'ALLOWED_INCLUDE_ROOTS': ['/'],     # for {% ssi %}
-        'TEMPLATE_DEBUG': True,
-        'TEMPLATE_DIRS': ['templates'],     # where the tests put things.
-    })
+        if django.VERSION < (1, 10):
+            # for {% ssi %}
+            the_settings['TEMPLATES'][0]['OPTIONS']['allowed_include_roots'] = ['/']
 
-settings.configure(**test_settings)
+    else:
+        the_settings.update({
+            'ALLOWED_INCLUDE_ROOTS': ['/'],     # for {% ssi %}
+            'TEMPLATE_DEBUG': True,
+            'TEMPLATE_DIRS': ['templates'],     # where the tests put things.
+        })
+
+    return the_settings
+
+settings.configure(**test_settings())
 
 if hasattr(django, "setup"):
     django.setup()
