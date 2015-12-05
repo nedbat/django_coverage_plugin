@@ -28,26 +28,32 @@ SHOW_TRACING = False
 # TODO: Add a check for TEMPLATE_DEBUG, and make noise if it is false.
 
 
-def dig(frame, *paths):
-    for path in paths:
+if DJANGO_VERSION >= (1, 9):
+    # The filename used to be self.source[0].name.  In more modern Djangos,
+    # it's context.template.origin.
+    def filename_for_frame(frame):
         try:
-            val = frame.f_locals[path[0]]
-        except KeyError:
-            continue
-        for acc in path[1:]:
-            if isinstance(acc, int):
-                try:
-                    val = val[acc]
-                except (IndexError, TypeError):
-                    break
-            else:
-                try:
-                    val = getattr(val, acc)
-                except AttributeError:
-                    break
-        else:
-            return val
-    return None
+            return frame.f_locals["context"].template.origin.name
+        except (KeyError, AttributeError):
+            return None
+
+    def position_for_node(node):
+        return node.token.position
+
+    def position_for_token(token):
+        return token.position
+else:
+    def filename_for_frame(frame):
+        try:
+            return frame.f_locals["self"].source[0].name
+        except (KeyError, AttributeError, IndexError):
+            return None
+
+    def position_for_node(node):
+        return node.source[1]
+
+    def position_for_token(token):
+        return token.source[1]
 
 
 def read_template_source(filename):
@@ -108,14 +114,7 @@ class DjangoTemplatePlugin(
 
         if 0:
             dump_frame(frame, label="dynamic_source_filename")
-        # The filename used to be self.source[0].name.  In more modern Djangos,
-        # it's context.template.origin.
-        filename = dig(
-            frame,
-            ["self", "source", 0, "name"],
-            ["context", "template", "origin", "name"],
-        )
-
+        filename = filename_for_frame(frame)
         if filename is not None:
             if filename.startswith("<"):
                 # String templates have a filename of "<unknown source>", and
@@ -132,17 +131,6 @@ class DjangoTemplatePlugin(
         render_self = frame.f_locals['self']
         if isinstance(render_self, (NodeList, Template)):
             return -1, -1
-
-        if DJANGO_VERSION >= (1, 9):
-            def position_for_node(node):
-                return node.token.position
-            def position_for_token(token):
-                return token.position
-        else:
-            def position_for_node(node):
-                return node.source[1]
-            def position_for_token(token):
-                return token.source[1]
 
         position = position_for_node(render_self)
         if position is None:
@@ -167,11 +155,7 @@ class DjangoTemplatePlugin(
             last_tokens = render_self.plural or render_self.singular
             s_end = position_for_token(last_tokens[-1])[1]
 
-        filename = dig(
-            frame,
-            ["self", "source", 0, "name"],
-            ["context", "template", "origin", "name"],
-        )
+        filename = filename_for_frame(frame)
         line_map = self.get_line_map(filename)
         start = get_line_number(line_map, s_start)
         end = get_line_number(line_map, s_end-1)
