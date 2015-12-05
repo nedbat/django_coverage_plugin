@@ -3,7 +3,7 @@
 import copy
 
 import django
-from django.test import override_settings
+from django.test.utils import override_settings
 
 from django_coverage_plugin import DjangoTemplatePluginException
 
