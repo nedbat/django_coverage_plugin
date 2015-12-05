@@ -175,15 +175,28 @@ def squashed(s):
     return re.sub(r"\s", "", s)
 
 
-def needs_django(*needed_version):
+def django_start_at(*needed_version):
     """A decorator for tests to require a minimum version of Django.
 
-    @needs_django(1, 8)     # Don't run the test on 1.7 or lower.
+    @django_start_at(1, 8)      # Don't run the test on 1.7 or lower.
     def test_thing(self):
         ...
 
     """
-    if django.VERSION >= tuple(needed_version):
+    if django.VERSION >= needed_version:
         return lambda func: func
     else:
         return unittest.skip("Django version must be newer")
+
+def django_stop_at(*needed_version):
+    """A decorator for tests to require a maximum version of Django.
+
+    @django_stop_at(1, 8)       # Don't run the test on 1.8 or higher.
+    def test_thing(self):
+        ...
+
+    """
+    if django.VERSION < needed_version:
+        return lambda func: func
+    else:
+        return unittest.skip("Django version must be older")
