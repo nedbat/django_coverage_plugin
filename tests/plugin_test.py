@@ -212,6 +212,7 @@ def django_start_at(*needed_version):
     else:
         return unittest.skip("Django version must be newer")
 
+
 def django_stop_at(*needed_version):
     """A decorator for tests to require a maximum version of Django.
 

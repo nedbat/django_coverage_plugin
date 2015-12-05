@@ -21,6 +21,7 @@ except ImportError:
     # Django 1.4 didn't have VerbatimNode
     VerbatimNode = None
 
+
 class DjangoTemplatePluginException(Exception):
     """Used for any errors from the plugin itself."""
     pass
