@@ -1,6 +1,6 @@
 """Tests of template inheritance for django_coverage_plugin."""
 
-from .plugin_test import DjangoPluginTestCase, django_start_at
+from .plugin_test import DjangoPluginTestCase, django_start_at, django_stop_at
 
 
 class BlockTest(DjangoPluginTestCase):
@@ -147,6 +147,7 @@ class IncludeTest(DjangoPluginTestCase):
 
 # {% ssi %} is in earlier Djangos than 1.5, but doesn't trace properly.
 @django_start_at(1, 5)
+@django_stop_at(1, 10)
 class SsiTest(DjangoPluginTestCase):
     """Test {% ssi %}, which does not trace the included file."""
 

@@ -8,7 +8,7 @@ from six.moves import range
 
 import coverage.plugin
 
-from django import VERSION as DJANGO_VERSION
+import django
 import django.template
 from django.template.base import (
     Lexer, TextNode, NodeList, Template,
@@ -21,14 +21,42 @@ except ImportError:
     # Django 1.4 didn't have VerbatimNode
     VerbatimNode = None
 
+class DjangoTemplatePluginException(Exception):
+    """Used for any errors from the plugin itself."""
+    pass
 
+
+# For debugging the plugin itself.
 SHOW_PARSING = False
 SHOW_TRACING = False
 
-# TODO: Add a check for TEMPLATE_DEBUG, and make noise if it is false.
 
+if django.VERSION >= (1, 8):
+    def check_debug():
+        from django.conf import settings
+        templates = settings.TEMPLATES
+        if len(templates) > 1:
+            raise DjangoTemplatePluginException(
+                "Can't use multiple template engines, help me add support!"
+            )
+        template_settings = templates[0]
+        if template_settings['BACKEND'] != 'django.template.backends.django.DjangoTemplates':
+            raise DjangoTemplatePluginException(
+                "Can't use non-Django templates!"
+            )
+        if not template_settings['OPTIONS']['debug']:
+            raise DjangoTemplatePluginException(
+                "Template debugging must be enabled in settings."
+            )
+else:
+    def check_debug():
+        from django.conf import settings
+        if not settings.TEMPLATE_DEBUG:
+            raise DjangoTemplatePluginException(
+                "Template debugging must be enabled in settings."
+            )
 
-if DJANGO_VERSION >= (1, 9):
+if django.VERSION >= (1, 9):
     # The filename used to be self.source[0].name.  In more modern Djangos,
     # it's context.template.origin.
     def filename_for_frame(frame):
@@ -77,6 +105,8 @@ class DjangoTemplatePlugin(
 ):
 
     def __init__(self):
+        check_debug()
+
         self.django_template_dir = os.path.realpath(
             os.path.dirname(django.template.__file__)
         )
@@ -208,7 +238,7 @@ class FileReporter(coverage.plugin.FileReporter):
         if SHOW_PARSING:
             print("-------------- {}".format(self.filename))
 
-        if DJANGO_VERSION >= (1, 9):
+        if django.VERSION >= (1, 9):
             lexer = Lexer(self.source())
         else:
             lexer = Lexer(self.source(), self.filename)

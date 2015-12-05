@@ -13,22 +13,46 @@ import django
 # Make Django templates outside of Django.
 # Originally taken from: http://stackoverflow.com/a/98178/14343
 from django.conf import settings
-settings.configure(
-    CACHES={
+test_settings = {
+    'CACHES': {
         'default': {
             'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         },
     },
-    DATABASES={
+    'DATABASES': {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': ":memory:",
+            'NAME': ':memory:',
         }
     },
-    TEMPLATE_DEBUG=True,
-    ALLOWED_INCLUDE_ROOTS=["/"],    # for {% ssi %}
-    ROOT_URLCONF="tests",
-)
+    'ROOT_URLCONF': 'tests',
+}
+
+if django.VERSION >= (1, 8):
+    test_settings.update({
+        'TEMPLATES': [
+            {
+                'BACKEND': 'django.template.backends.django.DjangoTemplates',
+                'DIRS': ['templates'],      # where the tests put things.
+                'OPTIONS': {
+                    'debug': True,
+                },
+            },
+        ],
+    })
+
+    if django.VERSION < (1, 10):
+        # for {% ssi %}
+        test_settings['TEMPLATES'][0]['OPTIONS']['allowed_include_roots'] = ['/']
+
+else:
+    test_settings.update({
+        'ALLOWED_INCLUDE_ROOTS': ['/'],     # for {% ssi %}
+        'TEMPLATE_DEBUG': True,
+        'TEMPLATE_DIRS': ['templates'],     # where the tests put things.
+    })
+
+settings.configure(**test_settings)
 
 if hasattr(django, "setup"):
     django.setup()
@@ -79,7 +103,7 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
         if options is None:
             options = {'source': ["."]}
 
-        with self.settings(TEMPLATE_DIRS=("templates",)):
+        with self.settings():
             if text is not None:
                 tem = Template(text)
             else:

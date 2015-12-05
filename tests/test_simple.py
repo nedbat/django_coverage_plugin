@@ -3,8 +3,6 @@
 
 from .plugin_test import DjangoPluginTestCase, django_start_at
 
-# TODO: test what happens if TEMPLATE_DEBUG is not set.
-
 
 # 200 Unicode chars: snowman + poo.
 UNIUNI = u"\u26C4\U0001F4A9"*100

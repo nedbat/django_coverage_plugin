@@ -1,6 +1,6 @@
 """Django Template Coverage Plugin"""
 
-from .plugin import DjangoTemplatePlugin
+from .plugin import DjangoTemplatePlugin, DjangoTemplatePluginException
 
 
 def coverage_init(reg, options):
