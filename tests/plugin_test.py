@@ -106,21 +106,20 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
         if options is None:
             options = {'source': ["."]}
 
-        with self.settings():
-            if text is not None:
-                tem = Template(text)
-            else:
-                tem = get_template(name or self.template_file)
-            ctx = Context(context or {})
-            self.cov = coverage.Coverage(**options)
-            self.append_config("run:plugins", "django_coverage_plugin")
-            if 0:
-                self.append_config("run:debug", "trace")
-            self.cov.start()
-            text = tem.render(ctx)
-            self.cov.stop()
-            self.cov.save()
-            return text
+        if text is not None:
+            tem = Template(text)
+        else:
+            tem = get_template(name or self.template_file)
+        ctx = Context(context or {})
+        self.cov = coverage.Coverage(**options)
+        self.append_config("run:plugins", "django_coverage_plugin")
+        if 0:
+            self.append_config("run:debug", "trace")
+        self.cov.start()
+        text = tem.render(ctx)
+        self.cov.stop()
+        self.cov.save()
+        return text
 
     def append_config(self, option, value):
         """Append to a configuration option."""
