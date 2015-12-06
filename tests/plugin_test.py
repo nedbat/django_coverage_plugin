@@ -9,10 +9,8 @@ import coverage
 from coverage.test_helpers import TempDirMixin
 
 import django
-
-# Make Django templates outside of Django.
-# Originally taken from: http://stackoverflow.com/a/98178/14343
 from django.conf import settings
+
 
 def test_settings():
     """Create a dict full of default Django settings for the tests."""

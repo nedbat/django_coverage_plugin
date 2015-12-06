@@ -37,18 +37,12 @@ if django.VERSION >= (1, 8):
         from django.conf import settings
         templates = settings.TEMPLATES
         if len(templates) > 1:
-            raise DjangoTemplatePluginException(
-                "Can't use multiple template engines, help me add support!"
-            )
+            raise DjangoTemplatePluginException("Can't use multiple template engines.")
         template_settings = templates[0]
         if template_settings['BACKEND'] != 'django.template.backends.django.DjangoTemplates':
-            raise DjangoTemplatePluginException(
-                "Can't use non-Django templates!"
-            )
-        if not template_settings['OPTIONS']['debug']:
-            raise DjangoTemplatePluginException(
-                "Template debugging must be enabled in settings."
-            )
+            raise DjangoTemplatePluginException("Can't use non-Django templates.")
+        if not template_settings.get('OPTIONS', {}).get('debug', False):
+            raise DjangoTemplatePluginException("Template debugging must be enabled in settings.")
 else:
     def check_debug():
         from django.conf import settings
