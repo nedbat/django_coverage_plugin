@@ -61,9 +61,9 @@ if hasattr(django, "setup"):
     django.setup()
 
 
-from django.template import Context, Template
-from django.template.loader import get_template
-from django.test import TestCase
+from django.template import Context, Template           # noqa
+from django.template.loader import get_template         # noqa
+from django.test import TestCase                        # noqa
 
 
 class DjangoPluginTestCase(TempDirMixin, TestCase):
