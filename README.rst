@@ -50,13 +50,28 @@ plural text, so both are marked as used if the tag is used.
 Changes
 ~~~~~~~
 
-v1.1, 12 November 2015
-----------------------
+
+v1.2 --- 2016-01-16
+-------------------
+
+Check if template debugging is enabled in the settings, and raise a visible
+warning if not.  This prevents mysterious failures of the plugin, and fixes
+`issue 17`_.
+
+Potential Django 1.9 support is included, but the patch to Django hasn't been
+applied yet.
+
+.. _issue 17: https://github.com/nedbat/django_coverage_plugin/issues/17
+
+
+v1.1 --- 2015-11-12
+-------------------
 
 Explicitly configure settings if need be to get things to work.
 
-v1.0: 20 September 2015
------------------------
+
+v1.0 --- 2015-09-20
+-------------------
 
 First version :)
 
