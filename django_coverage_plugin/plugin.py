@@ -52,16 +52,19 @@ else:
             )
 
 if django.VERSION >= (1, 9):
-    # The filename used to be self.source[0].name.  In more modern Djangos,
-    # it's context.template.origin.
+    # Since we are grabbing at internal details, we have to adapt as they
+    # change over versions.
     def filename_for_frame(frame):
         try:
-            return frame.f_locals["context"].template.origin.name
+            return frame.f_locals["self"].origin.name
         except (KeyError, AttributeError):
             return None
 
     def position_for_node(node):
-        return node.token.position
+        try:
+            return node.token.position
+        except AttributeError:
+            return None
 
     def position_for_token(token):
         return token.position
