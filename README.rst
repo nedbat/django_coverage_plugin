@@ -13,7 +13,7 @@ A `coverage.py`_ plugin to measure the coverage of Django templates.
 Supported Python versions are 2.7, 3.4, and 3.5.  Supported Django versions are
 1.4 through 1.8.
 
-The plugin itself is pip installable::
+The plugin is pip installable::
 
     $ pip install django_coverage_plugin
 
