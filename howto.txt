@@ -1,0 +1,10 @@
+* Release checklist
+
+- Version number in setup.py
+- Classifiers in setup.py
+- Copyright date in NOTICE.txt
+- Update README.rst with latest changes
+- Kits:
+    $ make kit
+    $ make pypi
+    $ make kit_upload
