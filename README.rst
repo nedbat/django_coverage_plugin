@@ -10,8 +10,8 @@ A `coverage.py`_ plugin to measure the coverage of Django templates.
 | |license| |versions| |djversions| |status|
 | |kit| |downloads|
 
-Supported Python versions are 2.7 and 3.4.  Supported Django versions are 1.4
-through 1.8.
+Supported Python versions are 2.7, 3.4, and 3.5.  Supported Django versions are
+1.4 through 1.8.
 
 The plugin itself is pip installable::
 
@@ -23,7 +23,7 @@ To run it, add this setting to your .coveragerc file::
     plugins =
         django_coverage_plugin
 
-Then run your tests under coverage.py. It requires coverage.py 4.0.
+Then run your tests under coverage.py. It requires coverage.py 4.0 or later.
 
 You will see your templates listed in your coverage report along with your
 Python modules.
