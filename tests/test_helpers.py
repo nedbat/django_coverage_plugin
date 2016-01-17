@@ -1,3 +1,6 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/django_coverage_plugin/blob/master/NOTICE.txt
+
 """Test helpers for the django coverage plugin."""
 
 import unittest

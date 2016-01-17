@@ -1,3 +1,6 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/django_coverage_plugin/blob/master/NOTICE.txt
+
 """Tests of template inheritance for django_coverage_plugin."""
 
 from .plugin_test import DjangoPluginTestCase, django_start_at, django_stop_at

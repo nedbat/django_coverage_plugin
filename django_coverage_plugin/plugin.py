@@ -1,3 +1,6 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/django_coverage_plugin/blob/master/NOTICE.txt
+
 """The Django template coverage plugin."""
 
 from __future__ import print_function

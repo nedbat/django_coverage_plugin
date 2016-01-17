@@ -1,4 +1,7 @@
 # coding: utf8
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/django_coverage_plugin/blob/master/NOTICE.txt
+
 """Simple tests for django_coverage_plugin."""
 
 from .plugin_test import DjangoPluginTestCase, django_start_at
