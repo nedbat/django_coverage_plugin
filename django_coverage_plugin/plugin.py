@@ -35,10 +35,23 @@ SHOW_PARSING = False
 SHOW_TRACING = False
 
 
-if django.VERSION >= (1, 8):
-    def check_debug():
-        from django.conf import settings
-        templates = settings.TEMPLATES
+def check_debug():
+    """Check that Django's template debugging is enabled.
+
+    Django's built-in "template debugging" records information the plugin needs
+    to do its work.  Check that the setting is correct, and raise an exception
+    if it is not.
+
+    """
+    # The settings for templates changed in Django 1.8 from TEMPLATE_DEBUG to
+    # TEMPLATES[..]['debug'].  Django 1.9 tolerated both forms, 1.10 insists on
+    # the new form.  Don't try to be version-specific here.  If the new
+    # settings exist, use them, otherwise use the old.
+
+    from django.conf import settings
+    templates = getattr(settings, 'TEMPLATES', [])
+    if templates:
+        # New-style settings.
         if len(templates) > 1:
             raise DjangoTemplatePluginException("Can't use multiple template engines.")
         template_settings = templates[0]
@@ -46,13 +59,13 @@ if django.VERSION >= (1, 8):
             raise DjangoTemplatePluginException("Can't use non-Django templates.")
         if not template_settings.get('OPTIONS', {}).get('debug', False):
             raise DjangoTemplatePluginException("Template debugging must be enabled in settings.")
-else:
-    def check_debug():
-        from django.conf import settings
+    else:
+        # Old-style settings.
         if not settings.TEMPLATE_DEBUG:
             raise DjangoTemplatePluginException(
                 "Template debugging must be enabled in settings."
             )
+
 
 if django.VERSION >= (1, 9):
     # Since we are grabbing at internal details, we have to adapt as they

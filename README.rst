@@ -54,6 +54,13 @@ Changes
 ~~~~~~~
 
 
+Unreleased
+----------
+
+The template debug settings are checked properly for people still using
+``TEMPLATE_DEBUG`` in newer versions of Django.
+
+
 v1.2 --- 2016-01-16
 -------------------
 
