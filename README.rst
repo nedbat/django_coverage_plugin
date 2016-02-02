@@ -125,7 +125,7 @@ To run the tests::
 .. |versions| image:: https://img.shields.io/pypi/pyversions/django_coverage_plugin.svg
     :target: https://pypi.python.org/pypi/django_coverage_plugin
     :alt: Python versions supported
-.. |djversions| image:: https://img.shields.io/badge/Django-1.4,1.5,1.6,1.7,1.8,1.9-44b78b.svg
+.. |djversions| image:: https://img.shields.io/badge/Django-1.4, 1.5, 1.6, 1.7, 1.8, 1.9-44b78b.svg
     :target: https://pypi.python.org/pypi/django_coverage_plugin
     :alt: Django versions supported
 .. |status| image:: https://img.shields.io/pypi/status/django_coverage_plugin.svg
