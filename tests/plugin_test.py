@@ -90,7 +90,7 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
         return os.path.abspath(self.make_file(template_path, text))
 
     def run_django_coverage(
-        self, name=None, text=None, context=None, options=None,
+        self, name=None, text=None, context=None, options=None, using=None
     ):
         """Run a template under coverage.
 
@@ -109,7 +109,14 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
         if options is None:
             options = {'source': ["."]}
 
-        if text is not None:
+        if using:
+            from django.template import engines
+            engine = engines[using]
+            if text is not None:
+                tem = engine.from_string(text)
+            else:
+                tem = engine.get_template(name or self.template_file)
+        elif text is not None:
             tem = Template(text)
         else:
             tem = get_template(name or self.template_file)

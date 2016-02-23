@@ -21,17 +21,12 @@ if django.VERSION >= (1, 8):
     NO_OPTIONS_OVERRIDES = test_settings()
     del NO_OPTIONS_OVERRIDES['TEMPLATES'][0]['OPTIONS']
 
-    MULTIPLE_ENGINE_OVERRIDES = test_settings()
-    MULTIPLE_ENGINE_OVERRIDES['TEMPLATES'].append({
-        'BACKEND':  NON_DJANGO_BACKEND,
-    })
-
     OTHER_ENGINE_OVERRIDES = test_settings()
     OTHER_ENGINE_OVERRIDES['TEMPLATES'][0]['BACKEND'] = NON_DJANGO_BACKEND
     OTHER_ENGINE_OVERRIDES['TEMPLATES'][0]['OPTIONS'] = {}
 else:
     DEBUG_FALSE_OVERRIDES = {'TEMPLATE_DEBUG': False}
-    NO_OPTIONS_OVERRIDES = MULTIPLE_ENGINE_OVERRIDES = OTHER_ENGINE_OVERRIDES = {}
+    NO_OPTIONS_OVERRIDES = OTHER_ENGINE_OVERRIDES = {}
 
 
 class SettingsTest(DjangoPluginTestCase):
@@ -48,14 +43,6 @@ class SettingsTest(DjangoPluginTestCase):
     def test_no_options(self):
         self.make_template('Hello')
         msg = "Template debugging must be enabled in settings."
-        with self.assertRaisesRegexp(DjangoTemplatePluginException, msg):
-            self.run_django_coverage()
-
-    @django_start_at(1, 8)
-    @override_settings(**MULTIPLE_ENGINE_OVERRIDES)
-    def test_multiple_engines(self):
-        self.make_template('Hello')
-        msg = "Can't use multiple template engines."
         with self.assertRaisesRegexp(DjangoTemplatePluginException, msg):
             self.run_django_coverage()
 
