@@ -3,6 +3,8 @@
 
 """Tests of multiple engines for django_coverage_plugin."""
 
+from django_coverage_plugin import DjangoTemplatePluginException
+
 from .plugin_test import DjangoPluginTestCase, django_start_at
 
 
@@ -36,3 +38,19 @@ class MultipleEngineTests(DjangoPluginTestCase):
     def test_string_template(self):
         text = self.run_django_coverage(text='Hello', using='other')
         self.assertEqual(text, 'Hello')
+
+    def test_third_engine_not_debug(self):
+        from django.test import modify_settings
+        engine3 = {
+            'NAME': 'notdebug',
+            'BACKEND': 'django.template.backends.django.DjangoTemplates',
+            'DIRS': ['templates3'],         # where the tests put things.
+        }
+        modified_settings = modify_settings(TEMPLATES={'append': [engine3]})
+        modified_settings.enable()
+        self.addCleanup(modified_settings.disable)
+
+        self.make_template('Hello')
+        msg = "Template debugging must be enabled in settings."
+        with self.assertRaisesRegexp(DjangoTemplatePluginException, msg):
+            self.run_django_coverage()
