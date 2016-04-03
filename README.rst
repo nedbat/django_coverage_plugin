@@ -54,6 +54,12 @@ Changes
 ~~~~~~~
 
 
+v1.3 --- 2016-04-03
+-------------------
+
+Multiple template engines are allowed.  Thanks, Simon Charette.
+
+
 v1.2.2 --- 2016-02-01
 ---------------------
 
