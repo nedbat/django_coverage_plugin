@@ -151,7 +151,7 @@ class IfChangedTest(DjangoPluginTestCase):
             """)
 
         text = self.run_django_coverage(context={
-            'items': ["AX", "AY", "BZ", "BW"],
+            'items': [("A", "X"), ("A", "Y"), ("B", "Z"), ("B", "W")],
         })
         self.assertEqual(squashed(text), 'AXYBZW')
         self.assert_analysis([1, 2, 3, 4, 5])
@@ -167,7 +167,7 @@ class IfChangedTest(DjangoPluginTestCase):
             """)
 
         text = self.run_django_coverage(context={
-            'items': ["AX", "AY", "BZ", "BW"],
+            'items': [("A", "X"), ("A", "Y"), ("B", "Z"), ("B", "W")],
         })
         self.assertEqual(squashed(text), 'AXYBZW')
         self.assert_analysis([1, 2, 3, 4, 5])
