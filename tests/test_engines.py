@@ -8,8 +8,9 @@ from .plugin_test import DjangoPluginTestCase, django_start_at
 
 @django_start_at(1, 8)
 class MultipleEngineTests(DjangoPluginTestCase):
-    @classmethod
-    def setUpClass(cls):
+    def setUp(self):
+        super(MultipleEngineTests, self).setUp()
+
         # Move to module imports once we drop support for Django < 1.7
         from django.test import modify_settings
         engine = {
@@ -20,12 +21,9 @@ class MultipleEngineTests(DjangoPluginTestCase):
                 'debug': True,
             },
         }
-        cls._modified_settings = modify_settings(TEMPLATES={'append': [engine]})
-        cls._modified_settings.enable()
-
-    @classmethod
-    def tearDownClass(cls):
-        cls._modified_settings.disable()
+        modified_settings = modify_settings(TEMPLATES={'append': [engine]})
+        modified_settings.enable()
+        self.addCleanup(modified_settings.disable)
 
     def test_file_template(self):
         self.make_template('Hello')
