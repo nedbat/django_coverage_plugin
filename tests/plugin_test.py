@@ -72,8 +72,12 @@ from django.test import TestCase                        # noqa
 class DjangoPluginTestCase(TempDirMixin, TestCase):
     """A base class for all our tests."""
 
-    def path(self, name=None):
-        return "templates/{}".format(name or self.template_file)
+    def setUp(self):
+        super(DjangoPluginTestCase, self).setUp()
+        self.template_directory = "templates"
+
+    def _path(self, name=None):
+        return "{}/{}".format(self.template_directory, name or self.template_file)
 
     def make_template(self, text, name=None):
         """Make a template with `text`.
@@ -86,7 +90,7 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
             self.template_file = name
         else:
             self.template_file = self.id().rpartition(".")[2] + ".html"
-        template_path = self.path(self.template_file)
+        template_path = self._path(self.template_file)
         return os.path.abspath(self.make_file(template_path, text))
 
     def run_django_coverage(
@@ -144,7 +148,7 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
             list: the line numbers of lines executed in the template.
 
         """
-        path = self.path(name)
+        path = self._path(name)
         line_data = self.cov.data.line_data()[os.path.realpath(path)]
         return line_data
 
@@ -156,7 +160,7 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
                 numbers of missed lines.
 
         """
-        path = self.path(name)
+        path = self._path(name)
         analysis = self.cov.analysis2(os.path.abspath(path))
         _, executable, _, missing, _ = analysis
         return executable, missing
@@ -190,7 +194,7 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
             float: the total percentage covered.
 
         """
-        path = self.path(name)
+        path = self._path(name)
         html_coverage = self.cov.html_report(os.path.abspath(path))
         return html_coverage
 
@@ -201,7 +205,7 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
             float: the total percentage covered.
 
         """
-        path = self.path(name)
+        path = self._path(name)
         xml_coverage = self.cov.xml_report(os.path.abspath(path))
         return xml_coverage
 

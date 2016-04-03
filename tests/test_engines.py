@@ -16,7 +16,7 @@ class MultipleEngineTests(DjangoPluginTestCase):
         engine = {
             'NAME': 'other',
             'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            'DIRS': ['templates'],      # where the tests put things.
+            'DIRS': ['templates2'],         # where the tests put things.
             'OPTIONS': {
                 'debug': True,
             },
@@ -24,6 +24,8 @@ class MultipleEngineTests(DjangoPluginTestCase):
         modified_settings = modify_settings(TEMPLATES={'append': [engine]})
         modified_settings.enable()
         self.addCleanup(modified_settings.disable)
+
+        self.template_directory = 'templates2'
 
     def test_file_template(self):
         self.make_template('Hello')
