@@ -13,6 +13,7 @@ import coverage.plugin
 
 import django
 import django.template
+from django.core.exceptions import ImproperlyConfigured
 from django.template.base import (
     Lexer, TextNode, NodeList, Template,
     TOKEN_BLOCK, TOKEN_MAPPING, TOKEN_TEXT, TOKEN_VAR,
@@ -49,7 +50,16 @@ def check_debug():
     # settings exist, use them, otherwise use the old.
 
     from django.conf import settings
-    templates = getattr(settings, 'TEMPLATES', [])
+
+    try:
+        templates = getattr(settings, 'TEMPLATES', [])
+    except ImproperlyConfigured:
+        # Maybe there are no settings at all.  We are fine with this.  Our
+        # code will need settings, but if this program we're in runs without
+        # settings, then it must be that it never uses templates, and our code
+        # will never try to use the settings anyway.
+        return
+
     if templates:
         for template_settings in templates:
             if template_settings['BACKEND'] != 'django.template.backends.django.DjangoTemplates':
@@ -118,7 +128,7 @@ class DjangoTemplatePlugin(
 ):
 
     def __init__(self):
-        check_debug()
+        self.debug_checked = False
 
         self.django_template_dir = os.path.realpath(
             os.path.dirname(django.template.__file__)
@@ -140,6 +150,10 @@ class DjangoTemplatePlugin(
 
     def file_tracer(self, filename):
         if filename.startswith(self.django_template_dir):
+            if not self.debug_checked:
+                check_debug()
+                self.debug_checked = True
+
             return self
         return None
 

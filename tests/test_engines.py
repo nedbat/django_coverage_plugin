@@ -3,8 +3,6 @@
 
 """Tests of multiple engines for django_coverage_plugin."""
 
-from django_coverage_plugin import DjangoTemplatePluginException
-
 from .plugin_test import DjangoPluginTestCase, django_start_at
 
 
@@ -51,6 +49,5 @@ class MultipleEngineTests(DjangoPluginTestCase):
         self.addCleanup(modified_settings.disable)
 
         self.make_template('Hello')
-        msg = "Template debugging must be enabled in settings."
-        with self.assertRaisesRegexp(DjangoTemplatePluginException, msg):
+        with self.assert_plugin_disabled("Template debugging must be enabled in settings."):
             self.run_django_coverage()

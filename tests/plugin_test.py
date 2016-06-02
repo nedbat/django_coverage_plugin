@@ -3,6 +3,7 @@
 
 """Base classes and helpers for testing the plugin."""
 
+import contextlib
 import os
 import os.path
 import re
@@ -13,6 +14,8 @@ from unittest_mixins import StdStreamCapturingMixin, TempDirMixin
 import coverage
 import django
 from django.conf import settings
+
+from django_coverage_plugin.plugin import DjangoTemplatePlugin
 
 
 def test_settings():
@@ -69,7 +72,7 @@ from django.template.loader import get_template         # noqa
 from django.test import TestCase                        # noqa
 
 
-class DjangoPluginTestCase(TempDirMixin, TestCase):
+class DjangoPluginTestCase(StdStreamCapturingMixin, TempDirMixin, TestCase):
     """A base class for all our tests."""
 
     def setUp(self):
@@ -110,6 +113,8 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
             str: the text produced by the template.
 
         """
+        use_real_context = (django.VERSION < (1, 8))
+
         if options is None:
             options = {'source': ["."]}
 
@@ -122,9 +127,15 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
                 tem = engine.get_template(name or self.template_file)
         elif text is not None:
             tem = Template(text)
+            use_real_context = True
         else:
             tem = get_template(name or self.template_file)
-        ctx = Context(context or {})
+
+        ctx = context or {}
+        if use_real_context:
+            # Before 1.8, render() wanted a Context. After, it wants a dict.
+            ctx = Context(ctx)
+
         self.cov = coverage.Coverage(**options)
         self.append_config("run:plugins", "django_coverage_plugin")
         if 0:
@@ -133,6 +144,11 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
         text = tem.render(ctx)
         self.cov.stop()
         self.cov.save()
+        # Warning! Accessing secret internals!
+        for pl in self.cov.plugins:
+            if isinstance(pl, DjangoTemplatePlugin):
+                if not pl._coverage_enabled:
+                    raise PluginDisabled()
         return text
 
     def append_config(self, option, value):
@@ -209,6 +225,25 @@ class DjangoPluginTestCase(TempDirMixin, TestCase):
         xml_coverage = self.cov.xml_report(os.path.abspath(path))
         return xml_coverage
 
+    @contextlib.contextmanager
+    def assert_plugin_disabled(self, msg):
+        """Assert that our plugin was disabled during an operation."""
+        # self.run_django_coverage will raise PluginDisabled if the plugin
+        # was disabled.
+        with self.assertRaises(PluginDisabled):
+            yield
+        stderr = self.stderr()
+        self.assertIn(
+            "Coverage.py warning: "
+            "Disabling plugin 'django_coverage_plugin.DjangoTemplatePlugin' "
+            "due to an exception:",
+            stderr
+        )
+        self.assertIn(
+            "DjangoTemplatePluginException: " + msg,
+            stderr
+        )
+
 
 def squashed(s):
     """Remove all of the whitespace from s."""
@@ -241,3 +276,8 @@ def django_stop_at(*needed_version):
         return lambda func: func
     else:
         return unittest.skip("Django version must be older")
+
+
+class PluginDisabled(Exception):
+    """Raised if we find that our plugin has been disabled."""
+    pass

@@ -6,8 +6,6 @@
 import django
 from django.test.utils import override_settings
 
-from django_coverage_plugin import DjangoTemplatePluginException
-
 from .plugin_test import DjangoPluginTestCase, test_settings, django_start_at
 
 
@@ -30,26 +28,24 @@ else:
 
 
 class SettingsTest(DjangoPluginTestCase):
+    """Tests of detecting that the settings need to be right for the plugin to work."""
 
     @override_settings(**DEBUG_FALSE_OVERRIDES)
     def test_debug_false(self):
         self.make_template('Hello')
-        msg = "Template debugging must be enabled in settings."
-        with self.assertRaisesRegexp(DjangoTemplatePluginException, msg):
+        with self.assert_plugin_disabled("Template debugging must be enabled in settings."):
             self.run_django_coverage()
 
     @django_start_at(1, 8)
     @override_settings(**NO_OPTIONS_OVERRIDES)
     def test_no_options(self):
         self.make_template('Hello')
-        msg = "Template debugging must be enabled in settings."
-        with self.assertRaisesRegexp(DjangoTemplatePluginException, msg):
+        with self.assert_plugin_disabled("Template debugging must be enabled in settings."):
             self.run_django_coverage()
 
     @django_start_at(1, 8)
     @override_settings(**OTHER_ENGINE_OVERRIDES)
     def test_other_engine(self):
         self.make_template('Hello')
-        msg = "Can't use non-Django templates."
-        with self.assertRaisesRegexp(DjangoTemplatePluginException, msg):
+        with self.assert_plugin_disabled("Can't use non-Django templates."):
             self.run_django_coverage()
