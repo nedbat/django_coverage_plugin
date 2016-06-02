@@ -54,6 +54,15 @@ Changes
 ~~~~~~~
 
 
+v1.3.1 --- 2016-06-02
+---------------------
+
+Settings are read slightly differently, so as to not interfere with programs
+that don't need settings.  Fixes `issue 18`_.
+
+.. _issue 18: https://github.com/nedbat/django_coverage_plugin/issues/18
+
+
 v1.3 --- 2016-04-03
 -------------------
 
