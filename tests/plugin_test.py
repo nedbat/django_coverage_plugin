@@ -8,9 +8,9 @@ import os.path
 import re
 import unittest
 
-import coverage
-from coverage.test_helpers import TempDirMixin
+from unittest_mixins import StdStreamCapturingMixin, TempDirMixin
 
+import coverage
 import django
 from django.conf import settings
 
