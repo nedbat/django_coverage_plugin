@@ -55,20 +55,17 @@ def check_debug():
     if not settings.configured:
         return False
 
-    try:
-        templates = getattr(settings, 'TEMPLATES', [])
-    except ImproperlyConfigured:
-        # Maybe there are no settings at all.  We are fine with this.  Our
-        # code will need settings, but if this program we're in runs without
-        # settings, then it must be that it never uses templates, and our code
-        # will never try to use the settings anyway.
-        return True
-
-    if templates:
-        for template_settings in templates:
-            if template_settings['BACKEND'] != 'django.template.backends.django.DjangoTemplates':
-                raise DjangoTemplatePluginException("Can't use non-Django templates.")
-            if not template_settings.get('OPTIONS', {}).get('debug', False):
+    if django.VERSION >= (1, 8):
+        # Django 1.8+ handles both old and new-style settings and converts them
+        # into template engines, so we don't need to depend on settings values
+        # directly
+        for engine in django.template.engines.all():
+            if not isinstance(engine, django.template.backends.django.DjangoTemplates):
+                raise DjangoTemplatePluginException(
+                    "Can't use non-Django templates. Found '%s': %s" %
+                    (engine.name, engine)
+                )
+            if not engine.engine.debug:
                 raise DjangoTemplatePluginException(
                     "Template debugging must be enabled in settings."
                 )
