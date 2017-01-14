@@ -157,6 +157,8 @@ class DjangoTemplatePlugin(
     def file_tracer(self, filename):
         if filename.startswith(self.django_template_dir):
             if not self.debug_checked:
+                # Keep calling check_debug until it returns True, which it
+                # will only do after settings have been configured
                 self.debug_checked = check_debug()
 
             return self
