@@ -64,7 +64,7 @@ def check_debug():
         for template_settings in templates:
             if template_settings['BACKEND'] != 'django.template.backends.django.DjangoTemplates':
                 raise DjangoTemplatePluginException("Can't use non-Django templates.")
-            if not template_settings.get('OPTIONS', {}).get('debug', False):
+            if not template_settings.get('OPTIONS', {}).get('debug', settings.DEBUG):
                 raise DjangoTemplatePluginException(
                     "Template debugging must be enabled in settings."
                 )
