@@ -43,6 +43,7 @@ def check_debug():
     to do its work.  Check that the setting is correct, and raise an exception
     if it is not.
 
+    Returns True if the debug check was performed, False otherwise
     """
     # The settings for templates changed in Django 1.8 from TEMPLATE_DEBUG to
     # TEMPLATES[..]['debug'].  Django 1.9 tolerated both forms, 1.10 insists on
@@ -51,6 +52,9 @@ def check_debug():
 
     from django.conf import settings
 
+    if not settings.configured:
+        return False
+
     try:
         templates = getattr(settings, 'TEMPLATES', [])
     except ImproperlyConfigured:
@@ -58,7 +62,7 @@ def check_debug():
         # code will need settings, but if this program we're in runs without
         # settings, then it must be that it never uses templates, and our code
         # will never try to use the settings anyway.
-        return
+        return True
 
     if templates:
         for template_settings in templates:
@@ -74,6 +78,8 @@ def check_debug():
             raise DjangoTemplatePluginException(
                 "Template debugging must be enabled in settings."
             )
+
+    return True
 
 
 if django.VERSION >= (1, 9):
@@ -151,8 +157,7 @@ class DjangoTemplatePlugin(
     def file_tracer(self, filename):
         if filename.startswith(self.django_template_dir):
             if not self.debug_checked:
-                check_debug()
-                self.debug_checked = True
+                self.debug_checked = check_debug()
 
             return self
         return None
