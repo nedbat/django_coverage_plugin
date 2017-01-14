@@ -61,6 +61,7 @@ def test_settings():
 
     return the_settings
 
+
 settings.configure(**test_settings())
 
 if hasattr(django, "setup"):
