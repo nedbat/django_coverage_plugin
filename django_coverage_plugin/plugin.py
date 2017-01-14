@@ -13,7 +13,6 @@ import coverage.plugin
 
 import django
 import django.template
-from django.core.exceptions import ImproperlyConfigured
 from django.template.base import (
     Lexer, TextNode, NodeList, Template,
     TOKEN_BLOCK, TOKEN_MAPPING, TOKEN_TEXT, TOKEN_VAR,
@@ -45,11 +44,6 @@ def check_debug():
 
     Returns True if the debug check was performed, False otherwise
     """
-    # The settings for templates changed in Django 1.8 from TEMPLATE_DEBUG to
-    # TEMPLATES[..]['debug'].  Django 1.9 tolerated both forms, 1.10 insists on
-    # the new form.  Don't try to be version-specific here.  If the new
-    # settings exist, use them, otherwise use the old.
-
     from django.conf import settings
 
     if not settings.configured:
@@ -58,7 +52,7 @@ def check_debug():
     if django.VERSION >= (1, 8):
         # Django 1.8+ handles both old and new-style settings and converts them
         # into template engines, so we don't need to depend on settings values
-        # directly
+        # directly and can look at the resulting configured objects
         for engine in django.template.engines.all():
             if not isinstance(engine, django.template.backends.django.DjangoTemplates):
                 raise DjangoTemplatePluginException(
