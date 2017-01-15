@@ -10,8 +10,10 @@ A `coverage.py`_ plugin to measure the coverage of Django templates.
 | |license| |versions| |djversions| |status|
 | |kit| |downloads|
 
-Supported Python versions are 2.7, 3.4, and 3.5.  Supported Django versions are
-1.4 through 1.9.
+Supported Python versions are 2.7, 3.4, 3.5 and 3.6.
+Supported Django versions are 1.4 through 1.10.
+Supported coverage.py versions are 4.0 and higher.
+
 
 The plugin is pip installable::
 
@@ -23,7 +25,7 @@ To run it, add this setting to your .coveragerc file::
     plugins =
         django_coverage_plugin
 
-Then run your tests under coverage.py. It requires coverage.py 4.0 or later.
+Then run your tests under coverage.py.
 
 You will see your templates listed in your coverage report along with your
 Python modules.
@@ -43,6 +45,8 @@ template files are included in the report.
 Caveats
 ~~~~~~~
 
+Support for Django versions 1.4 through 1.7 should be considered deprecated.
+
 Files included by the ``{% ssi %}`` tag are not included in the coverage
 measurements.
 
@@ -52,6 +56,22 @@ plural text, so both are marked as used if the tag is used.
 
 Changes
 ~~~~~~~
+
+
+v1.4 --- 2017-01-15
+---------------------
+
+Django 1.10.5 is now supported.
+
+Checking settings configuration is deferred so that settings.py is included
+in coverage reporting.  Fixes `issue 28`_.
+
+Only the django.template.backends.django.DjangoTemplates template engine is
+supported, and it must be configured with ['OPTIONS']['debug'] = True.  Fixes
+`issue 27`_.
+
+.. _issue 28: https://github.com/nedbat/django_coverage_plugin/issues/28
+.. _issue 27: https://github.com/nedbat/django_coverage_plugin/issues/27
 
 
 v1.3.1 --- 2016-06-02
