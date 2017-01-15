@@ -67,10 +67,12 @@ settings.configure(**test_settings())
 if hasattr(django, "setup"):
     django.setup()
 
+from django.template import Context, Template  # noqa
+from django.template.loader import get_template  # noqa
+from django.test import TestCase  # noqa
 
-from django.template import Context, Template           # noqa
-from django.template.loader import get_template         # noqa
-from django.test import TestCase                        # noqa
+if django.VERSION >= (1, 8):
+    from django.template.backends.django import DjangoTemplates  # noqa
 
 
 class DjangoPluginTestCase(StdStreamCapturingMixin, TempDirMixin, TestCase):
