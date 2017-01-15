@@ -53,11 +53,16 @@ def check_debug():
         # Django 1.8+ handles both old and new-style settings and converts them
         # into template engines, so we don't need to depend on settings values
         # directly and can look at the resulting configured objects
+        if not hasattr(django.template.backends, "django"):
+            raise DjangoTemplatePluginException("Can't use non-Django templates.")
+
+        if not hasattr(django.template.backends.django, "DjangoTemplates"):
+            raise DjangoTemplatePluginException("Can't use non-Django templates.")
+
         for engine in django.template.engines.all():
             if not isinstance(engine, django.template.backends.django.DjangoTemplates):
                 raise DjangoTemplatePluginException(
-                    "Can't use non-Django templates. Found '%s': %s" %
-                    (engine.name, engine)
+                    "Can't use non-Django templates."
                 )
             if not engine.engine.debug:
                 raise DjangoTemplatePluginException(
