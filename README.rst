@@ -11,7 +11,9 @@ A `coverage.py`_ plugin to measure the coverage of Django templates.
 | |kit| |downloads|
 
 Supported Python versions are 2.7, 3.4, 3.5 and 3.6.
+
 Supported Django versions are 1.4 through 1.10.
+
 Supported coverage.py versions are 4.0 and higher.
 
 
@@ -66,7 +68,7 @@ Django 1.10.5 is now supported.
 Checking settings configuration is deferred so that settings.py is included
 in coverage reporting.  Fixes `issue 28`_.
 
-Only the django.template.backends.django.DjangoTemplates template engine is
+Only the ``django.template.backends.django.DjangoTemplates`` template engine is
 supported, and it must be configured with ``['OPTIONS']['debug'] = True``.  Fixes
 `issue 27`_.
 
