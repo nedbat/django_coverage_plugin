@@ -62,8 +62,8 @@ Changes
 ~~~~~~~
 
 
-v1.4 --- 2017-01-15
----------------------
+v1.4 --- 2017-01-16
+-------------------
 
 Django 1.10.5 is now supported.
 
@@ -71,8 +71,8 @@ Checking settings configuration is deferred so that settings.py is included
 in coverage reporting.  Fixes `issue 28`_.
 
 Only the ``django.template.backends.django.DjangoTemplates`` template engine is
-supported, and it must be configured with ``['OPTIONS']['debug'] = True``.  Fixes
-`issue 27`_.
+supported, and it must be configured with ``['OPTIONS']['debug'] = True``.
+Fixes `issue 27`_.
 
 .. _issue 28: https://github.com/nedbat/django_coverage_plugin/issues/28
 .. _issue 27: https://github.com/nedbat/django_coverage_plugin/issues/27
