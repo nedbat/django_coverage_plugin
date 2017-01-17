@@ -13,7 +13,6 @@ import coverage.plugin
 
 import django
 import django.template
-from django.core.exceptions import ImproperlyConfigured
 from django.template.base import (
     Lexer, TextNode, NodeList, Template,
     TOKEN_BLOCK, TOKEN_MAPPING, TOKEN_TEXT, TOKEN_VAR,
@@ -43,28 +42,29 @@ def check_debug():
     to do its work.  Check that the setting is correct, and raise an exception
     if it is not.
 
+    Returns True if the debug check was performed, False otherwise
     """
-    # The settings for templates changed in Django 1.8 from TEMPLATE_DEBUG to
-    # TEMPLATES[..]['debug'].  Django 1.9 tolerated both forms, 1.10 insists on
-    # the new form.  Don't try to be version-specific here.  If the new
-    # settings exist, use them, otherwise use the old.
-
     from django.conf import settings
 
-    try:
-        templates = getattr(settings, 'TEMPLATES', [])
-    except ImproperlyConfigured:
-        # Maybe there are no settings at all.  We are fine with this.  Our
-        # code will need settings, but if this program we're in runs without
-        # settings, then it must be that it never uses templates, and our code
-        # will never try to use the settings anyway.
-        return
+    if not settings.configured:
+        return False
 
-    if templates:
-        for template_settings in templates:
-            if template_settings['BACKEND'] != 'django.template.backends.django.DjangoTemplates':
-                raise DjangoTemplatePluginException("Can't use non-Django templates.")
-            if not template_settings.get('OPTIONS', {}).get('debug', False):
+    if django.VERSION >= (1, 8):
+        # Django 1.8+ handles both old and new-style settings and converts them
+        # into template engines, so we don't need to depend on settings values
+        # directly and can look at the resulting configured objects
+        if not hasattr(django.template.backends, "django"):
+            raise DjangoTemplatePluginException("Can't use non-Django templates.")
+
+        if not hasattr(django.template.backends.django, "DjangoTemplates"):
+            raise DjangoTemplatePluginException("Can't use non-Django templates.")
+
+        for engine in django.template.engines.all():
+            if not isinstance(engine, django.template.backends.django.DjangoTemplates):
+                raise DjangoTemplatePluginException(
+                    "Can't use non-Django templates."
+                )
+            if not engine.engine.debug:
                 raise DjangoTemplatePluginException(
                     "Template debugging must be enabled in settings."
                 )
@@ -74,6 +74,8 @@ def check_debug():
             raise DjangoTemplatePluginException(
                 "Template debugging must be enabled in settings."
             )
+
+    return True
 
 
 if django.VERSION >= (1, 9):
@@ -151,8 +153,9 @@ class DjangoTemplatePlugin(
     def file_tracer(self, filename):
         if filename.startswith(self.django_template_dir):
             if not self.debug_checked:
-                check_debug()
-                self.debug_checked = True
+                # Keep calling check_debug until it returns True, which it
+                # will only do after settings have been configured
+                self.debug_checked = check_debug()
 
             return self
         return None
