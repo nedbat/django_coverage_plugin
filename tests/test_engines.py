@@ -3,16 +3,14 @@
 
 """Tests of multiple engines for django_coverage_plugin."""
 
-from .plugin_test import DjangoPluginTestCase, django_start_at
+from .plugin_test import DjangoPluginTestCase
+from django.test import modify_settings
 
 
-@django_start_at(1, 8)
 class MultipleEngineTests(DjangoPluginTestCase):
     def setUp(self):
         super(MultipleEngineTests, self).setUp()
 
-        # Move to module imports once we drop support for Django < 1.7
-        from django.test import modify_settings
         engine = {
             'NAME': 'other',
             'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -38,7 +36,6 @@ class MultipleEngineTests(DjangoPluginTestCase):
         self.assertEqual(text, 'Hello')
 
     def test_third_engine_not_debug(self):
-        from django.test import modify_settings
         engine3 = {
             'NAME': 'notdebug',
             'BACKEND': 'django.template.backends.django.DjangoTemplates',

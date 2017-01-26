@@ -35,29 +35,22 @@ def test_settings():
         'ROOT_URLCONF': 'tests',
     }
 
-    if django.VERSION >= (1, 8):
-        the_settings.update({
-            'TEMPLATES': [
-                {
-                    'BACKEND': 'django.template.backends.django.DjangoTemplates',
-                    'DIRS': ['templates'],      # where the tests put things.
-                    'OPTIONS': {
-                        'debug': True,
-                    },
+    the_settings.update({
+        'TEMPLATES': [
+            {
+                'BACKEND': 'django.template.backends.django.DjangoTemplates',
+                'DIRS': ['templates'],      # where the tests put things.
+                'OPTIONS': {
+                    'debug': True,
                 },
-            ],
-        })
+            },
+        ],
+    })
 
-        if django.VERSION < (1, 10):
-            # for {% ssi %}
-            the_settings['TEMPLATES'][0]['OPTIONS']['allowed_include_roots'] = ['/']
+    if django.VERSION < (1, 10):
+        # for {% ssi %}
+        the_settings['TEMPLATES'][0]['OPTIONS']['allowed_include_roots'] = ['/']
 
-    else:
-        the_settings.update({
-            'ALLOWED_INCLUDE_ROOTS': ['/'],     # for {% ssi %}
-            'TEMPLATE_DEBUG': True,
-            'TEMPLATE_DIRS': ['templates'],     # where the tests put things.
-        })
 
     return the_settings
 
@@ -68,11 +61,9 @@ if hasattr(django, "setup"):
     django.setup()
 
 from django.template import Context, Template  # noqa
+from django.template.backends.django import DjangoTemplates  # noqa
 from django.template.loader import get_template  # noqa
 from django.test import TestCase  # noqa
-
-if django.VERSION >= (1, 8):
-    from django.template.backends.django import DjangoTemplates  # noqa
 
 
 class DjangoPluginTestCase(StdStreamCapturingMixin, TempDirMixin, TestCase):
@@ -256,7 +247,7 @@ def squashed(s):
 def django_start_at(*needed_version):
     """A decorator for tests to require a minimum version of Django.
 
-    @django_start_at(1, 8)      # Don't run the test on 1.7 or lower.
+    @django_start_at(1, 10)      # Don't run the test on 1.10 or lower.
     def test_thing(self):
         ...
 
@@ -267,10 +258,10 @@ def django_start_at(*needed_version):
         return unittest.skip("Django version must be newer")
 
 
-def django_stop_at(*needed_version):
+def django_stop_before(*needed_version):
     """A decorator for tests to require a maximum version of Django.
 
-    @django_stop_at(1, 8)       # Don't run the test on 1.8 or higher.
+    @django_stop_before(1, 10)       # Don't run the test on 1.10 or higher.
     def test_thing(self):
         ...
 
