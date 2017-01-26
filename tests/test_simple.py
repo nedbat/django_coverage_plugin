@@ -175,7 +175,6 @@ class OtherTest(DjangoPluginTestCase):
         self.assertEqual(text, "Now:\nnow\n.\n")
         self.assert_analysis([1, 2, 3])
 
-    @django_start_at(1, 8)
     def test_now_as(self):
         self.make_template("""\
             {% now "\\n\\o\\w" as right_now %}
