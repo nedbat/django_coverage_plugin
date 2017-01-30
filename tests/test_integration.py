@@ -54,17 +54,11 @@ TEST_VIEWS_FILE_TEXT = """
 import django
 from django.test import TestCase
 
-if django.VERSION >= (1, 8):
-    from app_template_render.views import target_view
-
 class TestViews(TestCase):
    def test_view_target_view(self):
         from django.core.urlresolvers import reverse
 
-        if django.VERSION < (1, 8):
-            target_view = "app_template_render.views.target_view"
-        else:
-            global target_view
+        %(define_target_view)s
 
         resp = self.client.get(reverse(target_view))
         for expected in['1212', 'DcDc']:
@@ -79,16 +73,25 @@ class IntegrationTest(DjangoPluginTestCase):
 
     def setUp(self):
         self.python = os.path.abspath(os.environ['_'])
-        self.env_bin = os.path.dirname(self.python)
+        #print("PYTHON:", self.python)
+        if ".tox" in self.python:
+            self.env_bin = os.path.dirname(self.python)
+        else:
+            self.env_bin = ""
+            self.python = ""
 
     def set_cwd(self, path):
         self.cwd = path
 
     def _cmd(self, *args, **kwargs):
+        #print args, kwargs
         try:
-            return subprocess.check_output(args, cwd=self.cwd, stderr=subprocess.STDOUT, **kwargs).strip()
+            output = subprocess.check_output(args, cwd=self.cwd, stderr=subprocess.STDOUT, **kwargs)
+            return output.decode("utf-8").strip()
         except subprocess.CalledProcessError as e:
-            raise Exception("Called Processed Error:\n  cmd: %s\n  exc: %s\n  output:\n%s" % (args, e, e.output))
+            raise Exception("Called Processed Error:\n  cmd: %s\n  exc: %s\ncwd: %s\n  output:\n%s" % (args, e, self.cwd, e.output))
+        except OSError as e:
+            raise Exception("OS Error:\n  cmd: %s\n  exc: %s\ncwd: %s\n" % (args, e, self.cwd))
 
     def _pycmd(self, *args, **kwargs):
         args = [self.python] + list(args)
@@ -113,17 +116,30 @@ class IntegrationTest(DjangoPluginTestCase):
             with open(self.settings_file, "w") as f:
                f.write(data)
         self._add_installed_app("django_coverage_plugin")
-        self.addCleanup(shutil.rmtree, self.project_dir)
+        #self.addCleanup(shutil.rmtree, self.project_dir)
         return output
 
     def _add_installed_app(self, app_name):
         with open(self.settings_file) as f:
             settings_data = f.read()
-        before, after = settings_data.split("INSTALLED_APPS = (", 1)
-        apps, after = after.split(")", 1)
+        #self._print_file(settings_data, self.settings_file)
+
+        sep_open, sep_close = ("(", ")") if django.VERSION <= (1, 8) else ("[", "]")
+        before, after = settings_data.split("INSTALLED_APPS = %s" % sep_open, 1)
+        apps, after = after.split(sep_close, 1)
         apps = "%s\n    '%s',\n" % (apps, app_name)
-        settings_data = "%sINSTALLED_APPS = (%s)%s" % (before, apps, after)
+        settings_data = "%sINSTALLED_APPS = %s%s%s%s" % (before, sep_open, apps, sep_close, after)
+
+        if django.VERSION >= (1, 8):
+            before, after = settings_data.split("OPTIONS': {", 1)
+            settings_data = "%sOPTIONS': {'debug':True, %s" % (before, after)
+
         self._save_py_file(self.settings_file, settings_data)
+
+    def _print_file(self, file_data, file_name):
+        print("\n-------- begin: %s  --------" % file_name)
+        print(file_data)
+        print("-------- end: %s  --------\n\n" % file_name)
 
     def _save_py_file(self, path, data, show_data=False):
         with open(path, "w") as f:
@@ -140,10 +156,12 @@ class IntegrationTest(DjangoPluginTestCase):
 
     def _run_coverage(self, *args):
         self.set_cwd(self.project_dir)
-        output = self._cmd("coverage", "run", "--rcfile", self.config_file, *args)
+        output = self._cmd_global("coverage", "run", "--rcfile", self.config_file, *args)
+        print(output)
+        self.assertNotIn("Disabling plugin", output)
         env = os.environ.copy()
         env['DJANGO_SETTINGS_MODULE'] = self.settings_file
-        coverage_report = self._cmd("coverage", "report", "-m",  "--rcfile", self.config_file, env=env)
+        coverage_report = self._cmd_global("coverage", "report", "-m",  "--rcfile", self.config_file, env=env)
         coverage_report = self.parse_coverage_report(coverage_report)
         return output, coverage_report
 
@@ -155,7 +173,12 @@ class IntegrationTest(DjangoPluginTestCase):
         #    print f.read()
         self.config_file = self._add_project_file(COVERAGE_CFG_FILE_TEXT, "coverage.cfg")
         self.template_file = self._add_project_file(TEMPLATE_FILE_TEXT, app_name, "templates", "target_template.html")
-        self.test_views_file = self._add_project_file(TEST_VIEWS_FILE_TEXT, app_name, "test_views.py")
+        if django.VERSION < (1, 8):
+            define_target_view = '"app_template_render.views.target_view"'
+        else:
+            define_target_view = 'from app_template_render.views import target_view'
+        test_views_text = TEST_VIEWS_FILE_TEXT % locals()
+        self.test_views_file = self._add_project_file(test_views_text, app_name, "test_views.py")
         self.views_file = os.path.join(self.project_dir, app_name, "views.py")
         self.urls_file = os.path.join(self.project_dir, project_name, "urls.py")
 
@@ -208,7 +231,12 @@ class IntegrationTest(DjangoPluginTestCase):
         self.assertIsCovered(coverage_report, "integration_template_render/settings.py")
         self.assertIsCovered(coverage_report, "integration_template_render/__init__.py")
         self.assertIsCovered(coverage_report, "integration_template_render/urls.py")
-        self.assertIsCovered(coverage_report, "manage.py")
+
+        if django.VERSION >= (1, 10):
+            expect_missing, expect_pct = 6, 54
+        else:
+            expect_missing, expect_pct = 0, 0
+        self.assertIsCovered(coverage_report, "manage.py", expect_missing, expect_pct)
         self.assertIsCovered(coverage_report, "app_template_render/__init__.py")
         self.assertIsCovered(coverage_report, "app_template_render/views.py")
         self.assertIsCovered(coverage_report, "app_template_render/templates/target_template.html")
@@ -217,6 +245,16 @@ class IntegrationTest(DjangoPluginTestCase):
         fmt = u"%s [%s] expected: %%r, got %%r"
         info = cov_report[path]
         fmt = fmt % (path, info)
+        if info.num_missing != expect_missing or info.pct != expect_pct:
+            missing_line_numbers = set(info.missing_line_numbers())
+            full_path = os.path.join(self.project_dir, path)
+            print("FILE:", full_path)
+            with open(full_path) as f:
+                for idx, line in enumerate(f):
+                    line_no = idx + 1
+                    status = "M" if line_no in missing_line_numbers else " "
+                    print("%s %4s  %s" % (status, line_no, line[:-1]))
+
         self.assertEqual(info.num_missing, expect_missing, fmt % (expect_missing, info.num_missing))
         self.assertEqual(info.pct, expect_pct, fmt % (expect_pct, info.pct))
 
@@ -229,10 +267,22 @@ class IntegrationTest(DjangoPluginTestCase):
                 self.missing = missing
 
             def __unicode__(self):
-                return u"%s/%s/%s/%s" % (self.num_lines, self.num_missing, self.pct, self.missing)
+                return u"%s/%s/%s%%%%/%s" % (self.num_lines, self.num_missing, self.pct, self.missing)
 
             def __repr__(self):
-                return u"ReportInfo(%r, %r, %r, %r)" % (self.num_lines, self.num_missing, self.pct, self.missing)
+                return u"ReportInfo(num_lines=%r, num_missing=%r, pct=%r, missing=%r)" % (self.num_lines, self.num_missing, self.pct, self.missing)
+
+            def missing_line_numbers(self):
+                for chunk in self.missing.split(","):
+                    chunk = chunk.strip()
+                    if not chunk:
+                        continue
+                    elif "-" in chunk:
+                        start, end = chunk.split("-", 1)
+                        for i in range(int(start), int(end)):
+                            yield i
+                    else:
+                        yield int(chunk)
 
         report_dict = {}
         for line in report.splitlines():

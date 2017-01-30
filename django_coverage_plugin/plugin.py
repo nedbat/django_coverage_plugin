@@ -47,9 +47,16 @@ def check_debug():
     from django.conf import settings
 
     if not settings.configured:
+        #print("check_debug: settings not configured")
         return False
 
     if django.VERSION >= (1, 8):
+
+        from django.apps import apps
+        if not apps.ready:
+            #print("check_debug: apps not ready")
+            return False
+
         # Django 1.8+ handles both old and new-style settings and converts them
         # into template engines, so we don't need to depend on settings values
         # directly and can look at the resulting configured objects
@@ -57,11 +64,14 @@ def check_debug():
         # django.template.backends.django gets loaded lazily, so return false
         # until they've been loaded
         if not hasattr(django.template, "backends"):
+            #print("check_debug: no 'backends' in django.template")
             return False
         if not hasattr(django.template.backends, "django"):
+            #print("check_debug: no 'django' in django.template.backends")
             return False
 
         if not hasattr(django.template.backends.django, "DjangoTemplates"):
+            #print("check_debug: no 'DjangoTemplates' in django.template.backends.django")
             raise DjangoTemplatePluginException("Can't use non-Django templates.")
 
         for engine in django.template.engines.all():
