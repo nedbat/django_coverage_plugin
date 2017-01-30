@@ -12,6 +12,7 @@ def index(request):
     """A bogus view to use in the urls below."""
     pass
 
+
 urlpatterns = [
     url(r'^home$', index, name='index'),
 ]
