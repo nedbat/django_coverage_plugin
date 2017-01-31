@@ -219,6 +219,9 @@ class IntegrationTest(DjangoPluginTestCase):
         self._save_py_file(self.urls_file, urls_data)
 
     def test_template_render(self):
+        if django.VERSION <= (1,7):
+            pass
+
         self._create_django_project("integration_template_render", "app_template_render")
 
         output, coverage_report = self._run_coverage("manage.py", "test", "app_template_render")
