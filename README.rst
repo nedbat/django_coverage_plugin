@@ -61,6 +61,14 @@ plural text, so both are marked as used if the tag is used.
 Changes
 ~~~~~~~
 
+v1.4.2 --- 2017-01-30
+---------------------
+
+Fixes `issue 36`_, and another instance of `issue 32`_, which are the result of an initialization order problem.
+
+.. _issue 32: https://github.com/nedbat/django_coverage_plugin/issues/32
+.. _issue 36: https://github.com/nedbat/django_coverage_plugin/issues/3r
+
 
 v1.4.1 --- 2017-01-25
 ---------------------

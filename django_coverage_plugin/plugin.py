@@ -54,6 +54,12 @@ def check_debug():
         # into template engines, so we don't need to depend on settings values
         # directly and can look at the resulting configured objects
 
+        # I _think_ this check is all that's needed and the 3 "hasattr" checks
+        # below can be removed, but it's not clear how to verify that
+        from django.apps import apps
+        if not apps.ready:
+            return False
+
         # django.template.backends.django gets loaded lazily, so return false
         # until they've been loaded
         if not hasattr(django.template, "backends"):
