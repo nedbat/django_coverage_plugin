@@ -7,7 +7,7 @@ import os
 import subprocess
 import shutil
 
-from .plugin_test import DjangoPluginTestCase
+from .plugin_test import DjangoPluginTestCase, django_start_at
 
 import django
 
@@ -124,8 +124,13 @@ class IntegrationTest(DjangoPluginTestCase):
             settings_data = f.read()
         #self._print_file(settings_data, self.settings_file)
 
-        sep_open, sep_close = ("(", ")") if django.VERSION <= (1, 8) else ("[", "]")
-        before, after = settings_data.split("INSTALLED_APPS = %s" % sep_open, 1)
+        sep_open, sep_close = ("(", ")") if django.VERSION < (1, 9) else ("[", "]")
+        try:
+            before, after = settings_data.split("INSTALLED_APPS = %s" % sep_open, 1)
+        except Exception:
+            self._print_file(settings_data, self.settings_file)
+            raise
+
         apps, after = after.split(sep_close, 1)
         apps = "%s\n    '%s',\n" % (apps, app_name)
         settings_data = "%sINSTALLED_APPS = %s%s%s%s" % (before, sep_open, apps, sep_close, after)
@@ -218,10 +223,8 @@ class IntegrationTest(DjangoPluginTestCase):
             urls_data = urls_data.replace("]", fmt % locals())
         self._save_py_file(self.urls_file, urls_data)
 
+    @django_start_at(1, 8)
     def test_template_render(self):
-        if django.VERSION <= (1, 7):
-            return
-
         self._create_django_project("integration_template_render", "app_template_render")
 
         output, coverage_report = self._run_coverage("manage.py", "test", "app_template_render")
@@ -238,7 +241,7 @@ class IntegrationTest(DjangoPluginTestCase):
         if django.VERSION >= (1, 10):
             expect_missing, expect_pct = 6, 54
         else:
-            expect_missing, expect_pct = 0, 0
+            expect_missing, expect_pct = 0, 100
         self.assertIsCovered(coverage_report, "manage.py", expect_missing, expect_pct)
         self.assertIsCovered(coverage_report, "app_template_render/__init__.py")
         self.assertIsCovered(coverage_report, "app_template_render/views.py")
