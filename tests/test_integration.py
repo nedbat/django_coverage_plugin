@@ -60,7 +60,7 @@ from django.test import TestCase
 
 class TestViews(TestCase):
    def test_view_target_view(self):
-        from django.core.urlresolvers import reverse
+        %(import_reverse)s
 
         %(define_target_view)s
 
@@ -197,12 +197,19 @@ class IntegrationTest(DjangoPluginTestCase):
         #    print f.read()
         self.config_file = self._add_project_file(COVERAGE_CFG_FILE_TEXT, "coverage.cfg")
         self.template_file = self._add_project_file(TEMPLATE_FILE_TEXT, app_name, "templates", "target_template.html")
+
         if django.VERSION < (1, 8):
             define_target_view = '"app_template_render.views.target_view"'
         else:
             define_target_view = 'from app_template_render.views import target_view'
+        if django.VERSION < (1, 10):
+            import_reverse = "from django.core.urlresolvers import reverse"
+        else:
+            import_reverse = "from django.urls import reverse"
+
         test_views_text = TEST_VIEWS_FILE_TEXT % locals()
         self.test_views_file = self._add_project_file(test_views_text, app_name, "test_views.py")
+
         self.views_file = os.path.join(self.project_dir, app_name, "views.py")
         self.urls_file = os.path.join(self.project_dir, project_name, "urls.py")
         self.test_views_file = self._add_project_file("", app_name, "templatetags", "__init__.py")
@@ -259,10 +266,14 @@ class IntegrationTest(DjangoPluginTestCase):
         self.assertIsCovered(coverage_report, "integration_template_render/__init__.py")
         self.assertIsCovered(coverage_report, "integration_template_render/urls.py")
 
-        if django.VERSION >= (1, 10):
+        if django.VERSION < (1, 10):
+            expect_missing, expect_pct = 0, 100
+        elif django.VERSION < (2, 0):
             expect_missing, expect_pct = 6, 54
         else:
-            expect_missing, expect_pct = 0, 100
+            # This is django-tip, so it's likely to change over time.
+            expect_missing, expect_pct = 2, 78
+
         self.assertIsCovered(coverage_report, "manage.py", expect_missing, expect_pct)
         self.assertIsCovered(coverage_report, "app_template_render/__init__.py")
         self.assertIsCovered(coverage_report, "app_template_render/views.py")
@@ -307,7 +318,7 @@ class IntegrationTest(DjangoPluginTestCase):
                         continue
                     elif "-" in chunk:
                         start, end = chunk.split("-", 1)
-                        for i in range(int(start), int(end)):
+                        for i in range(int(start), int(end+1)):
                             yield i
                     else:
                         yield int(chunk)
