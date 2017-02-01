@@ -86,13 +86,11 @@ def lower(value):
 """
 
 
-
 class IntegrationTest(DjangoPluginTestCase):
     """Tests greenfield settings initializations and other weirdnesses"""
 
     def setUp(self):
         self.python = os.path.abspath(os.environ['_'])
-        #print("PYTHON:", self.python)
         if ".tox" in self.python:
             self.env_bin = os.path.dirname(self.python)
         else:
@@ -103,14 +101,15 @@ class IntegrationTest(DjangoPluginTestCase):
         self.cwd = path
 
     def _cmd(self, *args, **kwargs):
-        #print args, kwargs
         try:
             output = subprocess.check_output(args, cwd=self.cwd, stderr=subprocess.STDOUT, **kwargs)
             return output.decode("utf-8").strip()
         except subprocess.CalledProcessError as e:
-            raise Exception("Called Processed Error:\n  cmd: %s\n  exc: %s\ncwd: %s\n  output:\n%s" % (args, e, self.cwd, e.output))
+            fmt = "Called Processed Error:\n  cmd: %s\n  exc: %s\ncwd: %s\n  output:\n%s"
+            raise Exception(fmt % (args, e, self.cwd, e.output))
         except OSError as e:
-            raise Exception("OS Error:\n  cmd: %s\n  exc: %s\ncwd: %s\n" % (args, e, self.cwd))
+            fmt = "OS Error:\n  cmd: %s\n  exc: %s\ncwd: %s\n"
+            raise Exception(fmt % (args, e, self.cwd))
 
     def _pycmd(self, *args, **kwargs):
         args = [self.python] + list(args)
@@ -133,15 +132,14 @@ class IntegrationTest(DjangoPluginTestCase):
                 data = f.read()
             data = data.replace("'django.db.backends.'", "'django.db.backends.sqlite3'")
             with open(self.settings_file, "w") as f:
-               f.write(data)
+                f.write(data)
         self._add_installed_app("django_coverage_plugin")
-        #self.addCleanup(shutil.rmtree, self.project_dir)
+        self.addCleanup(shutil.rmtree, self.project_dir)
         return output
 
     def _add_installed_app(self, app_name):
         with open(self.settings_file) as f:
             settings_data = f.read()
-        #self._print_file(settings_data, self.settings_file)
 
         sep_open, sep_close = ("(", ")") if django.VERSION < (1, 9) else ("[", "]")
         try:
@@ -185,7 +183,10 @@ class IntegrationTest(DjangoPluginTestCase):
         self.assertNotIn("Disabling plugin", output)
         env = os.environ.copy()
         env['DJANGO_SETTINGS_MODULE'] = self.settings_file
-        coverage_report = self._cmd_global("coverage", "report", "-m",  "--rcfile", self.config_file, env=env)
+        coverage_report = self._cmd_global(
+            "coverage", "report", "-m", "--rcfile", self.config_file,
+            env=env
+        )
         coverage_report = self.parse_coverage_report(coverage_report)
         return output, coverage_report
 
@@ -193,10 +194,10 @@ class IntegrationTest(DjangoPluginTestCase):
         self.cwd = os.getcwd()
         self._start_project(project_name)
         self._start_app(app_name)
-        #with open(self.settings_file) as f:
-        #    print f.read()
         self.config_file = self._add_project_file(COVERAGE_CFG_FILE_TEXT, "coverage.cfg")
-        self.template_file = self._add_project_file(TEMPLATE_FILE_TEXT, app_name, "templates", "target_template.html")
+        self.template_file = self._add_project_file(
+            TEMPLATE_FILE_TEXT, app_name, "templates", "target_template.html"
+        )
 
         if django.VERSION < (1, 8):
             define_target_view = '"app_template_render.views.target_view"'
@@ -213,7 +214,9 @@ class IntegrationTest(DjangoPluginTestCase):
         self.views_file = os.path.join(self.project_dir, app_name, "views.py")
         self.urls_file = os.path.join(self.project_dir, project_name, "urls.py")
         self.test_views_file = self._add_project_file("", app_name, "templatetags", "__init__.py")
-        self.test_views_file = self._add_project_file(TEMPLATE_TAG_TEXT, app_name, "templatetags", "test_tags.py")
+        self.test_views_file = self._add_project_file(
+            TEMPLATE_TAG_TEXT, app_name, "templatetags", "test_tags.py"
+        )
 
         self._add_view_function(app_name, VIEW_FUNC_TEXT)
         self._add_url(project_name, app_name, "target_view", "target_view")
@@ -235,20 +238,24 @@ class IntegrationTest(DjangoPluginTestCase):
         views_data = "%s\n%s\n" % (views_data, view_text)
         self._save_py_file(self.views_file, views_data)
 
-
     def _add_url(self, project_name, app_name, view_func, view_name):
         with open(self.urls_file) as f:
             urls_data = f.read()
 
         if django.VERSION < (1, 8):
-            urls_data = urls_data.replace(
-                "\n)\n",
-                "    url(r'^$', '%(app_name)s.views.target_view', name='target_view')\n)\n" % locals(),
-            )
+            before = "\n)\n"
+            fmt = "    url(r'^$', '%(app_name)s.views.target_view', name='target_view')\n)\n"
+            after = fmt % locals()
+            urls_data = urls_data.replace(before, after)
+
         else:
-            urls_data = urls_data.replace("urlpatterns = [", "import %s.views\n\nurlpatterns = [" % app_name)
+            urls_data = urls_data.replace(
+                "urlpatterns = [",
+                "import %s.views\n\nurlpatterns = [" % app_name
+            )
             fmt = '''    url(r'^%(app_name)s/', %(app_name)s.views.%(view_func)s),\n]'''
             urls_data = urls_data.replace("]", fmt % locals())
+
         self._save_py_file(self.urls_file, urls_data)
 
     @django_start_at(1, 8)
@@ -261,7 +268,7 @@ class IntegrationTest(DjangoPluginTestCase):
         self.assertNotIn("ERROR", output)
         self.assertNotIn("FAIL", output)
 
-        import pprint;pprint.pprint(coverage_report)
+        # import pprint;pprint.pprint(coverage_report)
         self.assertIsCovered(coverage_report, "integration_template_render/settings.py")
         self.assertIsCovered(coverage_report, "integration_template_render/__init__.py")
         self.assertIsCovered(coverage_report, "integration_template_render/urls.py")
@@ -306,10 +313,12 @@ class IntegrationTest(DjangoPluginTestCase):
                 self.missing = missing
 
             def __unicode__(self):
-                return u"%s/%s/%s%%%%/%s" % (self.num_lines, self.num_missing, self.pct, self.missing)
+                fmt = u"%s/%s/%s%%%%/%s"
+                return fmt % (self.num_lines, self.num_missing, self.pct, self.missing)
 
             def __repr__(self):
-                return u"ReportInfo(num_lines=%r, num_missing=%r, pct=%r, missing=%r)" % (self.num_lines, self.num_missing, self.pct, self.missing)
+                fmt = u"ReportInfo(num_lines=%r, num_missing=%r, pct=%r, missing=%r)"
+                return fmt % (self.num_lines, self.num_missing, self.pct, self.missing)
 
             def missing_line_numbers(self):
                 for chunk in self.missing.split(","):
