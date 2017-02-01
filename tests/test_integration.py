@@ -20,7 +20,10 @@ def target_view(request):
         {"varA": 1212, "varB": "DcDc"},
     )
 """
-TEMPLATE_FILE_TEXT = """<!DOCTYPE html>
+TEMPLATE_FILE_TEXT = """
+{% load test_tags %}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -34,6 +37,7 @@ TEMPLATE_FILE_TEXT = """<!DOCTYPE html>
 {% if varA %}
     {{ varB }}
 {% endif %}
+LOWER: {{ varB|lower }}
 </body>
 </html>
 """
@@ -61,11 +65,26 @@ class TestViews(TestCase):
         %(define_target_view)s
 
         resp = self.client.get(reverse(target_view))
-        for expected in['1212', 'DcDc']:
-            self.assertContains(resp, expected)
+        self.assertContains(resp, '1212')
+        self.assertContains(resp, 'DcDc')
+        self.assertContains(resp, 'LOWER: dcdc')
         self.assertContains(resp, '<title>Example: 1212</title>')
 
 """
+TEMPLATE_TAG_TEXT = """
+from django import template
+from django.utils.safestring import mark_safe
+from django.template.defaultfilters import stringfilter
+
+register = template.Library()
+
+@register.filter(is_safe=True)
+@stringfilter
+def lower(value):
+    return mark_safe(value.lower())
+
+"""
+
 
 
 class IntegrationTest(DjangoPluginTestCase):
@@ -186,6 +205,8 @@ class IntegrationTest(DjangoPluginTestCase):
         self.test_views_file = self._add_project_file(test_views_text, app_name, "test_views.py")
         self.views_file = os.path.join(self.project_dir, app_name, "views.py")
         self.urls_file = os.path.join(self.project_dir, project_name, "urls.py")
+        self.test_views_file = self._add_project_file("", app_name, "templatetags", "__init__.py")
+        self.test_views_file = self._add_project_file(TEMPLATE_TAG_TEXT, app_name, "templatetags", "test_tags.py")
 
         self._add_view_function(app_name, VIEW_FUNC_TEXT)
         self._add_url(project_name, app_name, "target_view", "target_view")
@@ -246,6 +267,7 @@ class IntegrationTest(DjangoPluginTestCase):
         self.assertIsCovered(coverage_report, "app_template_render/__init__.py")
         self.assertIsCovered(coverage_report, "app_template_render/views.py")
         self.assertIsCovered(coverage_report, "app_template_render/templates/target_template.html")
+        self.assertIsCovered(coverage_report, "app_template_render/templatetags/test_tags.py")
 
     def assertIsCovered(self, cov_report, path, expect_missing=0, expect_pct=100):
         fmt = u"%s [%s] expected: %%r, got %%r"
