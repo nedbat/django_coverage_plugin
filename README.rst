@@ -61,7 +61,7 @@ plural text, so both are marked as used if the tag is used.
 Changes
 ~~~~~~~
 
-v1.4.2 --- 2017-01-30
+v1.4.2 --- 2017-02-06
 ---------------------
 
 Fixes another instance of `issue 32`_, which was the result of an initialization order problem.
