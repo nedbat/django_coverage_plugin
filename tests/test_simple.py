@@ -4,7 +4,7 @@
 
 """Simple tests for django_coverage_plugin."""
 
-from .plugin_test import DjangoPluginTestCase, django_start_at
+from .plugin_test import DjangoPluginTestCase
 
 
 # 200 Unicode chars: snowman + poo.
@@ -155,7 +155,6 @@ class OtherTest(DjangoPluginTestCase):
         self.assertEqual(text, "B\nB\nquux\n")
         self.assert_analysis([1, 2, 3])
 
-    @django_start_at(1, 8)
     def test_lorem(self):
         self.make_template("""\
             First
@@ -176,7 +175,6 @@ class OtherTest(DjangoPluginTestCase):
         self.assertEqual(text, "Now:\nnow\n.\n")
         self.assert_analysis([1, 2, 3])
 
-    @django_start_at(1, 8)
     def test_now_as(self):
         self.make_template("""\
             {% now "\\n\\o\\w" as right_now %}
@@ -196,7 +194,6 @@ class OtherTest(DjangoPluginTestCase):
         self.assertEqual(text, "{%\nurl 'entry_list'\n%}\n")
         self.assert_analysis([1, 2, 3])
 
-    @django_start_at(1, 5)          # 1.4 had different syntax for {% url %}
     def test_url(self):
         self.make_template("""\
             {% url 'index' %}
@@ -206,7 +203,6 @@ class OtherTest(DjangoPluginTestCase):
         self.assertEqual(text, "/home\nnice.\n")
         self.assert_analysis([1, 2])
 
-    @django_start_at(1, 5)          # {% verbatim %} is new in 1.5
     def test_verbatim(self):
         self.make_template("""\
             1
