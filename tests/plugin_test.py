@@ -107,7 +107,7 @@ class DjangoPluginTestCase(StdStreamCapturingMixin, TempDirMixin, TestCase):
             str: the text produced by the template.
 
         """
-        use_real_context = (django.VERSION < (1, 8))
+        use_real_context = False
 
         if options is None:
             options = {'source': ["."]}

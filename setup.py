@@ -22,14 +22,14 @@ Development Status :: 5 - Production/Stable
 
 setup(
     name='django_coverage_plugin',
-    version='1.4.2',
+    version='1.4.3',
     description='Django template coverage.py plugin',
     author='Ned Batchelder',
     author_email='ned@nedbatchelder.com',
     url='https://github.com/nedbat/django_coverage_plugin',
     packages=['django_coverage_plugin'],
     install_requires=[
-        'Django >= 1.4',
+        'Django >= 1.8',
         'coverage >= 4.0',
         'six >= 1.4.0',
     ],

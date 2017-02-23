@@ -14,7 +14,7 @@ A `coverage.py`_ plugin to measure the coverage of Django templates.
 
 Supported Python versions are 2.7, 3.4, 3.5 and 3.6.
 
-Supported Django versions are 1.8 through 1.11a1.
+Supported Django versions are 1.8 through 1.11b1.
 
 Supported coverage.py versions are 4.0 and higher.
 
@@ -58,6 +58,12 @@ plural text, so both are marked as used if the tag is used.
 
 Changes
 ~~~~~~~
+
+
+v1.4.3 --- 2017-02-22
+---------------------
+
+Removes support for Django versions below 1.8.  Validates support for Django version 1.11b1
 
 v1.4.2 --- 2017-02-06
 ---------------------
@@ -177,7 +183,7 @@ To run the tests::
 .. |versions| image:: https://img.shields.io/pypi/pyversions/django_coverage_plugin.svg
     :target: https://pypi.python.org/pypi/django_coverage_plugin
     :alt: Python versions supported
-.. |djversions| image:: https://img.shields.io/badge/Django-1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 1.10-44b78b.svg
+.. |djversions| image:: https://img.shields.io/badge/Django-1.8, 1.9, 1.10, 1.11.svg
     :target: https://pypi.python.org/pypi/django_coverage_plugin
     :alt: Django versions supported
 .. |status| image:: https://img.shields.io/pypi/status/django_coverage_plugin.svg
