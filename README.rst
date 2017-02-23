@@ -183,7 +183,7 @@ To run the tests::
 .. |versions| image:: https://img.shields.io/pypi/pyversions/django_coverage_plugin.svg
     :target: https://pypi.python.org/pypi/django_coverage_plugin
     :alt: Python versions supported
-.. |djversions| image:: https://img.shields.io/badge/Django-1.8, 1.9, 1.10, 1.11.svg
+.. |djversions| image:: https://img.shields.io/badge/Django-1.8, 1.9, 1.10, 1.11b1.svg
     :target: https://pypi.python.org/pypi/django_coverage_plugin
     :alt: Django versions supported
 .. |status| image:: https://img.shields.io/pypi/status/django_coverage_plugin.svg
