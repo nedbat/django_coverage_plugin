@@ -152,8 +152,9 @@ class IntegrationTest(DjangoPluginTestCase):
         # -- Add app to installed apps
         sep = ")" if django.VERSION < (1, 9) else "]"
         def _add_app(apps):
+            apps = list(apps)
             apps.append(app_name)
-            return apps
+            return tuple(apps)
         settings_data = change_elem(settings_data, "INSTALLED_APPS", sep, _add_app)
 
         def _update_templates_config(templates_config):
