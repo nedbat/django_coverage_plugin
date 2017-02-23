@@ -60,7 +60,7 @@ Changes
 ~~~~~~~
 
 
-v1.4.3 --- 2017-02-22
+v1.5.0 --- 2017-02-23
 ---------------------
 
 Removes support for Django versions below 1.8.  Validates support for Django version 1.11b1
