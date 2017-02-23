@@ -85,6 +85,20 @@ def lower(value):
 
 """
 
+def change_elem(data, elem_name, sep, func):
+    sep_open, sep_close = {"]": ("[", "]"), ")": ("(", ")")}[sep]
+    before, after = data.split("%s = %s" % (elem_name, sep_open), 1)
+    middle, after = after.split("\n%s\n" % sep_close, 1)
+    elem = "%s%s%s" % (sep_open, middle, sep_close)
+    elem = eval(elem)
+
+    elem = func(elem)
+
+    import pprint
+    middle = pprint.pformat(elem)
+    middle = "%s\n%s\n" % (middle[:-1], sep)
+    return "%s%s = %s%s" % (before, elem_name, middle, after)
+
 
 class IntegrationTest(DjangoPluginTestCase):
     """Tests greenfield settings initializations and other weirdnesses"""
@@ -135,42 +149,21 @@ class IntegrationTest(DjangoPluginTestCase):
         with open(self.settings_file) as f:
             settings_data = f.read()
 
-        sep_open, sep_close = ("(", ")") if django.VERSION < (1, 9) else ("[", "]")
-        try:
-            before, after = settings_data.split("INSTALLED_APPS = %s" % sep_open, 1)
-        except Exception:
-            self._print_file(settings_data, self.settings_file)
-            raise
+        # -- Add app to installed apps
+        sep = ")" if django.VERSION < (1, 9) else "]"
+        def _add_app(apps):
+            apps.append(app_name)
+            return apps
+        settings_data = change_elem(settings_data, "INSTALLED_APPS", sep, _add_app)
 
-        apps, after = after.split(sep_close, 1)
-        apps = "%s\n    '%s',\n" % (apps, app_name)
-        settings_data = "%sINSTALLED_APPS = %s%s%s%s" % (before, sep_open, apps, sep_close, after)
+        def _update_templates_config(templates_config):
+            if "APP_DIRS" in templates_config[0]:
+                del templates_config[0]['APP_DIRS']
+            templates_config[0]['OPTIONS']['debug'] = True
+            templates_config[0]['OPTIONS']['loaders'] = ('django.template.loaders.app_directories.Loader',)
+            return templates_config
 
-        before, after = settings_data.split("\nTEMPLATES =", 1)
-        middle, after = after.split("\n]", 1)
-        middle = "%s]" % middle
-
-        templates_config = eval(middle)
-        if "APP_DIRS" in templates_config[0]:
-            del templates_config[0]['APP_DIRS']
-        templates_config[0]['OPTIONS']['debug'] = True
-        templates_config[0]['OPTIONS']['loaders'] = ('django.template.loaders.app_directories.Loader',)
-
-        import pprint
-        middle = pprint.pformat(templates_config)
-        print middle
-
-        settings_data = "%s\nTEMPLATES = %s%s" % (before, middle, after)
-
-        if 0:
-            before, after = settings_data.split("OPTIONS': {", 1)
-            middle, after = after.split("}", 1)
-            if "'debug':True, " not in middle:
-                middle = "            'debug':True,\n %s" % middle
-            if "loaders" not in middle:
-                middle = "            'loaders': ('django.template.loaders.app_directories.Loader',),\n %s" % middle
-            settings_data = "%sOPTIONS': {%s}%s" % (before, middle, after)
-
+        settings_data = change_elem(settings_data, "TEMPLATES", "]", _update_templates_config)
         self._save_py_file(self.settings_file, settings_data)
 
     def _print_file(self, file_data, file_name):
