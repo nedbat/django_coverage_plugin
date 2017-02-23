@@ -127,13 +127,6 @@ class IntegrationTest(DjangoPluginTestCase):
         output = self._cmd("django-admin.py", "startproject", project_name)
         self.assertFalse(output)
         self.settings_file = os.path.join(self.project_dir, project_name, "settings.py")
-        if django.VERSION < (1, 6):
-            with open(self.settings_file) as f:
-                data = f.read()
-            data = data.replace("'django.db.backends.'", "'django.db.backends.sqlite3'")
-            with open(self.settings_file, "w") as f:
-                f.write(data)
-
         self._add_installed_app("django_coverage_plugin")
         #self.addCleanup(shutil.rmtree, self.project_dir)
         return output
@@ -153,33 +146,32 @@ class IntegrationTest(DjangoPluginTestCase):
         apps = "%s\n    '%s',\n" % (apps, app_name)
         settings_data = "%sINSTALLED_APPS = %s%s%s%s" % (before, sep_open, apps, sep_close, after)
 
-        if django.VERSION >= (1, 8):
-            before, after = settings_data.split("\nTEMPLATES =", 1)
-            middle, after = after.split("\n]", 1)
-            middle = "%s]" % middle
+        before, after = settings_data.split("\nTEMPLATES =", 1)
+        middle, after = after.split("\n]", 1)
+        middle = "%s]" % middle
 
-            templates_config = eval(middle)
-            if "APP_DIRS" in templates_config[0]:
-                del templates_config[0]['APP_DIRS']
-            templates_config[0]['OPTIONS']['debug'] = True
-            templates_config[0]['OPTIONS']['loaders'] = ('django.template.loaders.app_directories.Loader',)
+        templates_config = eval(middle)
+        if "APP_DIRS" in templates_config[0]:
+            del templates_config[0]['APP_DIRS']
+        templates_config[0]['OPTIONS']['debug'] = True
+        templates_config[0]['OPTIONS']['loaders'] = ('django.template.loaders.app_directories.Loader',)
 
-            import pprint
-            middle = pprint.pformat(templates_config)
-            print middle
+        import pprint
+        middle = pprint.pformat(templates_config)
+        print middle
 
-            settings_data = "%s\nTEMPLATES = %s%s" % (before, middle, after)
+        settings_data = "%s\nTEMPLATES = %s%s" % (before, middle, after)
 
-            if 0:
-                before, after = settings_data.split("OPTIONS': {", 1)
-                middle, after = after.split("}", 1)
-                if "'debug':True, " not in middle:
-                    middle = "            'debug':True,\n %s" % middle
-                if "loaders" not in middle:
-                    middle = "            'loaders': ('django.template.loaders.app_directories.Loader',),\n %s" % middle
-                settings_data = "%sOPTIONS': {%s}%s" % (before, middle, after)
+        if 0:
+            before, after = settings_data.split("OPTIONS': {", 1)
+            middle, after = after.split("}", 1)
+            if "'debug':True, " not in middle:
+                middle = "            'debug':True,\n %s" % middle
+            if "loaders" not in middle:
+                middle = "            'loaders': ('django.template.loaders.app_directories.Loader',),\n %s" % middle
+            settings_data = "%sOPTIONS': {%s}%s" % (before, middle, after)
 
-            self._save_py_file(self.settings_file, settings_data)
+        self._save_py_file(self.settings_file, settings_data)
 
     def _print_file(self, file_data, file_name):
         print("\n-------- begin: %s  --------" % file_name)
@@ -222,10 +214,7 @@ class IntegrationTest(DjangoPluginTestCase):
             TEMPLATE_FILE_TEXT, app_name, "templates", "target_template.html"
         )
 
-        if django.VERSION < (1, 8):
-            define_target_view = '"app_template_render.views.target_view"'
-        else:
-            define_target_view = 'from app_template_render.views import target_view'
+        define_target_view = 'from app_template_render.views import target_view'
         if django.VERSION < (1, 10):
             import_reverse = "from django.core.urlresolvers import reverse"
         else:
@@ -265,23 +254,16 @@ class IntegrationTest(DjangoPluginTestCase):
         with open(self.urls_file) as f:
             urls_data = f.read()
 
-        if django.VERSION < (1, 8):
-            before = "\n)\n"
-            fmt = "    url(r'^$', '%(app_name)s.views.target_view', name='target_view')\n)\n"
-            after = fmt % locals()
-            urls_data = urls_data.replace(before, after)
 
-        else:
-            urls_data = urls_data.replace(
-                "urlpatterns = [",
-                "import %s.views\n\nurlpatterns = [" % app_name
-            )
-            fmt = '''    url(r'^%(app_name)s/', %(app_name)s.views.%(view_func)s),\n]'''
-            urls_data = urls_data.replace("]", fmt % locals())
+        urls_data = urls_data.replace(
+            "urlpatterns = [",
+            "import %s.views\n\nurlpatterns = [" % app_name
+        )
+        fmt = '''    url(r'^%(app_name)s/', %(app_name)s.views.%(view_func)s),\n]'''
+        urls_data = urls_data.replace("]", fmt % locals())
 
         self._save_py_file(self.urls_file, urls_data)
 
-    @django_start_at(1, 8)
     def test_template_render(self):
         self._create_django_project("integration_template_render", "app_template_render")
 
