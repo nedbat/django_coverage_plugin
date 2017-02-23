@@ -29,7 +29,4 @@ kit:
 	$(SDIST_CMD)
 
 kit_upload:
-	$(SDIST_CMD) upload
-
-pypi:
-	python setup.py register
+	twine upload dist/*
