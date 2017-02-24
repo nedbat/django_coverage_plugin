@@ -70,8 +70,6 @@ v1.4.2 --- 2017-02-06
 
 Fixes another instance of `issue 32`_, which was the result of an initialization order problem.
 
-.. _issue 32: https://github.com/nedbat/django_coverage_plugin/issues/32
-
 
 v1.4.1 --- 2017-01-25
 ---------------------

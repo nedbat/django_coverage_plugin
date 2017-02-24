@@ -51,7 +51,6 @@ def test_settings():
         # for {% ssi %}
         the_settings['TEMPLATES'][0]['OPTIONS']['allowed_include_roots'] = ['/']
 
-
     return the_settings
 
 
