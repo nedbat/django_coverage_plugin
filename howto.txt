@@ -7,3 +7,4 @@
 - Kits:
     $ make kit
     $ make kit_upload
+- tag git
