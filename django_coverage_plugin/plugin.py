@@ -6,6 +6,7 @@
 from __future__ import print_function
 
 import os.path
+import re
 
 from six.moves import range
 
@@ -161,6 +162,15 @@ class DjangoTemplatePlugin(
 
     def file_reporter(self, filename):
         return FileReporter(filename)
+
+    def find_unexecuted_files(self, src_dir):
+        res = []
+        for i, (dirpath, dirnames, filenames) in enumerate(os.walk(src_dir)):
+            for filename in filenames:
+                if re.match(r"^[^.#~!$@%^&*()+=,]+\.html?$", filename):
+                    filepath = os.path.join(dirpath, filename)
+                    res.append(filepath)
+        return res
 
     # --- FileTracer methods
 
