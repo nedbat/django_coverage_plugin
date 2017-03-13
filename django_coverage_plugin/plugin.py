@@ -164,10 +164,12 @@ class DjangoTemplatePlugin(
         return FileReporter(filename)
 
     def find_executable_files(self, src_dir):
-        for i, (dirpath, dirnames, filenames) in enumerate(os.walk(src_dir)):
+        for (dirpath, dirnames, filenames) in os.walk(src_dir):
             for filename in filenames:
-                ignored, ext = os.path.splitext(filename)
-                if ext in (".htm", ".html"):
+                # We're only interested in files that look like reasonable HTML
+                # files: Must end with .htm or .html, and must not have certain
+                # funny characters that probably mean they are editor junk.
+                if re.match(r"^[^.#~!$@%^&*()+=,]+\.html?$", filename):
                     yield os.path.join(dirpath, filename)
 
     # --- FileTracer methods
