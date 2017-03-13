@@ -163,14 +163,12 @@ class DjangoTemplatePlugin(
     def file_reporter(self, filename):
         return FileReporter(filename)
 
-    def find_unexecuted_files(self, src_dir):
-        res = []
+    def find_executable_files(self, src_dir):
         for i, (dirpath, dirnames, filenames) in enumerate(os.walk(src_dir)):
             for filename in filenames:
-                if re.match(r"^[^.#~!$@%^&*()+=,]+\.html?$", filename):
-                    filepath = os.path.join(dirpath, filename)
-                    res.append(filepath)
-        return res
+                ignored, ext = os.path.splitext(filename)
+                if ext in (".htm", ".html"):
+                    yield os.path.join(dirpath, filename)
 
     # --- FileTracer methods
 
