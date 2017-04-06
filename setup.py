@@ -17,12 +17,12 @@ Programming Language :: Python :: Implementation :: CPython
 Programming Language :: Python :: Implementation :: PyPy
 Topic :: Software Development :: Quality Assurance
 Topic :: Software Development :: Testing
-Development Status :: 5 - Production/Stable
+Development Status :: 3 - Alpha
 """
 
 setup(
     name='django_coverage_plugin',
-    version='1.5.0',
+    version='1.5.1a',
     description='Django template coverage.py plugin',
     author='Ned Batchelder',
     author_email='ned@nedbatchelder.com',

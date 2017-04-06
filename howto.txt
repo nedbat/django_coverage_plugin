@@ -2,7 +2,12 @@
 
 - Version number in setup.py
 - Classifiers in setup.py
+    https://pypi.python.org/pypi?%3Aaction=list_classifiers
+    eg:
+      Development Status :: 3 - Alpha
+      Development Status :: 5 - Production/Stable
 - Copyright date in NOTICE.txt
+- Update README.rst with latest changes
 - Update README.rst with latest changes
 - Kits:
     $ make kit
