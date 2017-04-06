@@ -22,7 +22,7 @@ Development Status :: 5 - Production/Stable
 
 setup(
     name='django_coverage_plugin',
-    version='1.5.0',
+    version='1.5.1a',
     description='Django template coverage.py plugin',
     author='Ned Batchelder',
     author_email='ned@nedbatchelder.com',

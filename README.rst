@@ -62,7 +62,7 @@ Changes
 v1.5.1a --- 2017-04-05
 ---------------------
 
-Validates support for Django version 1.11.
+Validates support for Django version 1.11. Testing for new package maintainer Pamela McA'Nulty
 
 v1.5.0 --- 2017-02-23
 ---------------------
