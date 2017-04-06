@@ -17,7 +17,7 @@ Programming Language :: Python :: Implementation :: CPython
 Programming Language :: Python :: Implementation :: PyPy
 Topic :: Software Development :: Quality Assurance
 Topic :: Software Development :: Testing
-Development Status :: 5 - Production/Stable
+Development Status :: 3 - Alpha
 """
 
 setup(
