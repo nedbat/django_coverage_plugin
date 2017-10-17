@@ -6,6 +6,7 @@
 from __future__ import print_function
 
 import os.path
+import re
 
 from six.moves import range
 
@@ -161,6 +162,15 @@ class DjangoTemplatePlugin(
 
     def file_reporter(self, filename):
         return FileReporter(filename)
+
+    def find_executable_files(self, src_dir):
+        for (dirpath, dirnames, filenames) in os.walk(src_dir):
+            for filename in filenames:
+                # We're only interested in files that look like reasonable HTML
+                # files: Must end with .htm or .html, and must not have certain
+                # funny characters that probably mean they are editor junk.
+                if re.match(r"^[^.#~!$@%^&*()+=,]+\.html?$", filename):
+                    yield os.path.join(dirpath, filename)
 
     # --- FileTracer methods
 
