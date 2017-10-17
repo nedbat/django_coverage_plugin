@@ -49,9 +49,6 @@ template files are included in the report.
 Caveats
 ~~~~~~~
 
-Files included by the ``{% ssi %}`` tag are not included in the coverage
-measurements.
-
 Coverage.py can't tell whether a ``{% blocktrans %}`` tag used the singular or
 plural text, so both are marked as used if the tag is used.
 
