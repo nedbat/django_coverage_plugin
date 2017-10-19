@@ -14,7 +14,7 @@ A `coverage.py`_ plugin to measure the coverage of Django templates.
 
 Supported Python versions are 2.7, 3.4, 3.5 and 3.6.
 
-Supported Django versions are 1.8 through 1.11.
+Supported Django versions are 1.8 through 2.0b1.
 
 Supported coverage.py versions are 4.0 and higher.
 
@@ -56,8 +56,13 @@ plural text, so both are marked as used if the tag is used.
 Changes
 ~~~~~~~
 
+v1.5.1b --- 2017-10-18
+----------------------
+
+Validates support for Django version 2.0b1. Improves discovery of template files.
+
 v1.5.1a --- 2017-04-05
----------------------
+----------------------
 
 Validates support for Django version 1.11. Testing for new package maintainer Pamela McA'Nulty
 
