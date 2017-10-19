@@ -169,8 +169,8 @@ class SsiTest(DjangoPluginTestCase):
         self.assertEqual(text, "First\nInside {{ a }}\nJob\n\nLast\n")
         self.assert_analysis([1, 2, 3], name="outer.html")
         self.assertEqual(
-        	set(self.measured_files()), 
-        	set(["templates/outer.html", "templates/nested.html"])
+            set(self.measured_files()),
+            set(["templates/outer.html", "templates/nested.html"])
         )
 
     def test_ssi_parsed(self):
@@ -189,6 +189,6 @@ class SsiTest(DjangoPluginTestCase):
         self.assertEqual(text, "First\nInside 17\nJob\n\nLast\n")
         self.assert_analysis([1, 2, 3], name="outer.html")
         self.assertEqual(
-        	set(self.measured_files()), 
-        	set(["templates/outer.html", "templates/nested.html"])
+            set(self.measured_files()),
+            set(["templates/outer.html", "templates/nested.html"])
         )
