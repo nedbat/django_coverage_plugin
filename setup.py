@@ -22,7 +22,7 @@ Development Status :: 3 - Alpha
 
 setup(
     name='django_coverage_plugin',
-    version='1.5.1a',
+    version='1.5.2',
     description='Django template coverage.py plugin',
     author='Ned Batchelder',
     author_email='ned@nedbatchelder.com',
