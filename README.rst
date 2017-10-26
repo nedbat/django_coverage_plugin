@@ -56,7 +56,7 @@ plural text, so both are marked as used if the tag is used.
 Changes
 ~~~~~~~
 
-v1.5.1b --- 2017-10-18
+v1.5.2 --- 2017-10-18
 ----------------------
 
 Validates support for Django version 2.0b1. Improves discovery of template files.
