@@ -14,7 +14,7 @@ A `coverage.py`_ plugin to measure the coverage of Django templates.
 
 Supported Python versions are 2.7, 3.4, 3.5 and 3.6.
 
-Supported Django versions are 1.8 through 1.11b1.
+Supported Django versions are 1.8 through 2.0b1.
 
 Supported coverage.py versions are 4.0 and higher.
 
@@ -49,9 +49,6 @@ template files are included in the report.
 Caveats
 ~~~~~~~
 
-Files included by the ``{% ssi %}`` tag are not included in the coverage
-measurements.
-
 Coverage.py can't tell whether a ``{% blocktrans %}`` tag used the singular or
 plural text, so both are marked as used if the tag is used.
 
@@ -59,8 +56,17 @@ plural text, so both are marked as used if the tag is used.
 Changes
 ~~~~~~~
 
+v1.5.2 --- 2017-10-18
+----------------------
 
-v1.4.3 --- 2017-02-22
+Validates support for Django version 2.0b1. Improves discovery of template files.
+
+v1.5.1a --- 2017-04-05
+----------------------
+
+Validates support for Django version 1.11. Testing for new package maintainer Pamela McA'Nulty
+
+v1.5.0 --- 2017-02-23
 ---------------------
 
 Removes support for Django versions below 1.8.  Validates support for Django version 1.11b1
@@ -69,8 +75,6 @@ v1.4.2 --- 2017-02-06
 ---------------------
 
 Fixes another instance of `issue 32`_, which was the result of an initialization order problem.
-
-.. _issue 32: https://github.com/nedbat/django_coverage_plugin/issues/32
 
 
 v1.4.1 --- 2017-01-25
@@ -183,7 +187,7 @@ To run the tests::
 .. |versions| image:: https://img.shields.io/pypi/pyversions/django_coverage_plugin.svg
     :target: https://pypi.python.org/pypi/django_coverage_plugin
     :alt: Python versions supported
-.. |djversions| image:: https://img.shields.io/badge/Django-1.8, 1.9, 1.10, 1.11.svg
+.. |djversions| image:: https://img.shields.io/badge/Django-1.8%2C%201.9%2C%201.10%2C%201.11b1-44b78b.svg
     :target: https://pypi.python.org/pypi/django_coverage_plugin
     :alt: Django versions supported
 .. |status| image:: https://img.shields.io/pypi/status/django_coverage_plugin.svg

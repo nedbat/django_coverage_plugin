@@ -168,8 +168,10 @@ class SsiTest(DjangoPluginTestCase):
         text = self.run_django_coverage(name="outer.html", context={'a': 17})
         self.assertEqual(text, "First\nInside {{ a }}\nJob\n\nLast\n")
         self.assert_analysis([1, 2, 3], name="outer.html")
-        # nested.html is not among the measured files:
-        self.assertEqual(self.measured_files(), ["templates/outer.html"])
+        self.assertEqual(
+            set(self.measured_files()),
+            set(["templates/outer.html", "templates/nested.html"])
+        )
 
     def test_ssi_parsed(self):
         nested = self.make_template(name="nested.html", text="""\
@@ -186,5 +188,7 @@ class SsiTest(DjangoPluginTestCase):
         text = self.run_django_coverage(name="outer.html", context={'a': 17})
         self.assertEqual(text, "First\nInside 17\nJob\n\nLast\n")
         self.assert_analysis([1, 2, 3], name="outer.html")
-        # nested.html is not among the measured files:
-        self.assertEqual(self.measured_files(), ["templates/outer.html"])
+        self.assertEqual(
+            set(self.measured_files()),
+            set(["templates/outer.html", "templates/nested.html"])
+        )
