@@ -6,3 +6,4 @@ MANIFEST
 *.egg-info
 build
 dist
+integration_template_render

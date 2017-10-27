@@ -7,7 +7,7 @@ import os
 import subprocess
 import shutil
 
-from .plugin_test import DjangoPluginTestCase, django_start_at
+from .plugin_test import DjangoPluginTestCase
 
 import django
 
@@ -85,6 +85,7 @@ def lower(value):
 
 """
 
+
 def change_elem(data, elem_name, sep, func):
     sep_open, sep_close = {"]": ("[", "]"), ")": ("(", ")")}[sep]
     before, after = data.split("%s = %s" % (elem_name, sep_open), 1)
@@ -142,7 +143,7 @@ class IntegrationTest(DjangoPluginTestCase):
         self.assertFalse(output)
         self.settings_file = os.path.join(self.project_dir, project_name, "settings.py")
         self._add_installed_app("django_coverage_plugin")
-        #self.addCleanup(shutil.rmtree, self.project_dir)
+        # self.addCleanup(shutil.rmtree, self.project_dir)
         return output
 
     def _add_installed_app(self, app_name):
@@ -151,6 +152,7 @@ class IntegrationTest(DjangoPluginTestCase):
 
         # -- Add app to installed apps
         sep = ")" if django.VERSION < (1, 9) else "]"
+
         def _add_app(apps):
             if django.VERSION < (1, 9):
                 apps = list(apps)
@@ -164,7 +166,9 @@ class IntegrationTest(DjangoPluginTestCase):
             if "APP_DIRS" in templates_config[0]:
                 del templates_config[0]['APP_DIRS']
             templates_config[0]['OPTIONS']['debug'] = True
-            templates_config[0]['OPTIONS']['loaders'] = ('django.template.loaders.app_directories.Loader',)
+            templates_config[0]['OPTIONS']['loaders'] = (
+                'django.template.loaders.app_directories.Loader',
+            )
             return templates_config
 
         settings_data = change_elem(settings_data, "TEMPLATES", "]", _update_templates_config)
@@ -251,12 +255,16 @@ class IntegrationTest(DjangoPluginTestCase):
         with open(self.urls_file) as f:
             urls_data = f.read()
 
-
         urls_data = urls_data.replace(
             "urlpatterns = [",
             "import %s.views\n\nurlpatterns = [" % app_name
         )
-        fmt = '''    url(r'^%(app_name)s/', %(app_name)s.views.%(view_func)s),\n]'''
+        if django.VERSION < (2, 0):
+            url_func = "url"
+        else:
+            url_func = "path"
+
+        fmt = '''    %(url_func)s(r'^%(app_name)s/', %(app_name)s.views.%(view_func)s),\n]'''
         urls_data = urls_data.replace("]", fmt % locals())
 
         self._save_py_file(self.urls_file, urls_data)
