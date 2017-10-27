@@ -105,7 +105,13 @@ class IntegrationTest(DjangoPluginTestCase):
     """Tests greenfield settings initializations and other weirdnesses"""
 
     def setUp(self):
-        self.python = os.path.abspath(os.environ['_'])
+        self.python = ""
+
+        if '_' in os.environ:
+            self.python = os.path.abspath(os.environ['_'])
+        elif "VIRTUAL_ENV" in os.environ:
+            self.python = "%s/bin/python" % os.environ["VIRTUAL_ENV"]
+
         if ".tox" in self.python:
             self.env_bin = os.path.dirname(self.python)
         else:
