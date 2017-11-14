@@ -29,7 +29,6 @@ setup(
     url='https://github.com/nedbat/django_coverage_plugin',
     packages=['django_coverage_plugin'],
     install_requires=[
-        'Django >= 1.8',
         'coverage >= 4.0',
         'six >= 1.4.0',
     ],
