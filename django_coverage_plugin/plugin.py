@@ -78,6 +78,10 @@ def check_debug():
     return True
 
 
+if django.VERSION < (1, 8):
+    raise RuntimeError("Django Coverage Plugin requires Django 1.8 or higher")
+
+
 if django.VERSION >= (1, 9):
     # Since we are grabbing at internal details, we have to adapt as they
     # change over versions.
