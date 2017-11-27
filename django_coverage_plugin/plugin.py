@@ -37,8 +37,8 @@ class DjangoTemplatePluginException(Exception):
 # For debugging the plugin itself.
 SHOW_PARSING = False
 SHOW_TRACING = False
-SHOW_STARTUP = True
-LOG_FILE = "testing_log_file.log"
+SHOW_STARTUP = False
+LOG_FILE = None
 
 
 def print_log(*args, **kwargs):
@@ -70,10 +70,13 @@ def get_debug_option_value(curr_value, options, option_name):
     """
     if curr_value:
         if option_name:
-            print_log("Ignoring options '%s', already set to %s" % (option_name, curr_value))
+            print_log(
+                "Ignoring options '%s', already set to %s" % (option_name, curr_value)
+            )
         return curr_value
 
     value = options.get(option_name, curr_value)
+    # Be permissive wrt boolean configuration values
     if isinstance(value, six.string_types):
         v = value.lower()
         if v in ("f", "false", "no", "n", 0):
@@ -199,7 +202,9 @@ def read_template_source(filename):
 
     if not settings.configured:
         if SHOW_STARTUP:
-            print_log("read_template_source: settings not configured for filename '%s'" % filename)
+            print_log(
+                "read_template_source: settings not configured for filename '%s'" % filename
+            )
         settings.configure()
 
     with open(filename, "rb") as f:

@@ -55,8 +55,11 @@ It also has some optional configuration settings to enable certain debugging fla
 
 ``show_startup`` will log information during the startup sequence.  This is
 especially useful when debugging settings configurations.
+
 ``show_parsing`` will log information about how a template file is parsed.
+
 ``show_tracing`` will log information about how template code is traced.
+
 ``log_file_path`` is the relative or absolute path to the log file to which log messages
 should be written.  If not specified, log messages will be written to stdout.
 
