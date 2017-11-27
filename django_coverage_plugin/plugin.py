@@ -5,9 +5,12 @@
 
 from __future__ import print_function
 
+import datetime
 import os.path
 import re
+import sys
 
+import six
 from six.moves import range
 
 import coverage.plugin
@@ -34,6 +37,65 @@ class DjangoTemplatePluginException(Exception):
 # For debugging the plugin itself.
 SHOW_PARSING = False
 SHOW_TRACING = False
+SHOW_STARTUP = True
+LOG_FILE = "testing_log_file.log"
+
+
+def print_log(*args, **kwargs):
+    """ Print logging message, either appending to the LOG_FILE or to stdout."""
+    log_file = None
+    try:
+        if LOG_FILE:
+            log_file = open(LOG_FILE, "a")
+        kwargs['file'] = log_file if log_file else sys.stdout
+        print(*args, **kwargs)
+    finally:
+        if log_file:
+            log_file.close()
+
+
+def get_debug_option_value(curr_value, options, option_name):
+    """Common handling of debug options.
+
+    - If the current value is truthy, then ignore the option value  All
+    current values should default to falsy, so they will only be truthy
+    when someone is debugging the plugin code
+    - If the requested option name isn't in the options, then use the default
+    (aka current) value.
+
+    :param  curr_value  Initial value of option
+    :param  options     Dictionary of options passed in from coverage.py
+    :param  option_name Key name of option in 'options' dict
+    :returns option value
+    """
+    if curr_value:
+        if option_name:
+            print_log("Ignoring options '%s', already set to %s" % (option_name, curr_value))
+        return curr_value
+
+    value = options.get(option_name, curr_value)
+    if isinstance(value, six.string_types):
+        v = value.lower()
+        if v in ("f", "false", "no", "n", 0):
+            value = False
+        elif v in ("t", "true", "yes", "y", 1):
+            value = True
+    return value
+
+
+def handle_debugging_options(options):
+    """Set global debugging flags based on configuration options"""
+    global LOG_FILE, SHOW_PARSING, SHOW_TRACING, SHOW_STARTUP
+    print("handle_debugging_options: %r" % options)
+    LOG_FILE = get_debug_option_value(LOG_FILE, options, 'log_file_path')
+    SHOW_PARSING = get_debug_option_value(SHOW_PARSING, options, 'show_parsing')
+    SHOW_TRACING = get_debug_option_value(SHOW_TRACING, options, 'show_tracing')
+    SHOW_STARTUP = get_debug_option_value(SHOW_STARTUP, options, 'show_startup')
+    if SHOW_STARTUP:
+        print_log("--- django_coverage_plugin started at %s ---" % datetime.datetime.now())
+        print_log("Python Version: %s" % (sys.version,))
+        print_log("Django Version: %s" % (django.VERSION,))
+        print_log("command args  : %s" % (sys.argv,))
 
 
 def check_debug():
@@ -48,29 +110,49 @@ def check_debug():
     from django.conf import settings
 
     if not settings.configured:
+        if SHOW_STARTUP:
+            print_log("check_debug: settings not configured")
         return False
 
     # I _think_ this check is all that's needed and the 3 "hasattr" checks
     # below can be removed, but it's not clear how to verify that
     from django.apps import apps
     if not apps.ready:
+        if SHOW_STARTUP:
+            print_log("check_debug: apps not ready")
         return False
 
     # django.template.backends.django gets loaded lazily, so return false
     # until they've been loaded
     if not hasattr(django.template, "backends"):
+        if SHOW_STARTUP:
+            print_log("check_debug: django.template missing 'backends' attr")
         return False
     if not hasattr(django.template.backends, "django"):
+        if SHOW_STARTUP:
+            print_log(
+                "check_debug: django.template.backends missing 'django' attr"
+            )
         return False
     if not hasattr(django.template.backends.django, "DjangoTemplates"):
+        if SHOW_STARTUP:
+            print_log(
+                "check_debug: django.template.backends missing 'DjangoTemplates' attr"
+            )
         raise DjangoTemplatePluginException("Can't use non-Django templates.")
 
     for engine in django.template.engines.all():
         if not isinstance(engine, django.template.backends.django.DjangoTemplates):
+            if SHOW_STARTUP:
+                print_log("check_debug: Non Django template engine: %s" % engine)
             raise DjangoTemplatePluginException(
                 "Can't use non-Django templates."
             )
         if not engine.engine.debug:
+            if SHOW_STARTUP:
+                print_log(
+                    "check_debug: DjangoTemplates engine not DEBUG enabled"
+                )
             raise DjangoTemplatePluginException(
                 "Template debugging must be enabled in settings."
             )
@@ -116,6 +198,8 @@ def read_template_source(filename):
     from django.conf import settings
 
     if not settings.configured:
+        if SHOW_STARTUP:
+            print_log("read_template_source: settings not configured for filename '%s'" % filename)
         settings.configure()
 
     with open(filename, "rb") as f:
@@ -129,7 +213,10 @@ class DjangoTemplatePlugin(
     coverage.plugin.FileTracer,
 ):
 
-    def __init__(self):
+    def __init__(self, options):
+        handle_debugging_options(options)
+        if SHOW_STARTUP:
+            print_log("DjangoTemplatePlugin.__init__")
         self.debug_checked = False
 
         self.django_template_dir = os.path.realpath(
@@ -151,6 +238,8 @@ class DjangoTemplatePlugin(
         ]
 
     def file_tracer(self, filename):
+        if SHOW_STARTUP and not filename.endswith(".py"):
+            print_log("file_tracer: %s" % filename)
         if filename.startswith(self.django_template_dir):
             if not self.debug_checked:
                 # Keep calling check_debug until it returns True, which it
@@ -206,7 +295,7 @@ class DjangoTemplatePlugin(
             return -1, -1
 
         if SHOW_TRACING:
-            print("{!r}: {}".format(render_self, position))
+            print_log("{!r}: {}".format(render_self, position))
         s_start, s_end = position
         if isinstance(render_self, TextNode):
             first_line = render_self.s.splitlines(True)[0]
@@ -231,7 +320,7 @@ class DjangoTemplatePlugin(
         if start < 0 or end < 0:
             start, end = -1, -1
         if SHOW_TRACING:
-            print("line_number_range({}) -> {}".format(
+            print_log("line_number_range({}) -> {}".format(
                 filename, (start, end)
             ))
         return start, end
@@ -254,7 +343,7 @@ class DjangoTemplatePlugin(
             template_source = read_template_source(filename)
             if 0:   # change to see the template text
                 for i in range(0, len(template_source), 10):
-                    print("%3d: %r" % (i, template_source[i:i+10]))
+                    print_log("%3d: %r" % (i, template_source[i:i+10]))
             self.source_map[filename] = make_line_map(template_source)
         return self.source_map[filename]
 
@@ -275,7 +364,7 @@ class FileReporter(coverage.plugin.FileReporter):
         source_lines = set()
 
         if SHOW_PARSING:
-            print("-------------- {}".format(self.filename))
+            print_log("-------------- {}".format(self.filename))
 
         if django.VERSION >= (1, 9):
             lexer = Lexer(self.source())
@@ -292,7 +381,7 @@ class FileReporter(coverage.plugin.FileReporter):
 
         for token in tokens:
             if SHOW_PARSING:
-                print(
+                print_log(
                     "%10s %2d: %r" % (
                         TOKEN_MAPPING[token.token_type],
                         token.lineno,
@@ -353,7 +442,7 @@ class FileReporter(coverage.plugin.FileReporter):
                 source_lines.update(range(lineno, lineno+num_lines))
 
             if SHOW_PARSING:
-                print("\t\t\tNow source_lines is: {!r}".format(source_lines))
+                print_log("\t\t\tNow source_lines is: {!r}".format(source_lines))
 
         return source_lines
 
@@ -380,7 +469,10 @@ def get_line_number(line_map, offset):
 
 
 def dump_frame(frame, label=""):
-    """Dump interesting information about this frame."""
+    """
+    Dump interesting information about this frame.
+    ** ONLY USED WHEN DEBUGGING **
+    """
     locals = dict(frame.f_locals)
     self = locals.get('self', None)
     context = locals.get('context', None)
@@ -389,15 +481,15 @@ def dump_frame(frame, label=""):
 
     if label:
         label = " ( %s ) " % label
-    print("-- frame --%s---------------------" % label)
-    print("{}:{}:{}".format(
+    print_log("-- frame --%s---------------------" % label)
+    print_log("{}:{}:{}".format(
         os.path.basename(frame.f_code.co_filename),
         frame.f_lineno,
         type(self),
         ))
-    print(locals)
+    print_log(locals)
     if self:
-        print("self:", self.__dict__)
+        print_log("self:", self.__dict__)
     if context:
-        print("context:", context.__dict__)
-    print("\\--")
+        print_log("context:", context.__dict__)
+    print_log("\\--")

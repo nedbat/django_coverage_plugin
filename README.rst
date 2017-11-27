@@ -45,6 +45,21 @@ The Django template plugin uses some existing settings from your .coveragerc
 file.  The ``source=``, ``include=``, and ``omit=`` options control what
 template files are included in the report.
 
+It also has some optional configuration settings to enable certain debugging flags::
+
+    [django_coverage_plugin]
+    show_startup = True
+    show_tracing = True
+    show_startup = True
+    log_file_path = dj_coverage.log
+
+``show_startup`` will log information during the startup sequence.  This is
+especially useful when debugging settings configurations.
+``show_parsing`` will log information about how a template file is parsed.
+``show_tracing`` will log information about how template code is traced.
+``log_file_path`` is the relative or absolute path to the log file to which log messages
+should be written.  If not specified, log messages will be written to stdout.
+
 
 Caveats
 ~~~~~~~
@@ -55,6 +70,12 @@ plural text, so both are marked as used if the tag is used.
 
 Changes
 ~~~~~~~
+
+v1.5.3 --- 2017-11-28
+----------------------
+
+Exposes debugging configuration settings to .coveragerc. Adds logging to startup.
+Adds option to log to a file for easier issue analysis.
 
 v1.5.2 --- 2017-10-18
 ----------------------
