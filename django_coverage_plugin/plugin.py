@@ -108,6 +108,10 @@ def check_debug():
     to do its work.  Check that the setting is correct, and raise an exception
     if it is not.
 
+    It can take a fair amount of time before the Django settings are fully
+    configured, so check_debug() is called by file_tracer() until it
+    returns True.
+
     Returns True if the debug check was performed, False otherwise
     """
     from django.conf import settings
@@ -137,6 +141,9 @@ def check_debug():
                 "check_debug: django.template.backends missing 'django' attr"
             )
         return False
+
+    # Now configurations have been loaded enough to check that the settings
+    # are valid
     if not hasattr(django.template.backends.django, "DjangoTemplates"):
         if SHOW_STARTUP:
             print_log(
