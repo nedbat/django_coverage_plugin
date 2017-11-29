@@ -8,4 +8,4 @@ from .plugin import DjangoTemplatePluginException       # noqa
 
 
 def coverage_init(reg, options):
-    reg.add_file_tracer(DjangoTemplatePlugin())
+    reg.add_file_tracer(DjangoTemplatePlugin(options))
