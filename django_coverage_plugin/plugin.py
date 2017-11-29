@@ -38,15 +38,15 @@ class DjangoTemplatePluginException(Exception):
 SHOW_PARSING = False
 SHOW_TRACING = False
 SHOW_STARTUP = False
-LOG_FILE = None
+LOG_FILE_PATH = None
 
 
 def print_log(*args, **kwargs):
-    """ Print logging message, either appending to the LOG_FILE or to stdout."""
+    """ Print logging message, either appending to the LOG_FILE_PATH or to stdout."""
     log_file = None
     try:
-        if LOG_FILE:
-            log_file = open(LOG_FILE, "a")
+        if LOG_FILE_PATH:
+            log_file = open(LOG_FILE_PATH, "a")
         kwargs['file'] = log_file if log_file else sys.stdout
         print(*args, **kwargs)
     finally:
@@ -88,9 +88,9 @@ def get_debug_option_value(curr_value, options, option_name):
 
 def handle_debugging_options(options):
     """Set global debugging flags based on configuration options"""
-    global LOG_FILE, SHOW_PARSING, SHOW_TRACING, SHOW_STARTUP
+    global LOG_FILE_PATH, SHOW_PARSING, SHOW_TRACING, SHOW_STARTUP
     print("handle_debugging_options: %r" % options)
-    LOG_FILE = get_debug_option_value(LOG_FILE, options, 'log_file_path')
+    LOG_FILE_PATH = get_debug_option_value(LOG_FILE_PATH, options, 'log_file_path')
     SHOW_PARSING = get_debug_option_value(SHOW_PARSING, options, 'show_parsing')
     SHOW_TRACING = get_debug_option_value(SHOW_TRACING, options, 'show_tracing')
     SHOW_STARTUP = get_debug_option_value(SHOW_STARTUP, options, 'show_startup')
