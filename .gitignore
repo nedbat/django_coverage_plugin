@@ -7,3 +7,4 @@ MANIFEST
 build
 dist
 integration_template_render
+/.idea
