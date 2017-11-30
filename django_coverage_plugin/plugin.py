@@ -56,17 +56,22 @@ def check_debug():
     if not apps.ready:
         return False
 
-    # django.template.backends.django gets loaded lazily, so return false
-    # until they've been loaded
-    if not hasattr(django.template, "backends"):
-        return False
-    if not hasattr(django.template.backends, "django"):
-        return False
-    if not hasattr(django.template.backends.django, "DjangoTemplates"):
-        raise DjangoTemplatePluginException("Can't use non-Django templates.")
+    def _is_DjangoTemplatesEngine(engine):
+        # django.template.backends.django.DjangoTemplates gets loaded
+        # lazily, so return false if it hasn't been loaded by the
+        # time we've got a template enging to check
+        if not hasattr(django.template, "backends"):
+            return False
+        if not hasattr(django.template.backends, "django"):
+            return False
+        if not hasattr(django.template.backends.django, "DjangoTemplates"):
+            return False
 
+        return isinstance(engine, django.template.backends.django.DjangoTemplates)
+
+    found_good_engine = False
     for engine in django.template.engines.all():
-        if not isinstance(engine, django.template.backends.django.DjangoTemplates):
+        if not _is_DjangoTemplatesEngine(engine):
             raise DjangoTemplatePluginException(
                 "Can't use non-Django templates."
             )
@@ -74,8 +79,9 @@ def check_debug():
             raise DjangoTemplatePluginException(
                 "Template debugging must be enabled in settings."
             )
+        found_good_engine = True
 
-    return True
+    return found_good_engine
 
 
 if django.VERSION >= (1, 9):
