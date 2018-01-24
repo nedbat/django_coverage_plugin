@@ -430,11 +430,13 @@ TEMPLATES = """,
                 return fmt % (self.num_lines, self.num_missing, self.pct, self.missing)
 
             def missing_line_numbers(self):
+                # generate line numbers
                 for chunk in self.missing.split(","):
                     chunk = chunk.strip()
                     if not chunk:
                         continue
                     elif "-" in chunk:
+                        # This is a range, so generate the lineno for each line in the range
                         start, end = chunk.split("-", 1)
                         for i in range(int(start), int(end + 1)):
                             yield i
