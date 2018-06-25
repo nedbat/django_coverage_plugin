@@ -16,8 +16,12 @@ import django
 import django.template
 from django.template.base import (
     Lexer, TextNode, NodeList, Template,
-    TOKEN_BLOCK, TOKEN_MAPPING, TOKEN_TEXT, TOKEN_VAR,
 )
+try:
+    # Django 2.1 uses TokenType enum.
+    from django.template.base import TokenType
+except ImportError:
+    from django.template import base as TokenType
 from django.templatetags.i18n import BlockTranslateNode
 try:
     from django.template.defaulttags import VerbatimNode
@@ -298,12 +302,12 @@ class FileReporter(coverage.plugin.FileReporter):
             if SHOW_PARSING:
                 print(
                     "%10s %2d: %r" % (
-                        TOKEN_MAPPING[token.token_type],
+                        TokenType.TOKEN_MAPPING[token.token_type],
                         token.lineno,
                         token.contents,
                     )
                 )
-            if token.token_type == TOKEN_BLOCK:
+            if token.token_type == TokenType.TOKEN_BLOCK:
                 if token.contents == "endcomment":
                     comment = False
                     continue
@@ -311,7 +315,7 @@ class FileReporter(coverage.plugin.FileReporter):
             if comment:
                 continue
 
-            if token.token_type == TOKEN_BLOCK:
+            if token.token_type == TokenType.TOKEN_BLOCK:
                 if token.contents.startswith("endblock"):
                     inblock = False
                 elif token.contents.startswith("block"):
@@ -340,10 +344,10 @@ class FileReporter(coverage.plugin.FileReporter):
 
                 source_lines.add(token.lineno)
 
-            elif token.token_type == TOKEN_VAR:
+            elif token.token_type == TokenType.TOKEN_VAR:
                 source_lines.add(token.lineno)
 
-            elif token.token_type == TOKEN_TEXT:
+            elif token.token_type == TokenType.TOKEN_TEXT:
                 if extends and not inblock:
                     continue
                 # Text nodes often start with newlines, but we don't want to
