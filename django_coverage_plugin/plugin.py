@@ -20,14 +20,18 @@ from django.template.base import (
 try:
     # Django 2.1 uses TokenType enum.
     from django.template.base import TokenType
+    TOKEN_MAPPING = None
+    TOKEN_TEXT = TokenType.TEXT
+    TOKEN_VAR = TokenType.VAR
+    TOKEN_BLOCK = TokenType.BLOCK
 except ImportError:
-    from django.template import base as TokenType
-from django.templatetags.i18n import BlockTranslateNode
+    from django.template.base import TOKEN_TEXT, TOKEN_VAR, TOKEN_BLOCK, TOKEN_MAPPING
 try:
     from django.template.defaulttags import VerbatimNode
 except ImportError:
     # Django 1.4 didn't have VerbatimNode
     VerbatimNode = None
+from django.templatetags.i18n import BlockTranslateNode
 
 
 class DjangoTemplatePluginException(Exception):
@@ -302,12 +306,12 @@ class FileReporter(coverage.plugin.FileReporter):
             if SHOW_PARSING:
                 print(
                     "%10s %2d: %r" % (
-                        TokenType.TOKEN_MAPPING[token.token_type],
+                        TOKEN_MAPPING[token.token_type.upper()] if TOKEN_MAPPING else token.token_type.name.title(),
                         token.lineno,
                         token.contents,
                     )
                 )
-            if token.token_type == TokenType.TOKEN_BLOCK:
+            if token.token_type == TOKEN_BLOCK:
                 if token.contents == "endcomment":
                     comment = False
                     continue
@@ -315,7 +319,7 @@ class FileReporter(coverage.plugin.FileReporter):
             if comment:
                 continue
 
-            if token.token_type == TokenType.TOKEN_BLOCK:
+            if token.token_type == TOKEN_BLOCK:
                 if token.contents.startswith("endblock"):
                     inblock = False
                 elif token.contents.startswith("block"):
@@ -344,10 +348,10 @@ class FileReporter(coverage.plugin.FileReporter):
 
                 source_lines.add(token.lineno)
 
-            elif token.token_type == TokenType.TOKEN_VAR:
+            elif token.token_type == TOKEN_VAR:
                 source_lines.add(token.lineno)
 
-            elif token.token_type == TokenType.TOKEN_TEXT:
+            elif token.token_type == TOKEN_TEXT:
                 if extends and not inblock:
                     continue
                 # Text nodes often start with newlines, but we don't want to
