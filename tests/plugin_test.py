@@ -228,7 +228,7 @@ class DjangoPluginTestCase(StdStreamCapturingMixin, TempDirMixin, TestCase):
         stderr = self.stderr()
         self.assertIn(
             "Coverage.py warning: "
-            "Disabling plugin 'django_coverage_plugin.DjangoTemplatePlugin' "
+            "Disabling plug-in 'django_coverage_plugin.DjangoTemplatePlugin' "
             "due to an exception:",
             stderr
         )
