@@ -17,12 +17,17 @@ Programming Language :: Python :: Implementation :: CPython
 Programming Language :: Python :: Implementation :: PyPy
 Topic :: Software Development :: Quality Assurance
 Topic :: Software Development :: Testing
-Development Status :: 3 - Alpha
+Development Status :: 5 - Production/Stable
+Framework :: Django
+Framework :: Django :: 1.8
+Framework :: Django :: 1.11
+Framework :: Django :: 2.0
+Framework :: Django :: 2.1
 """
 
 setup(
     name='django_coverage_plugin',
-    version='1.5.2',
+    version='1.6rc1',
     description='Django template coverage.py plugin',
     author='Ned Batchelder',
     author_email='ned@nedbatchelder.com',
