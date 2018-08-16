@@ -14,16 +14,34 @@ import coverage.plugin
 
 import django
 import django.template
-from django.template.base import (
-    Lexer, TextNode, NodeList, Template,
-    TOKEN_BLOCK, TOKEN_MAPPING, TOKEN_TEXT, TOKEN_VAR,
-)
+from django.template.base import Lexer, TextNode, NodeList, Template
 from django.templatetags.i18n import BlockTranslateNode
+
 try:
     from django.template.defaulttags import VerbatimNode
 except ImportError:
     # Django 1.4 didn't have VerbatimNode
     VerbatimNode = None
+
+try:
+    from django.template.base import TokenType
+
+    def _token_name(token_type):
+        token_type.name.capitalize()
+
+except ImportError:
+    # Django <2.1 uses separate constants for token types
+    from django.template.base import (
+        TOKEN_BLOCK, TOKEN_MAPPING, TOKEN_TEXT, TOKEN_VAR
+    )
+
+    class TokenType:
+        TEXT = TOKEN_TEXT
+        VAR = TOKEN_VAR
+        BLOCK = TOKEN_BLOCK
+
+    def _token_name(token_type):
+        return TOKEN_MAPPING[token_type]
 
 
 class DjangoTemplatePluginException(Exception):
@@ -298,12 +316,12 @@ class FileReporter(coverage.plugin.FileReporter):
             if SHOW_PARSING:
                 print(
                     "%10s %2d: %r" % (
-                        TOKEN_MAPPING[token.token_type],
+                        _token_name(token.token_type),
                         token.lineno,
                         token.contents,
                     )
                 )
-            if token.token_type == TOKEN_BLOCK:
+            if token.token_type == TokenType.BLOCK:
                 if token.contents == "endcomment":
                     comment = False
                     continue
@@ -311,7 +329,7 @@ class FileReporter(coverage.plugin.FileReporter):
             if comment:
                 continue
 
-            if token.token_type == TOKEN_BLOCK:
+            if token.token_type == TokenType.BLOCK:
                 if token.contents.startswith("endblock"):
                     inblock = False
                 elif token.contents.startswith("block"):
@@ -340,10 +358,10 @@ class FileReporter(coverage.plugin.FileReporter):
 
                 source_lines.add(token.lineno)
 
-            elif token.token_type == TOKEN_VAR:
+            elif token.token_type == TokenType.VAR:
                 source_lines.add(token.lineno)
 
-            elif token.token_type == TOKEN_TEXT:
+            elif token.token_type == TokenType.TEXT:
                 if extends and not inblock:
                     continue
                 # Text nodes often start with newlines, but we don't want to
