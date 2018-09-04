@@ -1,8 +1,31 @@
 #!/usr/bin/env python
-# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-# For details: https://github.com/nedbat/django_coverage_plugin/blob/master/NOTICE.txt
+# -*- encoding: utf-8 -*-
+"""Setup for Django Coverage Plugin
+
+Licensed under the Apache 2.0 License
+- http://www.apache.org/licenses/LICENSE-2.0
+- https://github.com/nedbat/django_coverage_plugin/blob/master/NOTICE.txt
+
+"""
+from __future__ import absolute_import, print_function
+
+import io
+import re
+from os.path import dirname, join
 
 from setuptools import setup
+
+
+def read(*names, **kwargs):
+    """Read and return contents of file
+
+    Parameter: encoding kwarg may be set
+    """
+    return io.open(
+        join(dirname(__file__), *names),
+        encoding=kwargs.get('encoding', 'utf8')
+    ).read()
+
 
 classifiers = """\
 Environment :: Console
@@ -29,6 +52,12 @@ setup(
     name='django_coverage_plugin',
     version='1.6rc1',
     description='Django template coverage.py plugin',
+    long_description=(
+        re.compile(
+            '^.. start-badges.*^.. end-badges',
+            re.M | re.S,
+        ).sub('', read('README.rst'))
+    ),
     author='Ned Batchelder',
     author_email='ned@nedbatchelder.com',
     url='https://github.com/nedbat/django_coverage_plugin',
