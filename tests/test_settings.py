@@ -7,7 +7,6 @@ from django.test.utils import override_settings
 
 from .plugin_test import DjangoPluginTestCase, test_settings
 
-
 # Make settings overrides for tests below.
 NON_DJANGO_BACKEND = 'django.template.backends.dummy.TemplateStrings'
 

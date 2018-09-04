@@ -3,8 +3,9 @@
 
 """Tests of multiple engines for django_coverage_plugin."""
 
-from .plugin_test import DjangoPluginTestCase
 from django.test import modify_settings
+
+from .plugin_test import DjangoPluginTestCase
 
 
 class MultipleEngineTests(DjangoPluginTestCase):
