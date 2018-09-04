@@ -5,7 +5,7 @@
 
 import unittest
 
-from django_coverage_plugin.plugin import make_line_map, get_line_number
+from django_coverage_plugin.plugin import get_line_number, make_line_map
 
 
 class HelperTest(unittest.TestCase):

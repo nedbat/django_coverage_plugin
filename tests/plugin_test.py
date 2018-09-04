@@ -9,11 +9,14 @@ import os.path
 import re
 import unittest
 
-from unittest_mixins import StdStreamCapturingMixin, TempDirMixin
-
 import coverage
 import django
 from django.conf import settings
+from django.template import Context, Template  # noqa
+from django.template.backends.django import DjangoTemplates  # noqa
+from django.template.loader import get_template  # noqa
+from django.test import TestCase  # noqa
+from unittest_mixins import StdStreamCapturingMixin, TempDirMixin
 
 from django_coverage_plugin.plugin import DjangoTemplatePlugin
 
@@ -58,11 +61,6 @@ settings.configure(**test_settings())
 
 if hasattr(django, "setup"):
     django.setup()
-
-from django.template import Context, Template  # noqa
-from django.template.backends.django import DjangoTemplates  # noqa
-from django.template.loader import get_template  # noqa
-from django.test import TestCase  # noqa
 
 
 class DjangoPluginTestCase(StdStreamCapturingMixin, TempDirMixin, TestCase):

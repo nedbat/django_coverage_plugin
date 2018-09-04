@@ -6,7 +6,6 @@
 
 from .plugin_test import DjangoPluginTestCase
 
-
 # 200 Unicode chars: snowman + poo.
 UNIUNI = u"\u26C4\U0001F4A9"*100
 if isinstance(UNIUNI, str):

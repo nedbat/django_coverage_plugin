@@ -8,20 +8,13 @@ from __future__ import print_function
 import os.path
 import re
 
-from six.moves import range
-
 import coverage.plugin
-
 import django
 import django.template
-from django.template.base import Lexer, TextNode, NodeList, Template
+from django.template.base import Lexer, NodeList, Template, TextNode
+from django.template.defaulttags import VerbatimNode
 from django.templatetags.i18n import BlockTranslateNode
-
-try:
-    from django.template.defaulttags import VerbatimNode
-except ImportError:
-    # Django 1.4 didn't have VerbatimNode
-    VerbatimNode = None
+from six.moves import range
 
 try:
     from django.template.base import TokenType
