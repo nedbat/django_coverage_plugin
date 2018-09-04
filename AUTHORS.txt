@@ -1,7 +1,10 @@
 The Django coverage plugin was written by Ned Batchelder, with other
 contributions by:
 
-Jessamyn Smith
-Simon Charette
-Pamela McA'Nulty
+Andrew Pinkham
+Aron Griffis
 Emil Madsen
+Federico Bond
+Jessamyn Smith
+Pamela McA'Nulty
+Simon Charette
