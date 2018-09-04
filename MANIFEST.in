@@ -1,4 +1,15 @@
-# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-# For details: https://github.com/nedbat/django_coverage_plugin/blob/master/NOTICE.txt
+# Licensed under the Apache 2.0 License
+# - http://www.apache.org/licenses/LICENSE-2.0
+# - https://github.com/nedbat/django_coverage_plugin/blob/master/NOTICE.txt
 
-include requirements.txt
+exclude .isort.cfg
+exclude howto.txt
+exclude Makefile
+exclude requirements.txt
+exclude tox.ini
+include AUTHORS.txt
+include HISTORY.rst
+include LICENSE.txt
+include NOTICE.txt
+include README.rst
+prune tests
