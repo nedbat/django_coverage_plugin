@@ -8,22 +8,51 @@ from __future__ import print_function
 import os.path
 import re
 
+import django
+import django.template
+from django.template.base import Lexer, NodeList, Template, TextNode
+from django.template.defaulttags import VerbatimNode
+from django.templatetags.i18n import BlockTranslateNode
 from six.moves import range
 
 import coverage.plugin
 
-import django
-import django.template
-from django.template.base import (
-    Lexer, TextNode, NodeList, Template,
-    TOKEN_BLOCK, TOKEN_MAPPING, TOKEN_TEXT, TOKEN_VAR,
-)
-from django.templatetags.i18n import BlockTranslateNode
 try:
-    from django.template.defaulttags import VerbatimNode
+    from django.template.base import TokenType
+
+    def get_token_type(token):
+        """Compatibility wrapper for getting token_type
+
+        Mirrors function created to handle Django before 2.1
+        Remove this function (with direct attr access) once
+        support for Django<2.1 is dropped.
+
+        """
+        return token.token_type
+
 except ImportError:
-    # Django 1.4 didn't have VerbatimNode
-    VerbatimNode = None
+    # TODO: remove ImportError once Django<2.1 support removed
+    from django.template.base import (
+        TOKEN_BLOCK, TOKEN_TEXT, TOKEN_VAR, TOKEN_COMMENT,
+    )
+    from enum import Enum
+
+    class TokenType(Enum):
+        """Replicate the TokenType class from Django 2.1"""
+
+        TEXT = TOKEN_TEXT
+        VAR = TOKEN_VAR
+        BLOCK = TOKEN_BLOCK
+        COMMENT = TOKEN_COMMENT
+
+    def get_token_type(token):
+        """Compatibility wrapper for getting token_type
+
+        Ensures an Enum is always used, even when older versions of
+        Django's template lexer return an integer
+
+        """
+        return TokenType(token.token_type)
 
 
 class DjangoTemplatePluginException(Exception):
@@ -168,7 +197,7 @@ class DjangoTemplatePlugin(
         return FileReporter(filename)
 
     def find_executable_files(self, src_dir):
-        for (dirpath, dirnames, filenames) in os.walk(src_dir):
+        for (dirpath, _, filenames) in os.walk(src_dir):
             for filename in filenames:
                 # We're only interested in files that look like reasonable HTML
                 # files: Must end with .htm or .html, and must not have certain
@@ -295,15 +324,16 @@ class FileReporter(coverage.plugin.FileReporter):
         inblock = False
 
         for token in tokens:
+            token_type = get_token_type(token)
             if SHOW_PARSING:
                 print(
                     "%10s %2d: %r" % (
-                        TOKEN_MAPPING[token.token_type],
+                        token_type.name.capitalize(),
                         token.lineno,
                         token.contents,
                     )
                 )
-            if token.token_type == TOKEN_BLOCK:
+            if token_type == TokenType.BLOCK:
                 if token.contents == "endcomment":
                     comment = False
                     continue
@@ -311,7 +341,7 @@ class FileReporter(coverage.plugin.FileReporter):
             if comment:
                 continue
 
-            if token.token_type == TOKEN_BLOCK:
+            if token_type == TokenType.BLOCK:
                 if token.contents.startswith("endblock"):
                     inblock = False
                 elif token.contents.startswith("block"):
@@ -340,10 +370,10 @@ class FileReporter(coverage.plugin.FileReporter):
 
                 source_lines.add(token.lineno)
 
-            elif token.token_type == TOKEN_VAR:
+            elif token_type == TokenType.VAR:
                 source_lines.add(token.lineno)
 
-            elif token.token_type == TOKEN_TEXT:
+            elif token_type == TokenType.TEXT:
                 if extends and not inblock:
                     continue
                 # Text nodes often start with newlines, but we don't want to
