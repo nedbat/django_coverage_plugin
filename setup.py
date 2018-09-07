@@ -50,7 +50,7 @@ Framework :: Django :: 2.1
 
 setup(
     name='django_coverage_plugin',
-    version='1.6rc1',
+    version='1.6.0',
     description='Django template coverage.py plugin',
     long_description=(
         re.compile(

@@ -36,7 +36,7 @@ The plugin is pip installable::
 
     $ pip install django_coverage_plugin
 
-To run it, add this setting to your .coveragerc file::
+To run it, add this setting to your ``.coveragerc`` file::
 
     [run]
     plugins =
@@ -45,7 +45,8 @@ To run it, add this setting to your .coveragerc file::
 Then run your tests under `coverage.py`_.
 
 You will see your templates listed in your coverage report along with
-your Python modules.
+your Python modules. Please use `coverage.py`_ v4.4 or greater to allow
+the plugin to identify untested templates.
 
 If you get a :code:`django.core.exceptions.ImproperlyConfigured` error,
 you need to set the :code:`DJANGO_SETTINGS_MODULE` environment variable.
