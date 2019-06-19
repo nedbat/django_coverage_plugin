@@ -78,6 +78,8 @@ def check_debug():
         return False
     if not hasattr(django.template.backends.django, "DjangoTemplates"):
         raise DjangoTemplatePluginException("Can't use non-Django templates.")
+    if not django.template.engines._engines:
+        return False
 
     for engine in django.template.engines.all():
         if not isinstance(engine, django.template.backends.django.DjangoTemplates):
