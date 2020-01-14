@@ -134,6 +134,8 @@ def read_template_source(filename):
         settings.configure()
 
     with open(filename, "rb") as f:
+        # The FILE_CHARSET setting will be removed in 3.1:
+        # https://docs.djangoproject.com/en/3.0/ref/settings/#file-charset
         if django.VERSION >= (3, 1):
             charset = 'utf-8'
         else:
