@@ -14,7 +14,7 @@
 .. |versions| image:: https://img.shields.io/pypi/pyversions/django_coverage_plugin.svg
     :target: https://pypi.python.org/pypi/django_coverage_plugin
     :alt: Supported Python Versions
-.. |djversions| image:: https://img.shields.io/badge/Django-1.8%20%7C%201.11%20%7C%202.0%20%7C%202.1-44b78b.svg
+.. |djversions| image:: https://img.shields.io/badge/Django-1.8%20%7C%201.11%20%7C%202.0%20%7C%202.1%20%7C%202.2%20%7C%203.0-44b78b.svg
     :target: https://pypi.python.org/pypi/django_coverage_plugin
     :alt: Supported Django Versions
 
@@ -26,9 +26,9 @@ Django Template Coverage.py Plugin
 
 A `coverage.py`_ plugin to measure test coverage of Django templates.
 
-Supported Python versions: 2.7, 3.4, 3.5 and 3.6.
+Supported Python versions: 2.7, 3.4, 3.5, 3.6, 3.7 and 3.8.
 
-Supported Django versions: 1.8, 1.11, 2.0, and 2.1.
+Supported Django versions: 1.8, 1.11, 2.0, 2.1, 2.2 and 3.0.
 
 Supported coverage.py versions are 4.0 and higher.
 
