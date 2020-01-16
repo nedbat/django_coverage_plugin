@@ -8,7 +8,7 @@
       Development Status :: 5 - Production/Stable
 - Copyright date in NOTICE.txt
 - Update README.rst with latest changes
-- Update README.rst with latest changes
+- Update HISTORY.rst with latest changes
 - Kits:
     $ make kit
     $ make kit_upload

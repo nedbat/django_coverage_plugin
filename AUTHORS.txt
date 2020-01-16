@@ -3,6 +3,7 @@ contributions by:
 
 Andrew Pinkham
 Aron Griffis
+Bruno Alla
 Emil Madsen
 Federico Bond
 Jessamyn Smith

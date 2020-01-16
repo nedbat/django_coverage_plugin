@@ -30,7 +30,7 @@ Supported Python versions: 2.7, 3.4, 3.5, 3.6, 3.7 and 3.8.
 
 Supported Django versions: 1.8, 1.11, 2.0, 2.1, 2.2 and 3.0.
 
-Supported coverage.py versions are 4.0 and higher.
+Supported coverage.py version 4.x . Support for version 5 is on the way!
 
 The plugin is pip installable::
 
