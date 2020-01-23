@@ -54,7 +54,7 @@ Framework :: Django :: 3.0
 
 setup(
     name='django_coverage_plugin',
-    version='1.7.0',
+    version='1.8.0',
     description='Django template coverage.py plugin',
     long_description=(
         re.compile(
