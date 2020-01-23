@@ -136,7 +136,11 @@ class DjangoPluginTestCase(StdStreamCapturingMixin, TempDirMixin, TestCase):
         self.cov.stop()
         self.cov.save()
         # Warning! Accessing secret internals!
-        for pl in self.cov.plugins:
+        if hasattr(self.cov, 'plugins'):
+            plugins = self.cov.plugins
+        else:
+            plugins = self.cov._plugins
+        for pl in plugins:
             if isinstance(pl, DjangoTemplatePlugin):
                 if not pl._coverage_enabled:
                     raise PluginDisabled()
@@ -174,7 +178,7 @@ class DjangoPluginTestCase(StdStreamCapturingMixin, TempDirMixin, TestCase):
 
     def measured_files(self):
         """Get the list of measured files, in relative form."""
-        return [os.path.relpath(f) for f in self.cov.data.measured_files()]
+        return [os.path.relpath(f) for f in self.cov.get_data().measured_files()]
 
     def assert_analysis(self, executable, missing=None, name=None):
         """Assert that the analysis for `name` is right."""
