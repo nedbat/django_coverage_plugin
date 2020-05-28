@@ -51,6 +51,20 @@ the plugin to identify untested templates.
 If you get a :code:`django.core.exceptions.ImproperlyConfigured` error,
 you need to set the :code:`DJANGO_SETTINGS_MODULE` environment variable.
 
+If you get :code:`django_coverage_plugin.plugin.DjangoTemplatePluginException: Template debugging must be enabled in settings`, change your TEMPLATES setting:
+
+.. code-block:: python
+
+    DEBUG = True
+
+    TEMPLATES = [
+        {
+            ...
+            'OPTIONS': {
+                'debug': DEBUG,
+            },
+        },
+    ]
 
 Configuration
 ~~~~~~~~~~~~~
