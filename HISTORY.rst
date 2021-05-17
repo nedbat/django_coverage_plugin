@@ -2,6 +2,12 @@
 History
 =======
 
+Unreleased
+----------
+
+Drop support for Python 3.4 and 3.5.
+
+
 v1.8.0 --- 2020-01-23
 ---------------------
 
