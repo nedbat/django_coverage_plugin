@@ -387,7 +387,7 @@ def running_sum(seq):
 
 
 def make_line_map(text):
-    line_lengths = [len(l) for l in text.splitlines(True)]
+    line_lengths = [len(line) for line in text.splitlines(True)]
     line_map = list(running_sum(line_lengths))
     return line_map
 
