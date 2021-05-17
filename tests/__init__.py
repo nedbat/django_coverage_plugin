@@ -5,7 +5,10 @@
 
 # Define URLs here so we can use ROOT_URLCONF="tests"
 
-from django.conf.urls import url
+try:
+    from django.urls import re_path
+except ImportError:
+    from django.conf.urls import url as re_path
 
 
 def index(request):
@@ -14,5 +17,5 @@ def index(request):
 
 
 urlpatterns = [
-    url(r'^home$', index, name='index'),
+    re_path(r'^home$', index, name='index'),
 ]
