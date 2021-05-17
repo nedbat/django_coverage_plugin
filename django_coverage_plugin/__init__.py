@@ -3,8 +3,8 @@
 
 """Django Template Coverage Plugin"""
 
+from .plugin import DjangoTemplatePluginException  # noqa
 from .plugin import DjangoTemplatePlugin
-from .plugin import DjangoTemplatePluginException       # noqa
 
 
 def coverage_init(reg, options):

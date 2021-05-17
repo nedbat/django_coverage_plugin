@@ -25,7 +25,10 @@ try:
 except ImportError:
     # Django <2.1 uses separate constants for token types
     from django.template.base import (
-        TOKEN_BLOCK, TOKEN_MAPPING, TOKEN_TEXT, TOKEN_VAR
+        TOKEN_BLOCK,
+        TOKEN_MAPPING,
+        TOKEN_TEXT,
+        TOKEN_VAR,
     )
 
     class TokenType:
