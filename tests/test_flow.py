@@ -5,7 +5,7 @@
 
 import textwrap
 
-from .plugin_test import DjangoPluginTestCase, squashed
+from .plugin_test import DjangoPluginTestCase, django_stop_before, squashed
 
 
 class IfTest(DjangoPluginTestCase):
@@ -173,6 +173,7 @@ class IfChangedTest(DjangoPluginTestCase):
         self.assert_analysis([1, 2, 3, 4, 5])
 
 
+@django_stop_before(4, 0)
 class IfEqualTest(DjangoPluginTestCase):
 
     def test_ifequal(self):
