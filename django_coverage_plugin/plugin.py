@@ -156,9 +156,9 @@ class DjangoTemplatePlugin(
     def __init__(self):
         self.debug_checked = False
 
-        self.django_template_dir = os.path.realpath(
+        self.django_template_dir = os.path.normcase(os.path.realpath(
             os.path.dirname(django.template.__file__)
-        )
+        ))
 
         self.source_map = {}
 
@@ -175,7 +175,7 @@ class DjangoTemplatePlugin(
         ]
 
     def file_tracer(self, filename):
-        if filename.startswith(self.django_template_dir):
+        if os.path.normcase(filename).startswith(self.django_template_dir):
             if not self.debug_checked:
                 # Keep calling check_debug until it returns True, which it
                 # will only do after settings have been configured

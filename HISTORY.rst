@@ -7,6 +7,10 @@ Unreleased
 
 Drop support for Python 3.4 and 3.5.
 
+Fixed an issue on Windows where file names were being compared
+case-sensitively, causing templates to be missed (`issue 46`_).
+
+.. _issue 46: https://github.com/nedbat/django_coverage_plugin/issues/46
 
 v1.8.0 --- 2020-01-23
 ---------------------
