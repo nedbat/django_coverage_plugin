@@ -66,3 +66,35 @@ jobs:
           fi
           echo $TEMP
           python -m tox
+
+  checks:
+    name: "Quality checks"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
+
+      - name: "Set up Python"
+        uses: "actions/setup-python@v2"
+        with:
+          python-version: "3.8"
+
+      - name: "Install dependencies"
+        run: |
+          set -xe
+          python -VV
+          python -m site
+          python -m pip install -r requirements.txt
+
+      - name: "Run check"
+        run: |
+          python -m tox -e check
+
+      - name: "Run pkgcheck"
+        run: |
+          python -m tox -e pkgcheck
+
+      - name: "Run doc"
+        run: |
+          python -m tox -e doc
