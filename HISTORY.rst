@@ -7,10 +7,14 @@ Unreleased
 
 Drop support for Python 3.4 and 3.5.
 
-Fixed an issue on Windows where file names were being compared
+Fix an issue on Windows where file names were being compared
 case-sensitively, causing templates to be missed (`issue 46`_).
 
+Fix an issue (`issue 63`_) where tag libraries can't be found if imported
+during test collection. Thanks to Daniel Izquierdo for the fix.
+
 .. _issue 46: https://github.com/nedbat/django_coverage_plugin/issues/46
+.. _issue 63: https://github.com/nedbat/django_coverage_plugin/issues/63
 
 v1.8.0 --- 2020-01-23
 ---------------------
