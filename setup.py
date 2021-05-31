@@ -62,6 +62,7 @@ setup(
             re.M | re.S,
         ).sub('', read('README.rst'))
     ),
+    long_description_content_type='text/x-rst',
     author='Ned Batchelder',
     author_email='ned@nedbatchelder.com',
     url='https://github.com/nedbat/django_coverage_plugin',
