@@ -26,11 +26,11 @@ Django Template Coverage.py Plugin
 
 A `coverage.py`_ plugin to measure test coverage of Django templates.
 
-Supported Python versions: 2.7, 3.4, 3.5, 3.6, 3.7 and 3.8.
+Supported Python versions: 2.7, 3.6, 3.7, 3.8 and 3.9.
 
-Supported Django versions: 1.8, 1.11, 2.0, 2.1, 2.2 and 3.0.
+Supported Django versions: 1.8, 1.11, 2.x and 3.x.
 
-Supported coverage.py version 4.x or 5.x.
+Supported coverage.py versions: 4.x or higher.
 
 The plugin is pip installable::
 
@@ -39,8 +39,7 @@ The plugin is pip installable::
 To run it, add this setting to your ``.coveragerc`` file::
 
     [run]
-    plugins =
-        django_coverage_plugin
+    plugins = django_coverage_plugin
 
 Then run your tests under `coverage.py`_.
 
@@ -51,20 +50,23 @@ the plugin to identify untested templates.
 If you get a :code:`django.core.exceptions.ImproperlyConfigured` error,
 you need to set the :code:`DJANGO_SETTINGS_MODULE` environment variable.
 
-If you get :code:`django_coverage_plugin.plugin.DjangoTemplatePluginException: Template debugging must be enabled in settings`, change your TEMPLATES setting:
+Template coverage only works if your Django templates have debugging enabled.
+If you get :code:`django_coverage_plugin.plugin.DjangoTemplatePluginException:
+Template debugging must be enabled in settings`, or if no templates get
+measured, make sure you have :code:`TEMPLATES.OPTIONS.debug` set to True in
+your settings file:
 
 .. code-block:: python
-
-    DEBUG = True
 
     TEMPLATES = [
         {
             ...
             'OPTIONS': {
-                'debug': DEBUG,
+                'debug': True,
             },
         },
     ]
+
 
 Configuration
 ~~~~~~~~~~~~~
