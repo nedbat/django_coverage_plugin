@@ -176,9 +176,15 @@ class DjangoPluginTestCase(StdStreamCapturingMixin, TempDirMixin, TestCase):
         _, executable, _, missing, _ = analysis
         return executable, missing
 
-    def measured_files(self):
-        """Get the list of measured files, in relative form."""
-        return [os.path.relpath(f) for f in self.cov.get_data().measured_files()]
+    def assert_measured_files(self, *template_files):
+        """Assert that the measured files are `template_files`.
+
+        The names in `template_files` are the base names of files
+        in the templates directory.
+        """
+        measured = {os.path.relpath(f) for f in self.cov.get_data().measured_files()}
+        expected = {os.path.join("templates", f) for f in template_files}
+        self.assertEqual(measured, expected)
 
     def assert_analysis(self, executable, missing=None, name=None):
         """Assert that the analysis for `name` is right."""
