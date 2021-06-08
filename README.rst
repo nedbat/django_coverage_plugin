@@ -121,8 +121,8 @@ To run the tests::
 History
 ~~~~~~~
 
-Unreleased
-----------
+v2.0.0 --- 2021-06-08
+---------------------
 
 Drop support for Python 3.4 and 3.5.
 

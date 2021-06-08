@@ -33,11 +33,10 @@ Intended Audience :: Developers
 License :: OSI Approved :: Apache Software License
 Operating System :: OS Independent
 Programming Language :: Python :: 2.7
-Programming Language :: Python :: 3.4
-Programming Language :: Python :: 3.5
 Programming Language :: Python :: 3.6
 Programming Language :: Python :: 3.7
 Programming Language :: Python :: 3.8
+Programming Language :: Python :: 3.9
 Programming Language :: Python :: Implementation :: CPython
 Programming Language :: Python :: Implementation :: PyPy
 Topic :: Software Development :: Quality Assurance
@@ -46,15 +45,13 @@ Development Status :: 5 - Production/Stable
 Framework :: Django
 Framework :: Django :: 1.8
 Framework :: Django :: 1.11
-Framework :: Django :: 2.0
-Framework :: Django :: 2.1
 Framework :: Django :: 2.2
-Framework :: Django :: 3.0
+Framework :: Django :: 3.2
 """
 
 setup(
     name='django_coverage_plugin',
-    version='1.8.0',
+    version='2.0.0',
     description='Django template coverage.py plugin',
     long_description=(
         re.compile(
