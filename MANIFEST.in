@@ -9,7 +9,6 @@ exclude requirements.txt
 exclude tox.ini
 exclude .editorconfig
 include AUTHORS.txt
-include HISTORY.rst
 include LICENSE.txt
 include NOTICE.txt
 include README.rst
