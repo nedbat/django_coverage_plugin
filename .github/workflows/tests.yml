@@ -7,6 +7,11 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+  schedule:
+    # Since we test against the tip of Django development, run the tests once a
+    # week, Sundays at 6:00 UTC.
+    - cron: "0 6 * * 0"
+
 
 defaults:
   run:
