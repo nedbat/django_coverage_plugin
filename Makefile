@@ -3,13 +3,14 @@
 
 # Makefile for django_coverage_plugin
 
-default:
-	@echo "* No default action *"
+help:					## Show this help.
+	@echo "Available targets:"
+	@grep '^[a-zA-Z]' $(MAKEFILE_LIST) | sort | awk -F ':.*?## ' 'NF==2 {printf "  %-26s%s\n", $$1, $$2}'
 
-test:
-	tox
+test:					## Run all the tests.
+	tox -q -- -q
 
-clean:
+clean:					## Remove non-source files.
 	-rm -rf *.egg-info
 	-rm -rf build dist
 	-rm -f *.pyc */*.pyc */*/*.pyc */*/*/*.pyc */*/*/*/*.pyc */*/*/*/*/*.pyc
@@ -20,7 +21,7 @@ clean:
 	-rm -f .coverage .coverage.* coverage.xml
 	-rm -f setuptools-*.egg distribute-*.egg distribute-*.tar.gz
 
-sterile: clean
+sterile: clean                          ## Remove all non-controlled content, even if expensive.
 	-rm -rf .tox*
 
 SDIST_CMD = python setup.py sdist --formats=gztar
