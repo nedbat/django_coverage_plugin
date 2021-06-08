@@ -24,10 +24,9 @@ clean:					## Remove non-source files.
 sterile: clean                          ## Remove all non-controlled content, even if expensive.
 	-rm -rf .tox*
 
-SDIST_CMD = python setup.py sdist --formats=gztar
 
-kit:
-	$(SDIST_CMD)
+kit:					## Make the source distribution.
+	python setup.py sdist --formats=gztar
 
-kit_upload:
-	twine upload dist/*
+kit_upload:				## Upload the built distributions to PyPI.
+	twine upload --verbose dist/*
