@@ -203,8 +203,12 @@ class DjangoTemplatePlugin(
     def has_dynamic_source_filename(self):
         return True
 
+    # "render" is the public method, but "render_annotated" is an internal
+    # method sometimes implemented directly on nodes.
+    RENDER_METHODS = {"render", "render_annotated"}
+
     def dynamic_source_filename(self, filename, frame):
-        if frame.f_code.co_name != 'render':
+        if frame.f_code.co_name not in self.RENDER_METHODS:
             return None
 
         if 0:
@@ -219,7 +223,7 @@ class DjangoTemplatePlugin(
         return None
 
     def line_number_range(self, frame):
-        assert frame.f_code.co_name == 'render'
+        assert frame.f_code.co_name in self.RENDER_METHODS
         if 0:
             dump_frame(frame, label="line_number_range")
 
