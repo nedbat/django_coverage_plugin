@@ -4,6 +4,8 @@
 
 """Tests of HTML reporting for django_coverage_plugin."""
 
+import glob
+
 from .plugin_test import DjangoPluginTestCase
 
 
@@ -16,6 +18,7 @@ class HtmlTest(DjangoPluginTestCase):
 
         self.run_django_coverage()
         self.cov.html_report()
-        with open("htmlcov/templates_test_simple_html.html") as fhtml:
+        html_file = glob.glob("htmlcov/*_test_simple_html.html")[0]
+        with open(html_file) as fhtml:
             html = fhtml.read()
         self.assertIn('<span class="txt">Simple &#169; 2015</span>', html)
