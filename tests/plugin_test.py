@@ -231,19 +231,27 @@ class DjangoPluginTestCase(StdStreamCapturingMixin, TempDirMixin, TestCase):
         """Assert that our plugin was disabled during an operation."""
         # self.run_django_coverage will raise PluginDisabled if the plugin
         # was disabled.
-        with self.assertRaises(PluginDisabled):
-            yield
-        stderr = self.stderr()
+        # Coverage.py 6.0 made the warnings real warnings, so we have to adapt
+        # how we test the warnings based on the version.
+        if coverage.version.version_info >= (6, 0):
+            import coverage.exceptions as cov_exc
+            ctxmgr = self.assertWarns(cov_exc.CoverageWarning)
+        else:
+            ctxmgr = nullcontext()
+        with ctxmgr as cw:
+            with self.assertRaises(PluginDisabled):
+                yield
+
+        if cw is not None:
+            warn_text = "\n".join(str(w.message) for w in cw.warnings)
+        else:
+            warn_text = self.stderr()
         self.assertIn(
-            "Coverage.py warning: "
             "Disabling plug-in 'django_coverage_plugin.DjangoTemplatePlugin' "
             "due to an exception:",
-            stderr
+            warn_text
         )
-        self.assertIn(
-            "DjangoTemplatePluginException: " + msg,
-            stderr
-        )
+        self.assertIn("DjangoTemplatePluginException: " + msg, warn_text)
 
 
 def squashed(s):
@@ -282,3 +290,9 @@ def django_stop_before(*needed_version):
 class PluginDisabled(Exception):
     """Raised if we find that our plugin has been disabled."""
     pass
+
+
+@contextlib.contextmanager
+def nullcontext():
+    """For when we need a context manager to do nothing."""
+    yield None
