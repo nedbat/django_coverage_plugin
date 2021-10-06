@@ -36,6 +36,7 @@ jobs:
           - "3.7"
           - "3.8"
           - "3.9"
+          - "3.10"
         exclude:
           # Windows 2.7 doesn't work because Microsoft removed stuff we needed.
           - os: windows-latest
