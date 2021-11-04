@@ -3,6 +3,14 @@
 
 """Tests of template inheritance for django_coverage_plugin."""
 
+import os
+
+try:
+    from coverage.exceptions import NoSource
+except ImportError:
+    # for coverage 5.x
+    from coverage.misc import NoSource
+
 from .plugin_test import DjangoPluginTestCase
 
 
@@ -64,3 +72,65 @@ class FindSourceTest(DjangoPluginTestCase):
         self.assert_analysis([1], name="phd.tex", missing=[1])
         # The editor leave-behinds are not in the measured files.
         self.assert_measured_files("main.html", "unused.html", "phd.tex")
+
+    def test_non_utf8_error(self):
+        # A non-UTF8 text file will raise an error.
+        self.make_file(".coveragerc", """\
+            [run]
+            plugins = django_coverage_plugin
+            source = .
+            """)
+        # This is a template that is rendered.
+        self.make_template(name="main.html", text="Hello")
+        # Extra file containing a word encoded in CP-1252
+        self.make_file(self._path("static/changelog.txt"), bytes=b"sh\xf6n")
+
+        text = self.run_django_coverage(name="main.html")
+        self.assertEqual(text, "Hello")
+
+        self.assert_measured_files("main.html", "static{}changelog.txt".format(os.sep))
+        self.assert_analysis([1], name="main.html")
+        with self.assertRaisesRegexp(NoSource, r"changelog.txt.*invalid start byte"):
+            self.cov.html_report()
+
+    def test_non_utf8_omitted(self):
+        # If we omit the directory with the non-UTF8 file, all is well.
+        self.make_file(".coveragerc", """\
+            [run]
+            plugins = django_coverage_plugin
+            source = .
+            [report]
+            omit = */static/*
+            """)
+        # This is a template that is rendered.
+        self.make_template(name="main.html", text="Hello")
+        # Extra file containing a word encoded in CP-1252
+        self.make_file(self._path("static/changelog.txt"), bytes=b"sh\xf6n")
+
+        text = self.run_django_coverage(name="main.html")
+        self.assertEqual(text, "Hello")
+
+        self.assert_measured_files("main.html", "static{}changelog.txt".format(os.sep))
+        self.assert_analysis([1], name="main.html")
+        self.cov.html_report()
+
+    def test_non_utf8_ignored(self):
+        # If we ignore reporting errors, a non-UTF8 text file is fine.
+        self.make_file(".coveragerc", """\
+            [run]
+            plugins = django_coverage_plugin
+            source = .
+            [report]
+            ignore_errors = True
+            """)
+        # This is a template that is rendered.
+        self.make_template(name="main.html", text="Hello")
+        # Extra file containing a word encoded in CP-1252
+        self.make_file(self._path("static/changelog.txt"), bytes=b"sh\xf6n")
+
+        text = self.run_django_coverage(name="main.html")
+        self.assertEqual(text, "Hello")
+
+        self.assert_measured_files("main.html", "static{}changelog.txt".format(os.sep))
+        self.assert_analysis([1], name="main.html")
+        self.cov.html_report()
