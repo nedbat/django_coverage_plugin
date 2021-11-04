@@ -145,7 +145,7 @@ def read_template_source(filename):
             charset = 'utf-8'
         else:
             charset = settings.FILE_CHARSET
-        text = f.read().decode(charset)
+        text = f.read().decode(charset, errors='backslashreplace')
 
     return text
 

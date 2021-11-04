@@ -262,3 +262,11 @@ class BranchTest(DjangoPluginTestCase):
             )
         self.assertEqual(text, 'Hello\nWorld\n\nGoodbye')
         self.assert_analysis([1, 2, 3, 4])
+
+
+class TestNonUTF8StaticFile(DjangoPluginTestCase):
+    def test_non_utf8_static_file(self):
+        # Non-template file containing a word encoded in CP-1252
+        self.make_file("static/german.txt", bytes=b"sh\xf6n")
+        self.run_django_coverage(text='Hello')
+        self.assertEqual(self.get_html_report('../static/german.txt'), 0)
