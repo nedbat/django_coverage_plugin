@@ -72,12 +72,12 @@ Configuration
 ~~~~~~~~~~~~~
 
 The Django template plugin uses some existing settings from your
-.coveragerc file.  The ``source=``, ``include=``, and ``omit=`` options
+``.coveragerc`` file.  The ``source=``, ``include=``, and ``omit=`` options
 control what template files are included in the report.
 
 The plugin can find unused template and include them in your results.  By
 default, it will look for files in your templates directory with an extension
-of .html, .htm, or .txt.  You can configure it to look for a different set of
+of ``.html``, ``.htm``, or ``.txt``.  You can configure it to look for a different set of
 extensions if you like::
 
     [run]
@@ -86,6 +86,15 @@ extensions if you like::
     [django_coverage_plugin]
     template_extensions = html, txt, tex, email
 
+If you use ``pyproject.toml`` for tool configuration use::
+
+    [tool.coverage.run]
+    plugins = [
+        'django_coverage_plugin',
+    ]
+
+    [tool.coverage.django_coverage_plugin]
+    template_extensions = 'html, txt, tex, email'
 
 Caveats
 ~~~~~~~
