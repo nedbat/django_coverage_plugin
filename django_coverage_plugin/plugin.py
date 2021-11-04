@@ -8,6 +8,11 @@ from __future__ import print_function
 import os.path
 import re
 
+try:
+    from coverage.exceptions import NoSource
+except ImportError:
+    # for coverage 5.x
+    from coverage.misc import NoSource
 import coverage.plugin
 import django
 import django.template
@@ -303,7 +308,10 @@ class FileReporter(coverage.plugin.FileReporter):
 
     def source(self):
         if self._source is None:
-            self._source = read_template_source(self.filename)
+            try:
+                self._source = read_template_source(self.filename)
+            except (IOError, UnicodeError) as exc:
+                raise NoSource("Couldn't read {}: {}".format(self.filename, exc))
         return self._source
 
     def lines(self):

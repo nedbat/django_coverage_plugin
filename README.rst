@@ -130,6 +130,17 @@ To run the tests::
 History
 ~~~~~~~
 
+Unreleased
+----------
+
+If a non-UTF8 file was found when looking for templates, it would fail when
+reading during the reporting phase, ending execution.  This failure is now
+raised in a way that can be ignored with a .coveragerc setting of ``[report]
+ignore_errors=True`` (`issue 78`_).
+
+.. _issue 78: https://github.com/nedbat/django_coverage_plugin/issues/78
+
+
 v2.0.1 --- 2021-10-06
 ---------------------
 
