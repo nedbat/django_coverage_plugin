@@ -134,3 +134,41 @@ class FindSourceTest(DjangoPluginTestCase):
         self.assert_measured_files("main.html", "static{}changelog.txt".format(os.sep))
         self.assert_analysis([1], name="main.html")
         self.cov.html_report()
+
+    def test_htmlcov_isnt_measured(self):
+        # We used to find the HTML report and think it was template files.
+        self.make_file(".coveragerc", """\
+            [run]
+            plugins = django_coverage_plugin
+            source = .
+            """)
+        self.make_template(name="main.html", text="Hello")
+        text = self.run_django_coverage(name="main.html")
+        self.assertEqual(text, "Hello")
+
+        self.assert_measured_files("main.html")
+        self.cov.html_report()
+
+        # Run coverage again with an HTML report on disk.
+        text = self.run_django_coverage(name="main.html")
+        self.assert_measured_files("main.html")
+
+    def test_custom_html_report_isnt_measured(self):
+        # We used to find the HTML report and think it was template files.
+        self.make_file(".coveragerc", """\
+            [run]
+            plugins = django_coverage_plugin
+            source = .
+            [html]
+            directory = my_html_report
+            """)
+        self.make_template(name="main.html", text="Hello")
+        text = self.run_django_coverage(name="main.html")
+        self.assertEqual(text, "Hello")
+
+        self.assert_measured_files("main.html")
+        self.cov.html_report()
+
+        # Run coverage again with an HTML report on disk.
+        text = self.run_django_coverage(name="main.html")
+        self.assert_measured_files("main.html")

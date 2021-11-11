@@ -184,6 +184,9 @@ class DjangoTemplatePlugin(
             )),
         ]
 
+    def configure(self, config):
+        self.html_report_dir = os.path.abspath(config.get_option("html:directory"))
+
     def file_tracer(self, filename):
         if os.path.normcase(filename).startswith(self.django_template_dir):
             if not self.debug_checked:
@@ -204,6 +207,9 @@ class DjangoTemplatePlugin(
         rx = r"^[^.#~!$@%^&*()+=,]+\.(" + "|".join(self.extensions) + r")$"
 
         for (dirpath, dirnames, filenames) in os.walk(src_dir):
+            if dirpath == self.html_report_dir:
+                # Don't confuse the HTML report with HTML templates.
+                continue
             for filename in filenames:
                 if re.search(rx, filename):
                     yield os.path.join(dirpath, filename)

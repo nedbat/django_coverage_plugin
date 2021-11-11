@@ -8,4 +8,6 @@ from .plugin import DjangoTemplatePlugin
 
 
 def coverage_init(reg, options):
-    reg.add_file_tracer(DjangoTemplatePlugin(options))
+    plugin = DjangoTemplatePlugin(options)
+    reg.add_file_tracer(plugin)
+    reg.add_configurer(plugin)
