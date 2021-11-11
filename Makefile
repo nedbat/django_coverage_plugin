@@ -26,7 +26,8 @@ sterile: clean                          ## Remove all non-controlled content, ev
 
 
 kit:					## Make the source distribution.
-	python setup.py sdist --formats=gztar
+	python -m build
+	python -m twine check dist/*
 
 kit_upload:				## Upload the built distributions to PyPI.
 	twine upload --verbose dist/*

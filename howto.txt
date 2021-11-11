@@ -9,7 +9,7 @@
 - Copyright date in NOTICE.txt
 - Update README.rst with latest changes
 - Kits:
-    $ make kit
+    $ make clean kit
     $ make kit_upload
 - tag git
 - make a new gh release: https://github.com/nedbat/django_coverage_plugin/releases/new
