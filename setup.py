@@ -52,7 +52,7 @@ Framework :: Django :: 3.2
 
 setup(
     name='django_coverage_plugin',
-    version='2.0.1',
+    version='2.0.2',
     description='Django template coverage.py plugin',
     long_description=(
         re.compile(

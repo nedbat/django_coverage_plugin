@@ -130,8 +130,8 @@ To run the tests::
 History
 ~~~~~~~
 
-Unreleased
-----------
+v2.0.2 — 2021-11-11
+-------------------
 
 If a non-UTF8 file was found when looking for templates, it would fail when
 reading during the reporting phase, ending execution.  This failure is now
