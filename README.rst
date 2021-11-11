@@ -144,13 +144,13 @@ found and believed to be unmeasured HTML template files.  This is now fixed.
 .. _issue 78: https://github.com/nedbat/django_coverage_plugin/issues/78
 
 
-v2.0.1 --- 2021-10-06
----------------------
+v2.0.1 — 2021-10-06
+-------------------
 
 Test and claim our support on Python 3.10.
 
-v2.0.0 --- 2021-06-08
----------------------
+v2.0.0 — 2021-06-08
+-------------------
 
 Drop support for Python 3.4 and 3.5.
 
@@ -168,58 +168,58 @@ during test collection. Thanks to Daniel Izquierdo for the fix.
 .. _issue 60: https://github.com/nedbat/django_coverage_plugin/issues/60
 .. _issue 63: https://github.com/nedbat/django_coverage_plugin/issues/63
 
-v1.8.0 --- 2020-01-23
----------------------
+v1.8.0 — 2020-01-23
+-------------------
 
 Add support for:
 
 - Coverage 5
 
-v1.7.0 --- 2020-01-16
----------------------
+v1.7.0 — 2020-01-16
+-------------------
 
 Add support for:
 
 - Python 3.7 & 3.8
 - Django 2.2 & 3.0
 
-v1.6.0 --- 2018-09-04
----------------------
+v1.6.0 — 2018-09-04
+-------------------
 
 Add support for Django 2.1.
 
 
-v1.5.2 --- 2017-10-18
----------------------
+v1.5.2 — 2017-10-18
+-------------------
 
 Validates support for Django version 2.0b1. Improves discovery of
 template files.
 
 
-v1.5.1a --- 2017-04-05
-----------------------
+v1.5.1a — 2017-04-05
+--------------------
 
 Validates support for Django version 1.11. Testing for new package
 maintainer Pamela McA'Nulty
 
 
-v1.5.0 --- 2017-02-23
----------------------
+v1.5.0 — 2017-02-23
+-------------------
 
 Removes support for Django versions below 1.8.  Validates support for
 Django version 1.11b1
 
 
-v1.4.2 --- 2017-02-06
----------------------
+v1.4.2 — 2017-02-06
+-------------------
 
 Fixes another instance of `issue 32`_, which was the result of an
 initialization order problem.
 
 
 
-v1.4.1 --- 2017-01-25
----------------------
+v1.4.1 — 2017-01-25
+-------------------
 
 Fixes `issue 32`_, which was the result of an initialization order
 problem.
@@ -228,8 +228,8 @@ problem.
 
 
 
-v1.4 --- 2017-01-16
--------------------
+v1.4 — 2017-01-16
+-----------------
 
 Django 1.10.5 is now supported.
 
@@ -245,8 +245,8 @@ engine is supported, and it must be configured with
 
 
 
-v1.3.1 --- 2016-06-02
----------------------
+v1.3.1 — 2016-06-02
+-------------------
 
 Settings are read slightly differently, so as to not interfere with
 programs that don't need settings.  Fixes `issue 18`_.
@@ -255,30 +255,30 @@ programs that don't need settings.  Fixes `issue 18`_.
 
 
 
-v1.3 --- 2016-04-03
--------------------
+v1.3 — 2016-04-03
+-----------------
 
 Multiple template engines are allowed.  Thanks, Simon Charette.
 
 
 
-v1.2.2 --- 2016-02-01
----------------------
+v1.2.2 — 2016-02-01
+-------------------
 
 No change in code, but Django 1.9.2 is now supported.
 
 
 
-v1.2.1 --- 2016-01-28
----------------------
+v1.2.1 — 2016-01-28
+-------------------
 
 The template debug settings are checked properly for people still using
 ``TEMPLATE_DEBUG`` in newer versions of Django.
 
 
 
-v1.2 --- 2016-01-16
--------------------
+v1.2 — 2016-01-16
+-----------------
 
 Check if template debugging is enabled in the settings, and raise a
 visible warning if not.  This prevents mysterious failures of the
@@ -291,15 +291,15 @@ been applied yet.
 
 
 
-v1.1 --- 2015-11-12
--------------------
+v1.1 — 2015-11-12
+-----------------
 
 Explicitly configure settings if need be to get things to work.
 
 
 
-v1.0 --- 2015-09-20
--------------------
+v1.0 — 2015-09-20
+-----------------
 
 First version :)
 
