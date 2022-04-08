@@ -112,6 +112,14 @@ if django.VERSION >= (1, 9):
         except (KeyError, AttributeError):
             return None
 
+    def lines_for_node(n):
+        try:
+            startLine = n.token.lineno
+            count = len(n.s.splitlines(True)) if isinstance(n, TextNode) else 0
+            return startLine, startLine + count
+        except AttributeError:
+            return None
+
     def position_for_node(node):
         try:
             return node.token.position
@@ -126,6 +134,9 @@ else:
             return frame.f_locals["self"].source[0].name
         except (KeyError, AttributeError, IndexError):
             return None
+
+    def lines_for_node(node):
+        return None
 
     def position_for_node(node):
         return node.source[1]
@@ -249,7 +260,8 @@ class DjangoTemplatePlugin(
 
         position = position_for_node(render_self)
         if position is None:
-            return -1, -1
+            lines = lines_for_node(render_self)
+            return lines if lines else (-1, -1)
 
         if SHOW_TRACING:
             print("{!r}: {}".format(render_self, position))
