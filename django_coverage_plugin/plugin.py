@@ -365,7 +365,7 @@ class FileReporter(coverage.plugin.FileReporter):
                         continue
 
                 if extends and not inblock:
-                    # In an inheriting tempalte, ignore all tags outside of
+                    # In an inheriting template, ignore all tags outside of
                     # blocks.
                     continue
 

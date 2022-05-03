@@ -45,6 +45,9 @@ def test_settings():
                 'DIRS': ['templates'],      # where the tests put things.
                 'OPTIONS': {
                     'debug': True,
+                    'loaders': [
+                        'django.template.loaders.filesystem.Loader',
+                    ]
                 },
             },
         ],
