@@ -130,10 +130,11 @@ To run the tests::
 History
 ~~~~~~~
 
-Unreleased
-----------
+v2.0.3 — 2022-05-04
+-------------------
 
 Add support for Django 4.0
+
 
 v2.0.2 — 2021-11-11
 -------------------
