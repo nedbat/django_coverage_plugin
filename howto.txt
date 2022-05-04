@@ -11,5 +11,5 @@
 - Kits:
     $ make clean kit
     $ make kit_upload
-- tag git
+    $ make tag
 - make a new gh release: https://github.com/nedbat/django_coverage_plugin/releases/new
