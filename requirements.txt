@@ -1,4 +1,5 @@
 # To run tests, we just need tox.
 tox >= 1.8
 build
+scriv
 twine

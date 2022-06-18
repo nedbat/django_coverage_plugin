@@ -130,6 +130,8 @@ To run the tests::
 History
 ~~~~~~~
 
+.. scriv-insert-here
+
 v2.0.3 — 2022-05-04
 -------------------
 
