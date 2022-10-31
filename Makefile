@@ -24,7 +24,6 @@ clean:					## Remove non-source files.
 sterile: clean                          ## Remove all non-controlled content, even if expensive.
 	-rm -rf .tox*
 
-
 kit:					## Make the source distribution.
 	python -m build
 	python -m twine check dist/*
@@ -32,6 +31,9 @@ kit:					## Make the source distribution.
 kit_upload:				## Upload the built distributions to PyPI.
 	python -m twine upload --verbose dist/*
 
-tag: ## Make a git tag with the version number
+tag:					## Make a git tag with the version number.
 	git tag -a -m "Version v$$(python setup.py --version)" v$$(python setup.py --version)
 	git push --all
+
+ghrelease:				## Make a GitHub release for the latest version.
+	python -m scriv github-release

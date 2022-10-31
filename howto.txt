@@ -12,4 +12,4 @@
     $ make clean kit
     $ make kit_upload
     $ make tag
-- make a new gh release: https://github.com/nedbat/django_coverage_plugin/releases/new
+    $ make ghrelease
