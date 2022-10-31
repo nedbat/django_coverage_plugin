@@ -49,7 +49,7 @@ Framework :: Django :: 1.8
 Framework :: Django :: 1.11
 Framework :: Django :: 2.2
 Framework :: Django :: 3.2
-Framework :: Django :: 4.0
+Framework :: Django :: 4.1
 """
 
 setup(
@@ -57,10 +57,11 @@ setup(
     version='2.0.3',
     description='Django template coverage.py plugin',
     long_description=(
-        re.compile(
-            '^.. start-badges.*^.. end-badges',
-            re.M | re.S,
-        ).sub('', read('README.rst'))
+        re.sub(
+            '(?ms)^.. start-badges.*^.. end-badges',
+            '',
+            read('README.rst'),
+        )
     ),
     long_description_content_type='text/x-rst',
     author='Ned Batchelder',
@@ -71,6 +72,6 @@ setup(
         'coverage',
         'six >= 1.4.0',
     ],
-    license='Apache 2.0',
+    license='Apache-2.0',
     classifiers=classifiers.splitlines(),
 )
