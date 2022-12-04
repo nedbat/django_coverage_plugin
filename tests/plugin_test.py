@@ -21,7 +21,7 @@ from unittest_mixins import StdStreamCapturingMixin, TempDirMixin
 from django_coverage_plugin.plugin import DjangoTemplatePlugin
 
 
-def test_settings():
+def get_test_settings():
     """Create a dict full of default Django settings for the tests."""
     the_settings = {
         'CACHES': {
@@ -56,7 +56,7 @@ def test_settings():
     return the_settings
 
 
-settings.configure(**test_settings())
+settings.configure(**get_test_settings())
 
 if hasattr(django, "setup"):
     django.setup()

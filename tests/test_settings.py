@@ -5,18 +5,18 @@
 
 from django.test.utils import override_settings
 
-from .plugin_test import DjangoPluginTestCase, test_settings
+from .plugin_test import DjangoPluginTestCase, get_test_settings
 
 # Make settings overrides for tests below.
 NON_DJANGO_BACKEND = 'django.template.backends.dummy.TemplateStrings'
 
-DEBUG_FALSE_OVERRIDES = test_settings()
+DEBUG_FALSE_OVERRIDES = get_test_settings()
 DEBUG_FALSE_OVERRIDES['TEMPLATES'][0]['OPTIONS']['debug'] = False
 
-NO_OPTIONS_OVERRIDES = test_settings()
+NO_OPTIONS_OVERRIDES = get_test_settings()
 del NO_OPTIONS_OVERRIDES['TEMPLATES'][0]['OPTIONS']
 
-OTHER_ENGINE_OVERRIDES = test_settings()
+OTHER_ENGINE_OVERRIDES = get_test_settings()
 OTHER_ENGINE_OVERRIDES['TEMPLATES'][0]['BACKEND'] = NON_DJANGO_BACKEND
 OTHER_ENGINE_OVERRIDES['TEMPLATES'][0]['OPTIONS'] = {}
 
