@@ -33,7 +33,8 @@ class MultipleEngineTests(DjangoPluginTestCase):
         self.assert_analysis([1])
 
     def test_string_template(self):
-        text = self.run_django_coverage(text='Hello', using='other')
+        with self.assert_no_data():
+            text = self.run_django_coverage(text='Hello', using='other')
         self.assertEqual(text, 'Hello')
 
     def test_third_engine_not_debug(self):

@@ -133,7 +133,12 @@ class FindSourceTest(DjangoPluginTestCase):
 
         self.assert_measured_files("main.html", "static{}changelog.txt".format(os.sep))
         self.assert_analysis([1], name="main.html")
-        self.cov.html_report()
+        warn_msg = (
+            "'utf-8' codec can't decode byte 0xf6 in position 2: " +
+            "invalid start byte (couldnt-parse)"
+        )
+        with self.assert_coverage_warnings(warn_msg, min_cov=(6, 0)):
+            self.cov.html_report()
 
     def test_htmlcov_isnt_measured(self):
         # We used to find the HTML report and think it was template files.

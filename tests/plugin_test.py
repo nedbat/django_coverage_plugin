@@ -226,31 +226,52 @@ class DjangoPluginTestCase(StdStreamCapturingMixin, TempDirMixin, TestCase):
         return xml_coverage
 
     @contextlib.contextmanager
-    def assert_plugin_disabled(self, msg):
-        """Assert that our plugin was disabled during an operation."""
-        # self.run_django_coverage will raise PluginDisabled if the plugin
-        # was disabled.
+    def assert_coverage_warnings(self, *msgs, min_cov=None):
+        """Assert that coverage.py warnings are raised that contain all msgs.
+
+        If coverage version isn't at least min_cov, then no warnings are expected.
+
+        """
         # Coverage.py 6.0 made the warnings real warnings, so we have to adapt
         # how we test the warnings based on the version.
-        if coverage.version.version_info >= (6, 0):
+        if min_cov is not None and coverage.version_info < min_cov:
+            # Don't check for warnings on lower versions of coverage
+            yield
+            return
+        elif coverage.version_info >= (6, 0):
             import coverage.exceptions as cov_exc
             ctxmgr = self.assertWarns(cov_exc.CoverageWarning)
         else:
-            ctxmgr = nullcontext()
+            ctxmgr = contextlib.nullcontext()
         with ctxmgr as cw:
-            with self.assertRaises(PluginDisabled):
-                yield
+            yield
 
         if cw is not None:
             warn_text = "\n".join(str(w.message) for w in cw.warnings)
         else:
             warn_text = self.stderr()
-        self.assertIn(
-            "Disabling plug-in 'django_coverage_plugin.DjangoTemplatePlugin' "
-            "due to an exception:",
-            warn_text
-        )
-        self.assertIn("DjangoTemplatePluginException: " + msg, warn_text)
+        for msg in msgs:
+            self.assertIn(msg, warn_text)
+
+    @contextlib.contextmanager
+    def assert_plugin_disabled(self, msg):
+        """Assert that our plugin was disabled during an operation."""
+        # self.run_django_coverage will raise PluginDisabled if the plugin
+        # was disabled.
+        msgs = [
+            "Disabling plug-in 'django_coverage_plugin.DjangoTemplatePlugin' due to an exception:",
+            "DjangoTemplatePluginException: " + msg,
+        ]
+        with self.assert_coverage_warnings(*msgs):
+            with self.assertRaises(PluginDisabled):
+                yield
+
+    @contextlib.contextmanager
+    def assert_no_data(self, min_cov=None):
+        """Assert that coverage warns no data was collected."""
+        warn_msg = "No data was collected. (no-data-collected)"
+        with self.assert_coverage_warnings(warn_msg, min_cov=min_cov):
+            yield
 
 
 def squashed(s):
@@ -289,9 +310,3 @@ def django_stop_before(*needed_version):
 class PluginDisabled(Exception):
     """Raised if we find that our plugin has been disabled."""
     pass
-
-
-@contextlib.contextmanager
-def nullcontext():
-    """For when we need a context manager to do nothing."""
-    yield None

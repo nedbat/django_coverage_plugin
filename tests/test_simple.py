@@ -245,11 +245,14 @@ class StringTemplateTest(DjangoPluginTestCase):
     run_in_temp_dir = False
 
     def test_string_template(self):
-        text = self.run_django_coverage(
-            text="Hello, {{name}}!",
-            context={'name': 'World'},
-            options={},
-            )
+        # I don't understand why coverage 6 warns about no data,
+        # but coverage 5 does not.
+        with self.assert_no_data(min_cov=(6, 0)):
+            text = self.run_django_coverage(
+                text="Hello, {{name}}!",
+                context={'name': 'World'},
+                options={},
+                )
         self.assertEqual(text, "Hello, World!")
 
 
