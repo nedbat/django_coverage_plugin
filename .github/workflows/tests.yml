@@ -12,10 +12,17 @@ on:
     # week, Sundays at 6:00 UTC.
     - cron: "0 6 * * 0"
 
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
 
 defaults:
   run:
     shell: bash
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+  FORCE_COLOR: 1    # Get colored pytest output
 
 jobs:
   tests:
