@@ -3,8 +3,6 @@
 
 """The Django template coverage plugin."""
 
-from __future__ import print_function
-
 import os.path
 import re
 
@@ -99,39 +97,28 @@ def check_debug():
     return True
 
 
-if django.VERSION < (1, 8):
-    raise RuntimeError("Django Coverage Plugin requires Django 1.8 or higher")
+if django.VERSION < (1, 11):
+    raise RuntimeError("Django Coverage Plugin requires Django 1.11 or higher")
 
 
-if django.VERSION >= (1, 9):
-    # Since we are grabbing at internal details, we have to adapt as they
-    # change over versions.
-    def filename_for_frame(frame):
-        try:
-            return frame.f_locals["self"].origin.name
-        except (KeyError, AttributeError):
-            return None
+# Since we are grabbing at internal details, we have to adapt as they
+# change over versions.
+def filename_for_frame(frame):
+    try:
+        return frame.f_locals["self"].origin.name
+    except (KeyError, AttributeError):
+        return None
 
-    def position_for_node(node):
-        try:
-            return node.token.position
-        except AttributeError:
-            return None
 
-    def position_for_token(token):
-        return token.position
-else:
-    def filename_for_frame(frame):
-        try:
-            return frame.f_locals["self"].source[0].name
-        except (KeyError, AttributeError, IndexError):
-            return None
+def position_for_node(node):
+    try:
+        return node.token.position
+    except AttributeError:
+        return None
 
-    def position_for_node(node):
-        return node.source[1]
 
-    def position_for_token(token):
-        return token.source[1]
+def position_for_token(token):
+    return token.position
 
 
 def read_template_source(filename):

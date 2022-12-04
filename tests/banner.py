@@ -3,8 +3,6 @@
 
 """For printing the versions from tox.ini."""
 
-from __future__ import print_function
-
 import platform
 
 import django

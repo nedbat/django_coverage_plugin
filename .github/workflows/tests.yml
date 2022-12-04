@@ -31,17 +31,11 @@ jobs:
         python-version:
           # When changing this list, be sure to check the [gh-actions] list in
           # tox.ini so that tox will run properly.
-          - "2.7"
-          - "3.6"
           - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
-        exclude:
-          # Windows 2.7 doesn't work because Microsoft removed stuff we needed.
-          - os: windows-latest
-            python-version: "2.7"
       fail-fast: false
 
     steps:
@@ -85,7 +79,7 @@ jobs:
       - name: "Set up Python"
         uses: "actions/setup-python@v2"
         with:
-          python-version: "3.8"
+          python-version: "3.7"
 
       - name: "Install dependencies"
         run: |

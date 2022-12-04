@@ -53,10 +53,6 @@ def test_settings():
         ],
     })
 
-    if django.VERSION < (1, 10):
-        # for {% ssi %}
-        the_settings['TEMPLATES'][0]['OPTIONS']['allowed_include_roots'] = [""]
-
     return the_settings
 
 

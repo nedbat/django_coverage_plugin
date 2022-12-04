@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
 """Setup for Django Coverage Plugin
 
 Licensed under the Apache 2.0 License
@@ -7,7 +6,6 @@ Licensed under the Apache 2.0 License
 - https://github.com/nedbat/django_coverage_plugin/blob/master/NOTICE.txt
 
 """
-from __future__ import absolute_import, print_function
 
 import io
 import re
@@ -32,8 +30,6 @@ Environment :: Console
 Intended Audience :: Developers
 License :: OSI Approved :: Apache Software License
 Operating System :: OS Independent
-Programming Language :: Python :: 2.7
-Programming Language :: Python :: 3.6
 Programming Language :: Python :: 3.7
 Programming Language :: Python :: 3.8
 Programming Language :: Python :: 3.9
@@ -45,7 +41,6 @@ Topic :: Software Development :: Quality Assurance
 Topic :: Software Development :: Testing
 Development Status :: 5 - Production/Stable
 Framework :: Django
-Framework :: Django :: 1.8
 Framework :: Django :: 1.11
 Framework :: Django :: 2.2
 Framework :: Django :: 3.2
