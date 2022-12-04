@@ -5,12 +5,14 @@
 
 import platform
 
+import coverage
 import django
 
 print(
-    "{} {}; Django {}".format(
+    "{} {}; Django {}; Coverage {}".format(
         platform.python_implementation(),
         platform.python_version(),
-        django.get_version()
+        django.get_version(),
+        coverage.__version__,
     )
 )
