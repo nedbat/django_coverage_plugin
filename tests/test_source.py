@@ -90,7 +90,7 @@ class FindSourceTest(DjangoPluginTestCase):
 
         self.assert_measured_files("main.html", "static{}changelog.txt".format(os.sep))
         self.assert_analysis([1], name="main.html")
-        with self.assertRaisesRegexp(NoSource, r"changelog.txt.*invalid start byte"):
+        with self.assertRaisesRegex(NoSource, r"changelog.txt.*invalid start byte"):
             self.cov.html_report()
 
     def test_non_utf8_omitted(self):
