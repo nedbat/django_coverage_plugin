@@ -10,7 +10,7 @@ from .plugin_test import DjangoPluginTestCase
 
 class MultipleEngineTests(DjangoPluginTestCase):
     def setUp(self):
-        super(MultipleEngineTests, self).setUp()
+        super().setUp()
 
         engine = {
             'NAME': 'other',

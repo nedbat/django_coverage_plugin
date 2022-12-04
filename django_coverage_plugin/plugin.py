@@ -17,7 +17,6 @@ import django.template
 from django.template.base import Lexer, NodeList, Template, TextNode
 from django.template.defaulttags import VerbatimNode
 from django.templatetags.i18n import BlockTranslateNode
-from six.moves import range
 
 try:
     from django.template.base import TokenType
@@ -165,7 +164,7 @@ class DjangoTemplatePlugin(
         return [
             ("django_template_dir", self.django_template_dir),
             ("environment", sorted(
-                ("%s = %s" % (k, v))
+                ("{} = {}".format(k, v))
                 for k, v in os.environ.items()
                 if "DJANGO" in k
             )),
@@ -239,7 +238,7 @@ class DjangoTemplatePlugin(
             return -1, -1
 
         if SHOW_TRACING:
-            print("{!r}: {}".format(render_self, position))
+            print(f"{render_self!r}: {position}")
         s_start, s_end = position
         if isinstance(render_self, TextNode):
             first_line = render_self.s.splitlines(True)[0]
@@ -294,7 +293,7 @@ class DjangoTemplatePlugin(
 
 class FileReporter(coverage.plugin.FileReporter):
     def __init__(self, filename):
-        super(FileReporter, self).__init__(filename)
+        super().__init__(filename)
         # TODO: html filenames are absolute.
 
         self._source = None
@@ -303,15 +302,15 @@ class FileReporter(coverage.plugin.FileReporter):
         if self._source is None:
             try:
                 self._source = read_template_source(self.filename)
-            except (IOError, UnicodeError) as exc:
-                raise NoSource("Couldn't read {}: {}".format(self.filename, exc))
+            except (OSError, UnicodeError) as exc:
+                raise NoSource(f"Couldn't read {self.filename}: {exc}")
         return self._source
 
     def lines(self):
         source_lines = set()
 
         if SHOW_PARSING:
-            print("-------------- {}".format(self.filename))
+            print(f"-------------- {self.filename}")
 
         if django.VERSION >= (1, 9):
             lexer = Lexer(self.source())
@@ -389,7 +388,7 @@ class FileReporter(coverage.plugin.FileReporter):
                 source_lines.update(range(lineno, lineno+num_lines))
 
             if SHOW_PARSING:
-                print("\t\t\tNow source_lines is: {!r}".format(source_lines))
+                print(f"\t\t\tNow source_lines is: {source_lines!r}")
 
         return source_lines
 

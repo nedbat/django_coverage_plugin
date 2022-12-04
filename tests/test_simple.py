@@ -1,4 +1,3 @@
-# coding: utf8
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/django_coverage_plugin/blob/master/NOTICE.txt
 
@@ -7,7 +6,7 @@
 from .plugin_test import DjangoPluginTestCase
 
 # 200 Unicode chars: snowman + poo.
-UNIUNI = u"\u26C4\U0001F4A9"*100
+UNIUNI = "\u26C4\U0001F4A9"*100
 if isinstance(UNIUNI, str):
     UNISTR = UNIUNI
 else:
@@ -64,8 +63,8 @@ class SimpleTemplateTest(DjangoPluginTestCase):
             υηιcσɗє ιѕ тяιcку
             {{more}}!
             """)
-        text = self.run_django_coverage(context={'more': u'ɘboɔinU'})
-        self.assertEqual(text, u'υηιcσɗє ιѕ тяιcку\nɘboɔinU!\n')
+        text = self.run_django_coverage(context={'more': 'ɘboɔinU'})
+        self.assertEqual(text, 'υηιcσɗє ιѕ тяιcку\nɘboɔinU!\n')
         self.assert_analysis([1, 2])
         self.assertEqual(self.get_html_report(), 100)
         self.assertEqual(self.get_xml_report(), 100)
@@ -215,8 +214,8 @@ class OtherTest(DjangoPluginTestCase):
         text = self.run_django_coverage()
         self.assertEqual(
             text,
-            u"1\n\n{{if dying}}Alive.{{/if}}\nsecond.\n"
-            u"{%third%}.UNIUNI\n\n7\n".replace(u"UNIUNI", UNIUNI)
+            "1\n\n{{if dying}}Alive.{{/if}}\nsecond.\n"
+            "{%third%}.UNIUNI\n\n7\n".replace("UNIUNI", UNIUNI)
         )
         self.assert_analysis([1, 2, 3, 4, 5, 7])
 

@@ -7,7 +7,6 @@ Licensed under the Apache 2.0 License
 
 """
 
-import io
 import re
 from os.path import dirname, join
 
@@ -19,7 +18,7 @@ def read(*names, **kwargs):
 
     Parameter: encoding kwarg may be set
     """
-    return io.open(
+    return open(
         join(dirname(__file__), *names),
         encoding=kwargs.get('encoding', 'utf8')
     ).read()

@@ -66,11 +66,11 @@ class DjangoPluginTestCase(StdStreamCapturingMixin, TempDirMixin, TestCase):
     """A base class for all our tests."""
 
     def setUp(self):
-        super(DjangoPluginTestCase, self).setUp()
+        super().setUp()
         self.template_directory = "templates"
 
     def _path(self, name=None):
-        return "{}/{}".format(self.template_directory, name or self.template_file)
+        return f"{self.template_directory}/{name or self.template_file}"
 
     def make_template(self, text, name=None):
         """Make a template with `text`.
@@ -191,14 +191,14 @@ class DjangoPluginTestCase(StdStreamCapturingMixin, TempDirMixin, TestCase):
         self.assertEqual(
             executable,
             actual_executable,
-            "Executable lines aren't as expected: %r != %r" % (
+            "Executable lines aren't as expected: {!r} != {!r}".format(
                 executable, actual_executable,
             ),
         )
         self.assertEqual(
             missing or [],
             actual_missing,
-            "Missing lines aren't as expected: %r != %r" % (
+            "Missing lines aren't as expected: {!r} != {!r}".format(
                 missing, actual_missing,
             ),
         )
