@@ -64,7 +64,6 @@ setup(
     packages=['django_coverage_plugin'],
     install_requires=[
         'coverage',
-        'six >= 1.4.0',
     ],
     license='Apache-2.0',
     classifiers=classifiers.splitlines(),
