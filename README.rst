@@ -137,8 +137,8 @@ History
 
 .. scriv-insert-here
 
-Next
-----
+v3.0.0 — 2022-12-06
+-------------------
 
 Dropped support for Python 2.7, Python 3.6, and Django 1.8.
 
