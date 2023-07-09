@@ -31,7 +31,7 @@ A `coverage.py`_ plugin to measure test coverage of Django templates.
 
 Supported on:
 
-- Python: 3.8 through 3.11.
+- Python: 3.8 through 3.12.
 
 - Django: 2.x, 3.x and 4.x.
 
@@ -39,7 +39,7 @@ Supported on:
 
 The plugin is pip installable::
 
-    $ pip install django_coverage_plugin
+    $ python3 -m pip install django_coverage_plugin
 
 To run it, add this setting to your ``.coveragerc`` file::
 
@@ -128,7 +128,7 @@ Tests
 
 To run the tests::
 
-    $ pip install -r requirements.txt
+    $ python3 -m pip install -r requirements.txt
     $ tox
 
 
