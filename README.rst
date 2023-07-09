@@ -31,11 +31,11 @@ A `coverage.py`_ plugin to measure test coverage of Django templates.
 
 Supported on:
 
-- Python: 3.7 through 3.11.
+- Python: 3.8 through 3.11.
 
-- Django: 1.11, 2.x, 3.x and 4.x.
+- Django: 2.x, 3.x and 4.x.
 
-- Coverage.py: 4.x or higher.
+- Coverage.py: 6.x or higher.
 
 The plugin is pip installable::
 

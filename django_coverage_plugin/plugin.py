@@ -96,8 +96,8 @@ def check_debug():
     return True
 
 
-if django.VERSION < (1, 11):
-    raise RuntimeError("Django Coverage Plugin requires Django 1.11 or higher")
+if django.VERSION < (2, 0):
+    raise RuntimeError("Django Coverage Plugin requires Django 2.x or higher")
 
 
 # Since we are grabbing at internal details, we have to adapt as they
@@ -312,10 +312,7 @@ class FileReporter(coverage.plugin.FileReporter):
         if SHOW_PARSING:
             print(f"-------------- {self.filename}")
 
-        if django.VERSION >= (1, 9):
-            lexer = Lexer(self.source())
-        else:
-            lexer = Lexer(self.source(), self.filename)
+        lexer = Lexer(self.source())
         tokens = lexer.tokenize()
 
         # Are we inside a comment?
