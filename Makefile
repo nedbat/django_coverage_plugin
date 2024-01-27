@@ -32,7 +32,7 @@ kit_upload:				## Upload the built distributions to PyPI.
 	python -m twine upload --verbose dist/*
 
 tag:					## Make a git tag with the version number.
-	git tag -a -m "Version v$$(python setup.py --version)" v$$(python setup.py --version)
+	git tag -s -m "Version v$$(python setup.py --version)" v$$(python setup.py --version)
 	git push --all
 
 ghrelease:				## Make a GitHub release for the latest version.
