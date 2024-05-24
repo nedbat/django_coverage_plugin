@@ -104,9 +104,19 @@ if django.VERSION < (2, 0):
 # change over versions.
 def filename_for_frame(frame):
     try:
-        return frame.f_locals["self"].origin.name
-    except (KeyError, AttributeError):
+        self = frame.f_locals["self"]
+    except KeyError:
         return None
+
+    try:
+        return self.origin.name
+    except AttributeError:
+        pass
+
+    try:
+        return self[0].origin.name
+    except (IndexError, AttributeError):
+        pass
 
 
 def position_for_node(node):

@@ -87,13 +87,14 @@ class DjangoPluginTestCase(StdStreamCapturingMixin, TempDirMixin, TestCase):
         return os.path.abspath(self.make_file(template_path, text))
 
     def run_django_coverage(
-        self, name=None, text=None, context=None, options=None, using=None
+        self, name=None, text=None, context=None, options=None, using=None, widget=None
     ):
         """Run a template under coverage.
 
         The data context is `context` if provided, else {}.
         If `text` is provided, make a string template to run. Otherwise,
-        if `name` is provided, run that template, otherwise use the last
+        if `name` is provided, run that template, otherwise,
+        if `widget` is provided, render the widget, otherwise use the last
         template made by `make_template`.
 
         If `options` is provided, they are kwargs for the Coverage
@@ -118,6 +119,8 @@ class DjangoPluginTestCase(StdStreamCapturingMixin, TempDirMixin, TestCase):
         elif text is not None:
             tem = Template(text)
             use_real_context = True
+        elif widget is not None:
+            tem = widget
         else:
             tem = get_template(name or self.template_file)
 

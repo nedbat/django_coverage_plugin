@@ -177,3 +177,28 @@ class FindSourceTest(DjangoPluginTestCase):
         # Run coverage again with an HTML report on disk.
         text = self.run_django_coverage(name="main.html")
         self.assert_measured_files("main.html")
+
+    def test_widget_template_coverage_captured(self):
+        from django import forms
+
+        class Widget(forms.Widget):
+            template_name = 'widget.html'
+
+            def render(self, context):
+                """
+                We need to replace the normal Widget.render (which accepts a name, value and attrs)
+                with something that just accepts a context, like a normal Template.render would.
+                We also need to replace the `renderer`, as the hooks for the testing only work
+                based on the TemplatesSetting.
+                """
+                return self._render(
+                    self.template_name,
+                    context,
+                    renderer=forms.renderers.TemplatesSetting(),
+                )
+
+        self.make_template(name='widget.html', text="Hello")
+        text = self.run_django_coverage(widget=Widget())
+        self.assertEqual(text, 'Hello')
+
+        self.assert_measured_files('widget.html')
