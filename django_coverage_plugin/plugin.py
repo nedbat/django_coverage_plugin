@@ -159,7 +159,7 @@ class DjangoTemplatePlugin(
 
         self.source_map = {}
 
-        self.ignore_script_tags = options.get('ignore_script_tags', False)
+        self.ignore_script_tags = options.get('ignore_script_tags', False) in (True, 'True', 'true')
 
     # --- CoveragePlugin methods
 
@@ -298,13 +298,16 @@ class ScriptParser(html.parser.HTMLParser):
     # We never have nested script tags, so we are all good.
 
     def __init__(self, *args, **kwargs):
+        self.script_checker = kwargs.pop('script_checker', lambda attrs: True)
         super().__init__(*args, **kwargs)
-        self.script_lines = []
+        self.script_blocks = []
         self.in_script = False
+        self.script_lines_cache = None
 
     def handle_starttag(self, tag, attrs):
         if tag == 'script':
-            self.in_script = True
+            attrs = dict(attrs)
+            self.in_script = self.script_checker(attrs) and attrs.get('type', 'text/javascript') == 'text/javascript'
 
     def handle_endtag(self, tag):
         if tag == 'script':
@@ -313,9 +316,17 @@ class ScriptParser(html.parser.HTMLParser):
     def handle_data(self, data):
         if self.in_script:
             start_line = self.getpos()[0]
-            self.script_lines.extend([
-                line + start_line + 1 for line in range(data.rstrip().count('\n'))
-            ])
+            self.script_blocks.append((start_line + 1, start_line + 1 + data.rstrip().count('\n')))
+
+    def _script_lines(self):
+        for block in self.script_blocks:
+            yield from range(block[0], block[1])
+
+    @property
+    def script_lines(self):
+        if self.script_lines_cache is None:
+            self.script_lines_cache = list(self._script_lines())
+        return self.script_lines_cache
 
 
 class FileReporter(coverage.plugin.FileReporter):
