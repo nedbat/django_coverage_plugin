@@ -18,10 +18,11 @@ def read(*names, **kwargs):
 
     Parameter: encoding kwarg may be set
     """
-    return open(
+    with open(
         join(dirname(__file__), *names),
         encoding=kwargs.get('encoding', 'utf8')
-    ).read()
+    ) as f:
+        return f.read()
 
 
 classifiers = """\
@@ -34,13 +35,13 @@ Programming Language :: Python :: 3.9
 Programming Language :: Python :: 3.10
 Programming Language :: Python :: 3.11
 Programming Language :: Python :: 3.12
+Programming Language :: Python :: 3.13
 Programming Language :: Python :: Implementation :: CPython
 Programming Language :: Python :: Implementation :: PyPy
 Topic :: Software Development :: Quality Assurance
 Topic :: Software Development :: Testing
 Development Status :: 5 - Production/Stable
 Framework :: Django
-Framework :: Django :: 1.11
 Framework :: Django :: 2.2
 Framework :: Django :: 3.2
 Framework :: Django :: 4.2
