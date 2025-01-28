@@ -31,13 +31,13 @@ A `coverage.py`_ plugin to measure test coverage of Django templates.
 
 Supported on:
 
-- Python: 3.8 through 3.12.
+- Python: 3.9 through 3.13.
 
-- Django: 2.x, 3.x and 4.x.
+- Django: 2.x, 3.x, 4.x and 5.x.
 
 - Coverage.py: 6.x or higher.
 
-The plugin is pip installable::
+The plugin is pip-installable::
 
     $ python3 -m pip install django_coverage_plugin
 

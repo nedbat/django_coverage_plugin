@@ -41,11 +41,11 @@ jobs:
         python-version:
           # When changing this list, be sure to check the [gh-actions] list in
           # tox.ini so that tox will run properly.
-          - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
           - "3.12"
+          - "3.13"
       fail-fast: false
 
     steps:
@@ -94,7 +94,7 @@ jobs:
       - name: "Set up Python"
         uses: "actions/setup-python@v5"
         with:
-          python-version: "3.8"
+          python-version: "3.9"
 
       - name: "Install dependencies"
         run: |
