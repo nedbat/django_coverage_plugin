@@ -137,6 +137,12 @@ History
 
 .. scriv-insert-here
 
+v3.1.1 — 2025-06-15
+-------------------
+
+Support changes: dropped Python 3.8, added Python 3.13.  Added Django 5.2.
+
+
 v3.1.0 — 2023-07-10
 -------------------
 
