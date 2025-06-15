@@ -48,15 +48,9 @@ Framework :: Django :: 5.2
 
 setup(
     name='django_coverage_plugin',
-    version='3.1.0',
+    version='3.1.1rc1',
     description='Django template coverage.py plugin',
-    long_description=(
-        re.sub(
-            '(?ms)^.. start-badges.*^.. end-badges',
-            '',
-            read('README.rst'),
-        )
-    ),
+    long_description=(read('README.rst')),
     long_description_content_type='text/x-rst',
     author='Ned Batchelder',
     author_email='ned@nedbatchelder.com',
