@@ -45,6 +45,7 @@ Framework :: Django :: 2.2
 Framework :: Django :: 3.2
 Framework :: Django :: 4.2
 Framework :: Django :: 5.1
+Framework :: Django :: 5.2
 """
 
 setup(
