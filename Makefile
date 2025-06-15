@@ -31,6 +31,9 @@ kit:					## Make the source distribution.
 kit_upload:				## Upload the built distributions to PyPI.
 	python -m twine upload --verbose dist/*
 
+test_upload:				## Upload the distrubutions to test PyPI.
+	python -m twine upload --verbose --repository testpypi dist/*
+
 tag:					## Make a git tag with the version number.
 	git tag -s -m "Version v$$(python setup.py --version)" v$$(python setup.py --version)
 	git push --all
