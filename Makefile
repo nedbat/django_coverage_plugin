@@ -36,11 +36,13 @@ pypi:					## Upload the built distributions to PyPI.
 test_pypi:				## Upload the distributions to test PyPI.
 	python -m twine upload --verbose --repository testpypi --password $$TWINE_TEST_PASSWORD dist/*
 
-VERSION := $(shell python -c "import django_coverage_plugin as me; print(me.__version__)")
+_install_e:
+	python -m pip install -q -e .
 
-tag:					## Make a git tag with the version number.
-	git tag -s -m "Version v$(VERSION)" v$(VERSION)
-	git push --all
+tag: _install_e				## Make a git tag with the version number.
+	@export VER="$$(python -c "import django_coverage_plugin as me; print(me.__version__)")" && \
+	echo git tag -s -m "Version v$$VER" v$$VER
+	echo git push --all
 
 ghrelease:				## Make a GitHub release for the latest version.
 	python -m scriv github-release
