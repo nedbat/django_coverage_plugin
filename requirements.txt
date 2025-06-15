@@ -3,3 +3,7 @@ tox >= 1.8
 build
 scriv
 twine
+
+# We need django and coverage to be able to import ourselves to make a tag...
+django
+coverage
