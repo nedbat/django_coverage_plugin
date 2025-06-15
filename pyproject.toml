@@ -2,7 +2,7 @@
 # For details: https://github.com/nedbat/django_coverage_plugin/blob/master/NOTICE.txt
 
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=77.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -18,7 +18,7 @@ classifiers = [
     "Environment :: Console",
     "Framework :: Django",
     "Framework :: Django :: 2.2",
-    "Framework :: Django :: 3.2", 
+    "Framework :: Django :: 3.2",
     "Framework :: Django :: 4.2",
     "Framework :: Django :: 5.2",
     "Intended Audience :: Developers",
