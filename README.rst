@@ -21,7 +21,8 @@ A `coverage.py`_ plugin to measure test coverage of Django templates.
 .. |versions| image:: https://img.shields.io/pypi/pyversions/django_coverage_plugin.svg
     :target: https://pypi.python.org/pypi/django_coverage_plugin
     :alt: Supported Python Versions
-.. |djversions| image:: https://img.shields.io/badge/Django-1.8%20%7C%201.11%20%7C%202.2%20%7C%203.2%20%7C%204.1-44b78b.svg
+.. the Django badge says: `2.2 | 3.2 | 4.2 | 5.2`
+.. |djversions| image:: https://img.shields.io/badge/Django-2.2%20%7C%203.2%20%7C%204.2%20%7C%205.2-44b78b.svg
     :target: https://pypi.python.org/pypi/django_coverage_plugin
     :alt: Supported Django Versions
 
@@ -33,7 +34,7 @@ Supported on:
 
 - Python: 3.9 through 3.13.
 
-- Django: 2.x, 3.x, 4.x and 5.x.
+- Django: 2.2 through 5.2.
 
 - Coverage.py: 6.x or higher.
 
@@ -49,8 +50,7 @@ To run it, add this setting to your ``.coveragerc`` file::
 Then run your tests under `coverage.py`_.
 
 You will see your templates listed in your coverage report along with
-your Python modules. Please use `coverage.py`_ v4.4 or greater to allow
-the plugin to identify untested templates.
+your Python modules.
 
 If you get a :code:`django.core.exceptions.ImproperlyConfigured` error,
 you need to set the :code:`DJANGO_SETTINGS_MODULE` environment variable.
